@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  conferencia-service:
+    build: ./conferencia-service
+    container_name: conferencia-service
+    ports:
+      - "8081:8080" # Ajusta el puerto según lo necesites
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - app-network
+    depends_on:
+      - keycloak
+    env_file:
+      - ./conferencia-service/.env
+
+  review-service:
+    build: ./review-service
+    container_name: review-service
+    ports:
+      - "8082:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - app-network
+    depends_on:
+      - keycloak
+    env_file:
+      - ./review-service/.env
+
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    ports:
+      - "3000:3000" # Asume que el frontend corre en puerto 3000
+    networks:
+      - app-network
+    depends_on:
+      - conferencia-service
+      - review-service
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    container_name: keycloak
+    environment:
+      - KEYCLOAK_USER=admin
+      - KEYCLOAK_PASSWORD=admin
+      - DB_VENDOR=h2
+      - KEYCLOAK_IMPORT=/opt/keycloak/data/import/keycloak-realm-config.json # Importar configuración
+    volumes:
+      - ./keycloak/keycloak-realm-config.json:/opt/keycloak/data/import/keycloak-realm-config.json
+    ports:
+      - "8080:8080"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
