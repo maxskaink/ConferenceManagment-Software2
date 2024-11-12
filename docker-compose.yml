@@ -2,32 +2,28 @@ version: '3.8'
 
 services:
   conferencia-service:
-    build: ./conferencia-service
+    build: ./ConferenceMicroservice
     container_name: conferencia-service
     ports:
-      - "8081:8080" # Ajusta el puerto según lo necesites
+      - "8081:8081" # Ajusta el puerto según lo necesites
     environment:
       - SPRING_PROFILES_ACTIVE=docker
     networks:
       - app-network
     depends_on:
       - keycloak
-    env_file:
-      - ./conferencia-service/.env
 
   review-service:
     build: ./review-service
     container_name: review-service
     ports:
-      - "8082:8080"
+      - "8082:8082"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
     networks:
       - app-network
     depends_on:
       - keycloak
-    env_file:
-      - ./review-service/.env
 
   frontend:
     build: ./frontend
