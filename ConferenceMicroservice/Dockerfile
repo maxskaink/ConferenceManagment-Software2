@@ -1,5 +1,5 @@
 # Etapa 1: Compilación
-FROM maven:3.8.5-openjdk-17 AS build
+FROM maven:3.9.4-eclipse-temurin-21 AS build
 
 # Establece el directorio de trabajo en el contenedor
 WORKDIR /app
@@ -17,7 +17,7 @@ COPY src ./src
 RUN mvn clean package -DskipTests
 
 # Etapa 2: Generación de la imagen final
-FROM eclipse-temurin:17-jre-alpine
+FROM eclipse-temurin:21-jre-alpine
 
 # Establece el directorio de trabajo en el contenedor
 WORKDIR /app
