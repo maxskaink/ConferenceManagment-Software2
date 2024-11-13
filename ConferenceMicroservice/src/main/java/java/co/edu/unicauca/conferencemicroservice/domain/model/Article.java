@@ -3,7 +3,8 @@ package java.co.edu.unicauca.conferencemicroservice.domain.model;
 import java.co.edu.unicauca.conferencemicroservice.domain.exception.InvalidValue;
 import java.co.edu.unicauca.conferencemicroservice.domain.model.valueObjects.BasicDate;
 
-public class Article {private String id;
+public class Article {
+    private String id;
     private String name;
     private String idAuthor;
     private String keyWords;
