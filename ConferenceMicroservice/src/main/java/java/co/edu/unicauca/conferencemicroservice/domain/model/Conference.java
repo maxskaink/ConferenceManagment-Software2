@@ -36,9 +36,7 @@ public class Conference { private String id;
         this.organizer = organizer;
         this.description = description;
     }
-    public Conference(){
 
-    }
     public String getId() {
         return id;
     }
