@@ -9,7 +9,7 @@ public interface IArticleService {
     Article save(Article article);
     List<Article> findArticleByConference(String id);
     List<Article> findArticleByAuthor(String idAuthor);
-    Article findArtilceByID(String id) throws NotFound;
+    Article findArticleByID(String id) throws NotFound;
     Article update(String id, Article article)  throws InvalidValue, NotFound;
     Article delete(String id) throws InvalidValue;
     Article exist(String id) throws NotFound;

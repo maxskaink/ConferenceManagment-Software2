@@ -1,7 +1,5 @@
 package java.co.edu.unicauca.conferencemicroservice.infrastructure.arrayListRepository.mapper;
 
-import com.fasterxml.jackson.databind.cfg.MapperConfigBase;
-
 import java.co.edu.unicauca.conferencemicroservice.domain.model.Article;
 import java.co.edu.unicauca.conferencemicroservice.infrastructure.arrayListRepository.entity.ArticleEntity;
 
@@ -18,7 +16,7 @@ public class ArticleMapper {
                 article.getIdAuthor(),
                 article.getKeyWords(),
                 BasicDateMapper.toBasicDateEntity(article.getPublishDate()),
-                article.getConference()
+                article.getIdConference()
         );
     }
 

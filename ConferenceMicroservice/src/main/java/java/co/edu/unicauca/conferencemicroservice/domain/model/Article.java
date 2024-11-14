@@ -34,7 +34,7 @@ public class Article {
     public String getId() {return id;}
     public String getName() {return name;}
     public String getIdAuthor() {return idAuthor;}
-    public String getConference() {return idConference;}
+    public String getIdConference() {return idConference;}
     public String getKeyWords() {return keyWords;}
     public void setId(String id) {this.id = id;}
     public BasicDate getPublishDate() {return publishDate;}
@@ -42,7 +42,7 @@ public class Article {
     public void setIdAuthor(String idAuthor) {this.idAuthor = idAuthor;}
     public void setKeyWords(String keyWords) {this.keyWords = keyWords;}
     public void setPublishDate(BasicDate publishDate) {this.publishDate = publishDate;}
-    public void setConference(String conference) {
+    public void setIdConference(String conference) {
         this.idConference = conference;
     }
 
