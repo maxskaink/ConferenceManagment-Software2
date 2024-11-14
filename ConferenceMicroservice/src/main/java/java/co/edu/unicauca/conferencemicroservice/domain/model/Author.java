@@ -3,6 +3,7 @@ package java.co.edu.unicauca.conferencemicroservice.domain.model;
 import org.yaml.snakeyaml.events.Event;
 
 import java.co.edu.unicauca.conferencemicroservice.domain.exception.InvalidValue;
+import java.co.edu.unicauca.conferencemicroservice.domain.model.valueObjects.BasicDate;
 import java.util.regex.Pattern;
 
 public class Author {
@@ -51,6 +52,15 @@ public class Author {
     public void setEmail(String email) {
         validateEmail(email);
         this.email = email;
+    }
+
+    public Article createArticle(
+            String id,
+            String name,
+            String keyWords,
+            BasicDate publishDate
+    ){
+        return new Article(id, name, this.id, keyWords, publishDate);
     }
 
     private void validateName(String name){

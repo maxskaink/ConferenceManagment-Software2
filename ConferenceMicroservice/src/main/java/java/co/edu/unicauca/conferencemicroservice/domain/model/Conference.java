@@ -2,7 +2,8 @@ package java.co.edu.unicauca.conferencemicroservice.domain.model;
 
 import java.co.edu.unicauca.conferencemicroservice.domain.exception.InvalidValue;
 import java.co.edu.unicauca.conferencemicroservice.domain.model.valueObjects.BasicDate;
-public class Conference { private String id;
+public class Conference {
+    private String id;
     private String name;
     private BasicDate startDate;
     private BasicDate finishDate;
@@ -15,11 +16,11 @@ public class Conference { private String id;
      * Constructor of conference
      * @param name String name of conference
      * @param startDate BasicDate start date of conference
-     * @param finishDate BasicDate finish date of cconference
-     * @param place String Placfe of conference
-     * @param topic String topic of confernece
-     * @param organizer Organizer organizer to created confererence
-     * @param description Strign description of conference
+     * @param finishDate BasicDate finish date of conference
+     * @param place String Place of conference
+     * @param topic String topic of conference
+     * @param organizer Organizer to created conference
+     * @param description String description of conference
      */
     public Conference(String name, BasicDate startDate, BasicDate finishDate, String place, String topic, Organizer organizer, String description) {
         //Validate the values

@@ -18,7 +18,7 @@ public class ArticleMapper {
                 article.getIdAuthor(),
                 article.getKeyWords(),
                 BasicDateMapper.toBasicDateEntity(article.getPublishDate()),
-                article.getConference().getId()
+                article.getConference()
         );
     }
 

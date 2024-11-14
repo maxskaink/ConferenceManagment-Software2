@@ -9,7 +9,7 @@ public class Article {
     private String idAuthor;
     private String keyWords;
     private BasicDate publishDate;
-    private Conference conference;
+    private String idConference;
 
     /**
      * Main constructor of Article class, if some value is invalid throw INvalidValue
@@ -34,18 +34,16 @@ public class Article {
     public String getId() {return id;}
     public String getName() {return name;}
     public String getIdAuthor() {return idAuthor;}
-    public Conference getConference() {return conference;}
+    public String getConference() {return idConference;}
     public String getKeyWords() {return keyWords;}
-
     public void setId(String id) {this.id = id;}
     public BasicDate getPublishDate() {return publishDate;}
     public void setName(String name) {this.name = name;}
     public void setIdAuthor(String idAuthor) {this.idAuthor = idAuthor;}
     public void setKeyWords(String keyWords) {this.keyWords = keyWords;}
     public void setPublishDate(BasicDate publishDate) {this.publishDate = publishDate;}
-
-    public void setConference(Conference conference) {
-        this.conference = conference;
+    public void setConference(String conference) {
+        this.idConference = conference;
     }
 
     private void validateString(String name, String value){
