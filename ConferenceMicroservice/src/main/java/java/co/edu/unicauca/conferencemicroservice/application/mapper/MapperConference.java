@@ -15,4 +15,17 @@ public class MapperConference {
                 conferenceDTO.getDescription()
         );
     }
+
+    public static ConferenceDTO toConferenceDTO( Conference conference){
+        return new ConferenceDTO(
+                conference.getId(),
+                conference.getName(),
+                conference.getStartDate(),
+                conference.getFinishDate(),
+                conference.getPlace(),
+                conference.getTopic(),
+                conference.getIdOrganizer(),
+                conference.getDescription()
+        );
+    }
 }
