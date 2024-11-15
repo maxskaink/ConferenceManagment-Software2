@@ -4,7 +4,7 @@ import org.springframework.stereotype.Repository;
 import java.co.edu.unicauca.conferencemicroservice.domain.exception.DuplicateInformation;
 import java.co.edu.unicauca.conferencemicroservice.domain.exception.NotFound;
 import java.co.edu.unicauca.conferencemicroservice.domain.model.Organizer;
-import java.co.edu.unicauca.conferencemicroservice.domain.port.out.IOrganizerRepository;
+import java.co.edu.unicauca.conferencemicroservice.application.port.out.IOrganizerRepository;
 import java.co.edu.unicauca.conferencemicroservice.infrastructure.arrayListRepository.entity.OrganizerEntity;
 import java.co.edu.unicauca.conferencemicroservice.infrastructure.arrayListRepository.mapper.OrganizerMapper;
 

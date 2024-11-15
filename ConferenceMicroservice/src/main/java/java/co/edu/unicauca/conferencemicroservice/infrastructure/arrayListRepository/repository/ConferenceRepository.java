@@ -4,14 +4,13 @@ import org.springframework.stereotype.Repository;
 import java.co.edu.unicauca.conferencemicroservice.domain.exception.DuplicateInformation;
 import java.co.edu.unicauca.conferencemicroservice.domain.exception.NotFound;
 import java.co.edu.unicauca.conferencemicroservice.domain.model.Conference;
-import java.co.edu.unicauca.conferencemicroservice.domain.port.out.IConferenceRepository;
+import java.co.edu.unicauca.conferencemicroservice.application.port.out.IConferenceRepository;
 import java.co.edu.unicauca.conferencemicroservice.infrastructure.arrayListRepository.entity.BasicDateEntity;
 import java.co.edu.unicauca.conferencemicroservice.infrastructure.arrayListRepository.entity.ConferenceEntity;
 import java.co.edu.unicauca.conferencemicroservice.infrastructure.arrayListRepository.mapper.BasicDateMapper;
 import java.co.edu.unicauca.conferencemicroservice.infrastructure.arrayListRepository.mapper.ConferenceMapper;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public class ConferenceRepository implements IConferenceRepository {
@@ -65,7 +64,7 @@ public class ConferenceRepository implements IConferenceRepository {
         foundConference.setTopic(conference.getTopic());
         foundConference.setStartDate(BasicDateMapper.toBasicDateEntity(conference.getStartDate()));
         foundConference.setFinishDate(BasicDateMapper.toBasicDateEntity(conference.getFinishDate()));
-        foundConference.setIdOrganizer(conference.getOrganizer().getId());
+        foundConference.setIdOrganizer(conference.getIdOrganizer().getId());
 
         return ConferenceMapper.toConference(foundConference);
     }

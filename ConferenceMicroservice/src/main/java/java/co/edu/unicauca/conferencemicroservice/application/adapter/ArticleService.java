@@ -3,33 +3,60 @@ package java.co.edu.unicauca.conferencemicroservice.application.adapter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.co.edu.unicauca.conferencemicroservice.application.builder.BuilderArticle;
+import java.co.edu.unicauca.conferencemicroservice.application.builder.DirectorBuilderArticle;
+import java.co.edu.unicauca.conferencemicroservice.application.dto.ArticleDTO;
+import java.co.edu.unicauca.conferencemicroservice.application.port.out.IAuthorRepository;
+import java.co.edu.unicauca.conferencemicroservice.application.port.out.IConferenceRepository;
 import java.co.edu.unicauca.conferencemicroservice.domain.exception.InvalidValue;
 import java.co.edu.unicauca.conferencemicroservice.domain.exception.NotFound;
 import java.co.edu.unicauca.conferencemicroservice.domain.model.Article;
-import java.co.edu.unicauca.conferencemicroservice.domain.port.in.IArticleService;
-import java.co.edu.unicauca.conferencemicroservice.domain.port.out.IArticleRepository;
-import java.co.edu.unicauca.conferencemicroservice.domain.port.out.IEventsHandler;
+import java.co.edu.unicauca.conferencemicroservice.application.port.in.IArticleService;
+import java.co.edu.unicauca.conferencemicroservice.application.port.out.IArticleRepository;
+import java.co.edu.unicauca.conferencemicroservice.application.port.out.IEventsHandler;
 import java.util.List;
 
 @Service
 public class ArticleService implements IArticleService {
 
     private final IArticleRepository articleRepository;
+    private final IAuthorRepository authorRepository;
+    private final IConferenceRepository conferenceRepository;
     private final IEventsHandler eventsHandler;
 
     @Autowired
-    public ArticleService( IArticleRepository repository, IEventsHandler eventsHandler){
+    public ArticleService(
+            IArticleRepository repository,
+            IAuthorRepository authorRepository,
+            IConferenceRepository conferenceRepository,
+            IEventsHandler eventsHandler
+    ){
         this.articleRepository = repository;
+        this.authorRepository = authorRepository;
+        this.conferenceRepository = conferenceRepository;
         this.eventsHandler = eventsHandler;
     }
 
     @Override
-    public Article save(Article article) {
+    public Article save(ArticleDTO article) {
         if(article == null)
             throw new InvalidValue("Need an instance of article");
 
-        Article articleCreated = articleRepository.saveArticle(article);
+        //instance of builder and create the article
+        BuilderArticle builder = new BuilderArticle(
+                article,
+                authorRepository,
+                conferenceRepository
+        );
+        DirectorBuilderArticle director = new DirectorBuilderArticle( builder );
 
+        director.makeArticle();
+
+        Article newArticle = builder.getResult();
+
+        //Save the article
+        Article articleCreated = articleRepository.saveArticle(newArticle);
+        //Notify an event
         eventsHandler.sendArticle(articleCreated);
 
         return articleCreated;
@@ -64,16 +91,30 @@ public class ArticleService implements IArticleService {
     }
 
     @Override
-    public Article update(String id, Article article) throws InvalidValue, NotFound {
+    public Article update(String id, ArticleDTO article) throws InvalidValue, NotFound {
         if(id==null)
             throw new InvalidValue("Id null is invalid");
         if(article == null)
             throw new InvalidValue("Need an instance of article");
 
         article.setId(id);
-        Article articleUpdated = this.articleRepository.updateArticle(article);
 
-        eventsHandler.sendArticle(article);
+        //instance of builder and create the article
+        BuilderArticle builder = new BuilderArticle(
+                article,
+                authorRepository,
+                conferenceRepository
+        );
+        DirectorBuilderArticle director = new DirectorBuilderArticle( builder );
+
+        director.makeArticleWithoutID();
+
+        Article newArticle = builder.getResult();
+
+        //Save the changes of the new article
+        Article articleUpdated = this.articleRepository.updateArticle(newArticle);
+        //Notify the event
+        eventsHandler.sendArticle(newArticle);
 
         return articleUpdated;
     }
@@ -87,7 +128,7 @@ public class ArticleService implements IArticleService {
         return articleRepository.deleteArticleById(id);
     }
 
-    //TODO revisar esta funcion mas a detalle
+    //TODO check this functin in detail
     @Override
     public Article exist(String id) throws NotFound {
         return null;

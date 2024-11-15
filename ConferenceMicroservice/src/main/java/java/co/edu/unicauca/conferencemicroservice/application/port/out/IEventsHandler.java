@@ -1,4 +1,4 @@
-package java.co.edu.unicauca.conferencemicroservice.domain.port.out;
+package java.co.edu.unicauca.conferencemicroservice.application.port.out;
 
 import java.co.edu.unicauca.conferencemicroservice.domain.model.Article;
 import java.co.edu.unicauca.conferencemicroservice.domain.model.Conference;

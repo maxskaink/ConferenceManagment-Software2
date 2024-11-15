@@ -1,4 +1,4 @@
-package java.co.edu.unicauca.conferencemicroservice.domain.port.out;
+package java.co.edu.unicauca.conferencemicroservice.application.port.out;
 
 import java.co.edu.unicauca.conferencemicroservice.domain.exception.DuplicateInformation;
 import java.co.edu.unicauca.conferencemicroservice.domain.exception.NotFound;
@@ -20,7 +20,7 @@ public interface IAuthorRepository {
     List<Author> findAllAuthors();
 
     /**
-     * Save an author in db, if the values ar dupliacte, throws an DuplicateInformation
+     * Save an author in db, if the values ar duplicate, throws an DuplicateInformation
      * @param author Author to save in DB
      * @return The author saved in db
      */
@@ -29,7 +29,7 @@ public interface IAuthorRepository {
     /**
      * Delete an author in db, if it doesn't exist, throw an
      * NotFound exception
-     * @param idAuthor Id of the author to delete
+     * @param idAuthor id of the author to delete
      * @return The deleted Author
      */
     Author deleteAuthor(String idAuthor) throws NotFound;

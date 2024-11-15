@@ -1,5 +1,6 @@
-package java.co.edu.unicauca.conferencemicroservice.domain.port.in;
+package java.co.edu.unicauca.conferencemicroservice.application.port.in;
 
+import java.co.edu.unicauca.conferencemicroservice.application.dto.ConferenceDTO;
 import java.co.edu.unicauca.conferencemicroservice.domain.exception.NotFound;
 import java.co.edu.unicauca.conferencemicroservice.domain.model.Conference;
 import java.util.List;
@@ -11,7 +12,7 @@ public interface IConferenceService {
      * @param conferenceToSave conference for save in repository
      * @return conference to save or null
      */
-    Conference save(Conference conferenceToSave);
+    Conference save(ConferenceDTO conferenceToSave);
 
     /**
      *
@@ -38,7 +39,7 @@ public interface IConferenceService {
      * @param conferenceToUpdate new conference for update
      * @return conference updated or null
      */
-    Conference updateConference(String conferenceId, Conference conferenceToUpdate) throws NotFound;
+    Conference updateConference(String conferenceId, ConferenceDTO conferenceToUpdate) throws NotFound;
     /**
      *
      * @param conferenceId id to find in repository

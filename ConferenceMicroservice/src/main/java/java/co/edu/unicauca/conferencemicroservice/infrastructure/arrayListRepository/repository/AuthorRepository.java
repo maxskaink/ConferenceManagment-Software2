@@ -5,7 +5,7 @@ import org.springframework.stereotype.Repository;
 import java.co.edu.unicauca.conferencemicroservice.domain.exception.DuplicateInformation;
 import java.co.edu.unicauca.conferencemicroservice.domain.exception.NotFound;
 import java.co.edu.unicauca.conferencemicroservice.domain.model.Author;
-import java.co.edu.unicauca.conferencemicroservice.domain.port.out.IAuthorRepository;
+import java.co.edu.unicauca.conferencemicroservice.application.port.out.IAuthorRepository;
 import java.co.edu.unicauca.conferencemicroservice.infrastructure.arrayListRepository.entity.AuthorEntity;
 import java.co.edu.unicauca.conferencemicroservice.infrastructure.arrayListRepository.mapper.AuthorMapper;
 import java.util.ArrayList;

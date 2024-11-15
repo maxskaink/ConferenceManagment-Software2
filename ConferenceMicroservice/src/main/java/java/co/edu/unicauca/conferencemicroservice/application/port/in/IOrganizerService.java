@@ -1,5 +1,6 @@
-package java.co.edu.unicauca.conferencemicroservice.domain.port.in;
+package java.co.edu.unicauca.conferencemicroservice.application.port.in;
 
+import java.co.edu.unicauca.conferencemicroservice.application.dto.UserDTO;
 import java.co.edu.unicauca.conferencemicroservice.domain.exception.NotFound;
 import java.co.edu.unicauca.conferencemicroservice.domain.model.Organizer;
 import java.util.List;
@@ -11,7 +12,7 @@ public interface IOrganizerService {
      * @param organizerToSave Organzier complete to save
      * @return Organizer saved or null
      */
-     Organizer saveOrganizer(Organizer organizerToSave) ;
+     Organizer saveOrganizer(UserDTO organizerToSave) ;
 
     /**
      *

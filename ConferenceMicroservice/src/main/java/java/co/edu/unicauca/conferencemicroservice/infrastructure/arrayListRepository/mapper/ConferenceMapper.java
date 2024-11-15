@@ -17,7 +17,7 @@ public class ConferenceMapper {
                 BasicDateMapper.toBasicDateEntity(conference.getStartDate()),
                 BasicDateMapper.toBasicDateEntity(conference.getFinishDate()),
                 conference.getTopic(),
-                conference.getOrganizer().getId(),
+                conference.getIdOrganizer().getId(),
                 conference.getDescription(),
                 true
         );

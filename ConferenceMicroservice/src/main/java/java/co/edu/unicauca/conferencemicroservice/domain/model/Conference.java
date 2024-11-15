@@ -9,7 +9,7 @@ public class Conference {
     private BasicDate finishDate;
     private String place;
     private String topic;
-    private Organizer organizer;
+    private String idOrganizer;
     private String description;
 
     /**
@@ -19,10 +19,10 @@ public class Conference {
      * @param finishDate BasicDate finish date of conference
      * @param place String Place of conference
      * @param topic String topic of conference
-     * @param organizer Organizer to created conference
+     * @param idOrganizer idOrganizer to created conference
      * @param description String description of conference
      */
-    public Conference(String name, BasicDate startDate, BasicDate finishDate, String place, String topic, Organizer organizer, String description) {
+    public Conference(String name, BasicDate startDate, BasicDate finishDate, String place, String topic, String idOrganizer, String description) {
         //Validate the values
         validateString("name",name);
         validateString("place ", place);
@@ -34,7 +34,7 @@ public class Conference {
         this.finishDate = finishDate;
         this.place = place;
         this.topic = topic;
-        this.organizer = organizer;
+        this.idOrganizer = this.idOrganizer;
         this.description = description;
     }
 
@@ -86,12 +86,12 @@ public class Conference {
         this.topic = topic;
     }
 
-    public Organizer getOrganizer() {
-        return organizer;
+    public String getIdOrganizer() {
+        return idOrganizer;
     }
 
-    public void setOrganizer(Organizer organizer) {
-        this.organizer = organizer;
+    public void setIdOrganizer(String idOrganizer) {
+        this.idOrganizer = idOrganizer;
     }
 
     public String getDescription() {
@@ -100,6 +100,33 @@ public class Conference {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    /**
+     * Create an instance of article
+     * @param author Author how create de article
+     * @param idArticle id of the new article
+     * @param name name of the article
+     * @param keyWords keyword of the article
+     * @param publishDate date of article published
+     * @return An instance of article
+     */
+    public Article createArticle(
+            Author author,
+            String idArticle,
+            String name,
+            String keyWords,
+            BasicDate publishDate
+
+    ){
+        return new Article(
+                idArticle,
+                name,
+                author.getId(),
+                keyWords,
+                this.getId(),
+                publishDate
+        );
     }
 
     /**

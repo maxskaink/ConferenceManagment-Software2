@@ -1,4 +1,4 @@
-package java.co.edu.unicauca.conferencemicroservice.domain.port.out;
+package java.co.edu.unicauca.conferencemicroservice.application.port.out;
 
 import java.co.edu.unicauca.conferencemicroservice.domain.exception.DuplicateInformation;
 import java.co.edu.unicauca.conferencemicroservice.domain.exception.NotFound;
@@ -46,7 +46,7 @@ public interface IConferenceRepository {
     List<Conference> findAllActive();
 
     /**
-     * Find Conference by Id Organizer if doesn't exist
+     * Find Conference by id Organizer if it doesn't exist
      * throw a NotFound Exception
      * @param idOrganizer id of the organizer to search
      * @return the conferences with id conferences

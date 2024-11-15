@@ -19,15 +19,17 @@ public class Article {
      * @param keyWords must be not null or empty
      * @param publishDate must be a real date
      */
-    public Article(String id, String name, String idAuthor, String keyWords, BasicDate publishDate) {
+    public Article(String id, String name, String idAuthor, String keyWords, String idConference,BasicDate publishDate) {
         validateString("Name", name);
         validateString("id author", idAuthor);
         validateString("Keywords ", keyWords);
+        validateString("idConference", idConference);
         validatePublisDate(publishDate);
         this.name = name;
         this.idAuthor = idAuthor;
         this.keyWords = keyWords;
         this.publishDate = publishDate;
+        this.idConference = idConference;
     }
 
 

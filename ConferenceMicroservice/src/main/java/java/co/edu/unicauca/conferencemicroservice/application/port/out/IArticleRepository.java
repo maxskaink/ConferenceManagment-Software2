@@ -1,7 +1,6 @@
-package java.co.edu.unicauca.conferencemicroservice.domain.port.out;
+package java.co.edu.unicauca.conferencemicroservice.application.port.out;
 
 import java.co.edu.unicauca.conferencemicroservice.domain.exception.DuplicateInformation;
-import java.co.edu.unicauca.conferencemicroservice.domain.exception.InvalidValue;
 import java.co.edu.unicauca.conferencemicroservice.domain.exception.NotFound;
 import java.co.edu.unicauca.conferencemicroservice.domain.model.Article;
 import java.util.List;
@@ -36,9 +35,9 @@ public interface IArticleRepository {
 
     /**
      * Delete an article with idArticle, if it not exist throw an
-     * NotFound Exceptiion
+     * NotFound Exception
      * @param id id of the Article
-     * @return The deleted Artile
+     * @return The deleted Article
      */
     Article deleteArticleById(String id) throws NotFound;
 
