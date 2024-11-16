@@ -10,8 +10,8 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 public class ListConferencesOrganizerDTO {
-    private int  totalConference;
-    private String idOrganizer;
+    private int                 totalConference;
+    private String              idOrganizer;
     private List<ConferenceDTO> conferences;
     public ListConferencesOrganizerDTO(){}
 }

@@ -106,7 +106,7 @@ public class Conference {
 
     /**
      * Create an instance of article
-     * @param author Author how create de article
+     * @param idAuthor Author how create de article
      * @param idArticle id of the new article
      * @param name name of the article
      * @param keyWords keyword of the article
@@ -114,7 +114,7 @@ public class Conference {
      * @return An instance of article
      */
     public Article createArticle(
-            Author author,
+            String idAuthor,
             String idArticle,
             String name,
             String keyWords,
@@ -124,7 +124,7 @@ public class Conference {
         return new Article(
                 idArticle,
                 name,
-                author.getId(),
+                idAuthor,
                 keyWords,
                 this.getId(),
                 publishDate
@@ -141,12 +141,4 @@ public class Conference {
             throw  new InvalidValue(name + " is empty");
     }
 
-    /**
-     * Validate organizer is not null
-     * @param objOrganizer organizer to validate
-     */
-    private void validateOrganizer(Organizer objOrganizer){
-        if(objOrganizer  == null)
-            throw  new InvalidValue("Organizer is null");
-    }
 }

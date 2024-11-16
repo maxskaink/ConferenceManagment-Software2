@@ -10,12 +10,12 @@ import java.co.edu.unicauca.conferencemicroservice.domain.model.valueObjects.Bas
 @Setter
 @AllArgsConstructor
 public class ConferenceDTO {
-    private String id;
-    private String name;
-    private BasicDate startDate;
-    private BasicDate finishDate;
-    private String place;
-    private String topic;
-    private String idOrganizer;
-    private String description;
+    private String      id;
+    private String      name;
+    private BasicDate   startDate;
+    private BasicDate   finishDate;
+    private String      place;
+    private String      topic;
+    private String      idOrganizer;
+    private String      description;
 }

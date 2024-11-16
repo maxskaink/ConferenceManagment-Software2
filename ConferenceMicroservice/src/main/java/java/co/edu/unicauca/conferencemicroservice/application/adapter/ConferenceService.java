@@ -7,12 +7,11 @@ import java.co.edu.unicauca.conferencemicroservice.application.dto.ConferenceDTO
 import java.co.edu.unicauca.conferencemicroservice.application.mapper.MapperConference;
 import java.co.edu.unicauca.conferencemicroservice.domain.exception.InvalidValue;
 import java.co.edu.unicauca.conferencemicroservice.domain.exception.NotFound;
+import java.co.edu.unicauca.conferencemicroservice.domain.exception.Unauthorized;
 import java.co.edu.unicauca.conferencemicroservice.domain.model.Conference;
-import java.co.edu.unicauca.conferencemicroservice.domain.model.Organizer;
 import java.co.edu.unicauca.conferencemicroservice.application.port.in.IConferenceService;
 import java.co.edu.unicauca.conferencemicroservice.application.port.out.IConferenceRepository;
 import java.co.edu.unicauca.conferencemicroservice.application.port.out.IEventsHandler;
-import java.co.edu.unicauca.conferencemicroservice.application.port.out.IOrganizerRepository;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,14 +20,14 @@ public class ConferenceService implements IConferenceService {
 
     private final IConferenceRepository repositoryConference;
 
-    private final IOrganizerRepository repositoryOrganizer;
-
     private final IEventsHandler eventsHandler;
 
     @Autowired
-    public ConferenceService( IConferenceRepository repository, IOrganizerRepository repositoryOrganizer, IEventsHandler event){
+    public ConferenceService(
+            IConferenceRepository repository,
+            IEventsHandler event
+    ){
         this.repositoryConference = repository;
-        this.repositoryOrganizer = repositoryOrganizer;
         this.eventsHandler = event;
     }
 
@@ -38,17 +37,15 @@ public class ConferenceService implements IConferenceService {
         if(conferenceDTO == null)
             throw new InvalidValue("null conferenceToSave is invalid");
 
-        //Find the organizer
-        Organizer organizer = repositoryOrganizer.findOrganizerById(conferenceDTO.getIdOrganizer());
-
         //Create an instance of conference
-        Conference conferenceToSave = organizer.createConference(
-                UUID.randomUUID().toString(),
+        Conference conferenceToSave = new Conference (
+                UUID.randomUUID().toString(), // Generate a ID for de conference
                 conferenceDTO.getName(),
                 conferenceDTO.getStartDate(),
                 conferenceDTO.getFinishDate(),
                 conferenceDTO.getPlace(),
                 conferenceDTO.getTopic(),
+                conferenceDTO.getIdOrganizer(),
                 conferenceDTO.getDescription()
         );
         //Save the conference in the db
@@ -88,6 +85,10 @@ public class ConferenceService implements IConferenceService {
             throw new InvalidValue("null conference to update is invalid");
 
         conferenceToUpdate.setId(conferenceId);
+
+        Conference conference = this.findConferenceById(conferenceId);
+        if( ! conference.getIdOrganizer().equals( conferenceToUpdate.getIdOrganizer() ))
+            throw new Unauthorized("The organizer doesn't own this conference");
 
         return repositoryConference.updateConference(
                 MapperConference.toConference(conferenceToUpdate),

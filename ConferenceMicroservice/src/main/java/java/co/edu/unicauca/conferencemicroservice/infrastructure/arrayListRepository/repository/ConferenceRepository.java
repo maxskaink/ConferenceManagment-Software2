@@ -64,7 +64,6 @@ public class ConferenceRepository implements IConferenceRepository {
         foundConference.setTopic(conference.getTopic());
         foundConference.setStartDate(BasicDateMapper.toBasicDateEntity(conference.getStartDate()));
         foundConference.setFinishDate(BasicDateMapper.toBasicDateEntity(conference.getFinishDate()));
-        foundConference.setIdOrganizer(conference.getIdOrganizer().getId());
 
         return ConferenceMapper.toConference(foundConference);
     }

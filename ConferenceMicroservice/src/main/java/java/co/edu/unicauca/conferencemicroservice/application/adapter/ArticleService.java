@@ -6,10 +6,10 @@ import org.springframework.stereotype.Service;
 import java.co.edu.unicauca.conferencemicroservice.application.builder.BuilderArticle;
 import java.co.edu.unicauca.conferencemicroservice.application.builder.DirectorBuilderArticle;
 import java.co.edu.unicauca.conferencemicroservice.application.dto.ArticleDTO;
-import java.co.edu.unicauca.conferencemicroservice.application.port.out.IAuthorRepository;
 import java.co.edu.unicauca.conferencemicroservice.application.port.out.IConferenceRepository;
 import java.co.edu.unicauca.conferencemicroservice.domain.exception.InvalidValue;
 import java.co.edu.unicauca.conferencemicroservice.domain.exception.NotFound;
+import java.co.edu.unicauca.conferencemicroservice.domain.exception.Unauthorized;
 import java.co.edu.unicauca.conferencemicroservice.domain.model.Article;
 import java.co.edu.unicauca.conferencemicroservice.application.port.in.IArticleService;
 import java.co.edu.unicauca.conferencemicroservice.application.port.out.IArticleRepository;
@@ -20,19 +20,16 @@ import java.util.List;
 public class ArticleService implements IArticleService {
 
     private final IArticleRepository articleRepository;
-    private final IAuthorRepository authorRepository;
     private final IConferenceRepository conferenceRepository;
     private final IEventsHandler eventsHandler;
 
     @Autowired
     public ArticleService(
             IArticleRepository repository,
-            IAuthorRepository authorRepository,
             IConferenceRepository conferenceRepository,
             IEventsHandler eventsHandler
     ){
         this.articleRepository = repository;
-        this.authorRepository = authorRepository;
         this.conferenceRepository = conferenceRepository;
         this.eventsHandler = eventsHandler;
     }
@@ -45,7 +42,6 @@ public class ArticleService implements IArticleService {
         //instance of builder and create the article
         BuilderArticle builder = new BuilderArticle(
                 article,
-                authorRepository,
                 conferenceRepository
         );
         DirectorBuilderArticle director = new DirectorBuilderArticle( builder );
@@ -98,11 +94,13 @@ public class ArticleService implements IArticleService {
             throw new InvalidValue("Need an instance of article");
 
         article.setId(id);
+        Article articleExist = findArticleByID(id);
+        if(!articleExist.getIdAuthor().equals(article.getIdAuthor()))
+            throw new Unauthorized("The author is no owner of the article");
 
         //instance of builder and create the article
         BuilderArticle builder = new BuilderArticle(
                 article,
-                authorRepository,
                 conferenceRepository
         );
         DirectorBuilderArticle director = new DirectorBuilderArticle( builder );

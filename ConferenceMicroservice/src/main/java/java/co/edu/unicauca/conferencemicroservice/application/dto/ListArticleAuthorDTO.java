@@ -10,8 +10,8 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 public class ListArticleAuthorDTO {
-    private String author;
-    private int totalArticles;
-    private List<ArticleDTO> articles;
+    private String          author;
+    private int             totalArticles;
+    private List<ArticleDTO>articles;
     public ListArticleAuthorDTO() {}
 }

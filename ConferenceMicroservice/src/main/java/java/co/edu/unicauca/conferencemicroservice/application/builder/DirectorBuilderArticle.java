@@ -23,7 +23,6 @@ public class DirectorBuilderArticle {
      * Make an article, also generate a new UUID for the article
      */
     public void makeArticle(){
-        builder.validateAuthor();
         builder.validateConference();
         builder.generateID();
     }
@@ -32,7 +31,6 @@ public class DirectorBuilderArticle {
      * it will use the DTO id
      */
     public void makeArticleWithoutID(){
-        builder.validateAuthor();
         builder.validateConference();
     }
 }

@@ -2,11 +2,6 @@ package java.co.edu.unicauca.conferencemicroservice.application.builder;
 
 public interface IBuilderArticle {
     /**
-     * Validate the existence of the author
-     */
-    void validateAuthor();
-
-    /**
      * Validate the existence of the conference and if it is available
      */
     void validateConference();

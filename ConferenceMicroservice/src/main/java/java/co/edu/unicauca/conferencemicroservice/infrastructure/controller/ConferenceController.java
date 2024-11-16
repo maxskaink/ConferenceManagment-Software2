@@ -1,7 +1,5 @@
 package java.co.edu.unicauca.conferencemicroservice.infrastructure.controller;
 
-import org.apache.catalina.mapper.Mapper;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +29,8 @@ public class ConferenceController {
     public ResponseEntity<ConferenceDTO> createConference(
             @RequestBody ConferenceDTO conferenceDTO
     ){
+        // Assuming that the idOrganizer of  conferenceDTO is valid
+        // and is a organizer.
         ConferenceDTO conferenceCreated = MapperConference.toConferenceDTO(
                 conferenceService.save(conferenceDTO)
         );
@@ -48,7 +48,7 @@ public class ConferenceController {
         for(Conference conferenceItem: conferences)
             response.getConferences().add(MapperConference.toConferenceDTO(conferenceItem));
 
-        response.setTotalConference( conferences.size() );
+        response.setTotalConferences( conferences.size() );
 
         return ResponseEntity
                 .status(HttpStatus.ACCEPTED)
@@ -57,6 +57,7 @@ public class ConferenceController {
 
     @GetMapping("/organizer/{idOrganizer}")
     public ResponseEntity<ListConferencesOrganizerDTO> getConferenceOrganizer(@PathVariable String idOrganizer){
+        // Assuming the idOrganizer is valid and exist the organizer
         ListConferencesOrganizerDTO response = new ListConferencesOrganizerDTO();
         response.setConferences( new ArrayList<>() );
         response.setIdOrganizer( idOrganizer );
@@ -78,6 +79,7 @@ public class ConferenceController {
             @PathVariable String idConference,
             @RequestBody ConferenceDTO conferenceDTO
     ){
+        //Assuming the own have permission and is active
         Conference conferenceUpdated =
                 conferenceService.updateConference(idConference, conferenceDTO);
         return ResponseEntity

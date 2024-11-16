@@ -15,9 +15,4 @@ public interface IEventsHandler {
      * @param article article to send
      */
     void sendArticle(Article article);
-
-    /**
-     * Listen the queue for users
-     */
-    void listenUsers();
 }
