@@ -20,6 +20,7 @@ public class Organizer extends Author{
      * @return The instance of the conference
      */
     public Conference createConference(
+            String id,
             String name,
             BasicDate startDate,
             BasicDate finishDate,
@@ -27,6 +28,6 @@ public class Organizer extends Author{
             String topic,
             String description
     ){
-        return new Conference(name, startDate, finishDate, place, topic, this, description);
+        return new Conference(id, name, startDate, finishDate, place, topic, this.getId(), description);
     }
 }

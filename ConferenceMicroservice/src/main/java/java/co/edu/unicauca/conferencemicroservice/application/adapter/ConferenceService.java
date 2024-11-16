@@ -14,6 +14,7 @@ import java.co.edu.unicauca.conferencemicroservice.application.port.out.IConfere
 import java.co.edu.unicauca.conferencemicroservice.application.port.out.IEventsHandler;
 import java.co.edu.unicauca.conferencemicroservice.application.port.out.IOrganizerRepository;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class ConferenceService implements IConferenceService {
@@ -42,6 +43,7 @@ public class ConferenceService implements IConferenceService {
 
         //Create an instance of conference
         Conference conferenceToSave = organizer.createConference(
+                UUID.randomUUID().toString(),
                 conferenceDTO.getName(),
                 conferenceDTO.getStartDate(),
                 conferenceDTO.getFinishDate(),
@@ -84,6 +86,8 @@ public class ConferenceService implements IConferenceService {
             throw new InvalidValue("null conferenceId is invalid");
         if(conferenceToUpdate == null)
             throw new InvalidValue("null conference to update is invalid");
+
+        conferenceToUpdate.setId(conferenceId);
 
         return repositoryConference.updateConference(
                 MapperConference.toConference(conferenceToUpdate),

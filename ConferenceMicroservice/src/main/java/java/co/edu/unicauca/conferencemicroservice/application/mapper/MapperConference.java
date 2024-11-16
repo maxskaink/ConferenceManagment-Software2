@@ -6,6 +6,7 @@ import java.co.edu.unicauca.conferencemicroservice.domain.model.Conference;
 public class MapperConference {
     public static Conference toConference(ConferenceDTO conferenceDTO){
         return new Conference(
+                conferenceDTO.getId(),
                 conferenceDTO.getName(),
                 conferenceDTO.getStartDate(),
                 conferenceDTO.getFinishDate(),

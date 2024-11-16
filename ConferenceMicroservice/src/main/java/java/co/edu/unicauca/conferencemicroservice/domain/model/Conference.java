@@ -22,19 +22,21 @@ public class Conference {
      * @param idOrganizer idOrganizer to created conference
      * @param description String description of conference
      */
-    public Conference(String name, BasicDate startDate, BasicDate finishDate, String place, String topic, String idOrganizer, String description) {
+    public Conference(String id, String name, BasicDate startDate, BasicDate finishDate, String place, String topic, String idOrganizer, String description) {
         //Validate the values
+        validateString("id", id);
         validateString("name",name);
         validateString("place ", place);
         validateString("topic", topic );
         validateString("description", description);
         //Assigns the values
+        this.id = id;
         this.name = name;
         this.startDate = startDate;
         this.finishDate = finishDate;
         this.place = place;
         this.topic = topic;
-        this.idOrganizer = this.idOrganizer;
+        this.idOrganizer = idOrganizer;
         this.description = description;
     }
 
