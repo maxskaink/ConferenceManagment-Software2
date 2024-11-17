@@ -1,4 +1,4 @@
-package co.edu.unicauca.conferencemicroservice.application.adapter;
+package co.edu.unicauca.conferencemicroservice.application.facade;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
