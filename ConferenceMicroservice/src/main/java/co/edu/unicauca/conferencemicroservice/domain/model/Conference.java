@@ -29,6 +29,8 @@ public class Conference {
         validateString("place ", place);
         validateString("topic", topic );
         validateString("description", description);
+        validateDate(startDate, "startDate");
+        validateDate(finishDate, "finishDate");
         //Assigns the values
         this.id = id;
         this.name = name;
@@ -139,6 +141,16 @@ public class Conference {
     private void validateString(String name, String value){
         if( value == null || value.isEmpty())
             throw  new InvalidValue(name + " is empty");
+    }
+
+    /**
+     * Validate if the basic date is valid
+     * @param value basic date to validate
+     * @throws InvalidValue exception if the basic date is invalid
+     */
+    private void validateDate(BasicDate date, String value) throws InvalidValue {
+        if(date == null)
+            throw  new InvalidValue("Date "+ value +" can't be null");
     }
 
 }

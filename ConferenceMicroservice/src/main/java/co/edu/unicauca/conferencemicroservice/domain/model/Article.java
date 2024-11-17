@@ -20,11 +20,13 @@ public class Article {
      * @param publishDate must be a real date
      */
     public Article(String id, String name, String idAuthor, String keyWords, String idConference,BasicDate publishDate) {
+        validateString("id article", id);
         validateString("Name", name);
         validateString("id author", idAuthor);
         validateString("Keywords ", keyWords);
         validateString("idConference", idConference);
         validatePublisDate(publishDate);
+        this.id = id;
         this.name = name;
         this.idAuthor = idAuthor;
         this.keyWords = keyWords;

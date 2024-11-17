@@ -69,9 +69,10 @@ public class ArticleRepository implements IArticleRepository {
     public Article deleteArticleById(String id) throws NotFound {
 
         for(ArticleEntity articleEntity : articles){
-            if(articleEntity.getId().equals(id))
+            if(articleEntity.getId().equals(id)){
                 articles.remove(articleEntity);
-            return ArticleMapper.toArticle(articleEntity);
+                return ArticleMapper.toArticle(articleEntity);
+            }
         }
 
         throw new NotFound("Article with id" + id + " not found");

@@ -48,7 +48,7 @@ public class ArticleController {
     public ResponseEntity<ListArticleConferenceDTO> getListArticlesConferences(@PathVariable String idConference){
         ListArticleConferenceDTO response = new ListArticleConferenceDTO();
 
-        response.setConferenceOutDTO(
+        response.setConference(
                 MapperConference.toConferenceDTO( conferenceService.findConferenceById(idConference) )
         );
 
@@ -62,7 +62,7 @@ public class ArticleController {
         response.setCantArticles(articlesDTO.size());
 
         return ResponseEntity
-                .status(HttpStatus.ACCEPTED)
+                .status(HttpStatus.OK)
                 .body(response);
     }
 
@@ -82,7 +82,7 @@ public class ArticleController {
         response.setTotalArticles(articlesDTO.size());
 
         return ResponseEntity
-                .status(HttpStatus.ACCEPTED)
+                .status(HttpStatus.OK)
                 .body(response);
 
     }
@@ -97,7 +97,7 @@ public class ArticleController {
                 articleService.update(idArticle, article)
         );
         return ResponseEntity
-                .status(HttpStatus.ACCEPTED)
+                .status(HttpStatus.OK)
                 .body(articleUpdated);
     }
 
@@ -107,7 +107,7 @@ public class ArticleController {
                 articleService.delete(idArticle)
         );
         return ResponseEntity
-                .status(HttpStatus.ACCEPTED)
+                .status(HttpStatus.OK)
                 .body(articleDeleted);
     }
 

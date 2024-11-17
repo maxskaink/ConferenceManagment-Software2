@@ -10,7 +10,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 public class ListArticleConferenceDTO {
-    private ConferenceDTO   conferenceOutDTO;
+    private ConferenceDTO   conference;
     private int             cantArticles;
     private List<ArticleDTO>articles;
     public ListArticleConferenceDTO() {}

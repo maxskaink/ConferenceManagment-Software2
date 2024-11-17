@@ -30,7 +30,7 @@ public class DirectorBuilderArticle {
      * Make an article, but not generate UUID for the article,
      * it will use the DTO id
      */
-    public void makeArticleWithoutID(){
+    public void makeArticleWithDTO(){
         builder.validateConference();
     }
 }

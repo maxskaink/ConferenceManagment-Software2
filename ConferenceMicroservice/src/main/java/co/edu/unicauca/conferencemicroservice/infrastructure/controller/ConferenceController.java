@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/conferences")
+@RequestMapping("/api/conferences")
 public class ConferenceController {
 
     private final IConferenceService conferenceService;
@@ -30,7 +30,7 @@ public class ConferenceController {
             @RequestBody ConferenceDTO conferenceDTO
     ){
         // Assuming that the idOrganizer of  conferenceDTO is valid
-        // and is a organizer.
+        // and is an organizer.
         ConferenceDTO conferenceCreated = MapperConference.toConferenceDTO(
                 conferenceService.save(conferenceDTO)
         );
@@ -51,7 +51,7 @@ public class ConferenceController {
         response.setTotalConferences( conferences.size() );
 
         return ResponseEntity
-                .status(HttpStatus.ACCEPTED)
+                .status(HttpStatus.OK)
                 .body(response);
     }
 
@@ -70,7 +70,7 @@ public class ConferenceController {
         response.setTotalConference( conferences.size() );
 
         return ResponseEntity
-                .status(HttpStatus.ACCEPTED)
+                .status(HttpStatus.OK)
                 .body(response);
     }
 
@@ -83,7 +83,7 @@ public class ConferenceController {
         Conference conferenceUpdated =
                 conferenceService.updateConference(idConference, conferenceDTO);
         return ResponseEntity
-                .status(HttpStatus.ACCEPTED)
+                .status(HttpStatus.OK)
                 .body( MapperConference.toConferenceDTO( conferenceUpdated ));
     }
 
@@ -92,7 +92,7 @@ public class ConferenceController {
         Conference conferenceDeleted =
                 conferenceService.deleteConference(idConference);
         return ResponseEntity
-                .status(HttpStatus.ACCEPTED)
+                .status(HttpStatus.OK)
                 .body( MapperConference.toConferenceDTO( conferenceDeleted) );
     }
 }

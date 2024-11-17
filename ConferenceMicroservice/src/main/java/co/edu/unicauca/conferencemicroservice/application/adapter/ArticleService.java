@@ -95,8 +95,13 @@ public class ArticleService implements IArticleService {
 
         article.setId(id);
         Article articleExist = findArticleByID(id);
+
         if(!articleExist.getIdAuthor().equals(article.getIdAuthor()))
             throw new Unauthorized("The author is no owner of the article");
+
+        if(article.getIdConference()==null || article.getIdConference().isEmpty()){
+            article.setIdConference(articleExist.getIdConference());
+        }
 
         //instance of builder and create the article
         BuilderArticle builder = new BuilderArticle(
@@ -105,7 +110,7 @@ public class ArticleService implements IArticleService {
         );
         DirectorBuilderArticle director = new DirectorBuilderArticle( builder );
 
-        director.makeArticleWithoutID();
+        director.makeArticleWithDTO();
 
         Article newArticle = builder.getResult();
 

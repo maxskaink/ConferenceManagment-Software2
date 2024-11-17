@@ -71,7 +71,7 @@ public class ConferenceRepository implements IConferenceRepository {
     @Override
     public Conference deleteById(String id) throws NotFound {
         for (ConferenceEntity conferenceEntity : conferences) {
-            if (conferenceEntity.getId().equals(id)) {
+            if (conferenceEntity.getId().equals(id) && conferenceEntity.isActive()) {
                 conferenceEntity.setActive(false);
                 return ConferenceMapper.toConference(conferenceEntity);
             }
@@ -108,7 +108,8 @@ public class ConferenceRepository implements IConferenceRepository {
     public List<Conference> findAll() {
         List<Conference> allConferences = new ArrayList<>();
         for (ConferenceEntity conferenceEntity : conferences) {
-            allConferences.add(ConferenceMapper.toConference(conferenceEntity));
+            if(conferenceEntity.isActive())
+                allConferences.add(ConferenceMapper.toConference(conferenceEntity));
         }
         return allConferences;
     }
