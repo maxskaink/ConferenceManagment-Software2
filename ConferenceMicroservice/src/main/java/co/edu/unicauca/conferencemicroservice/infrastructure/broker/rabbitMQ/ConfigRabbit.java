@@ -9,14 +9,14 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class ConfigRabbit {
-    // Nombre de las colas
+    // Names of queue
     public static final String CONFERENCE_QUEUE = "conferenceQueue";
     public static final String ARTICLE_QUEUE = "articleQueue";
 
-    // Nombre del intercambio
+    // Name of exchange
     public static final String EXCHANGE_NAME = "myExchange";
 
-    // Claves de enrutamiento
+    // Routing keys
     public static final String CONFERENCE_ROUTING_KEY = "conferenceRoutingKey";
     public static final String ARTICLE_ROUTING_KEY = "articleRoutingKey";
 

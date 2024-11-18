@@ -19,7 +19,7 @@ public class ArticleRepository implements IArticleRepository {
     private final List<ArticleEntity> articles;
 
     public ArticleRepository() {
-        articles = new ArrayList<ArticleEntity>();
+        articles = new ArrayList<>();
 
         generateBaseInfo();
     }
@@ -80,20 +80,20 @@ public class ArticleRepository implements IArticleRepository {
 
     @Override
     public Article updateArticle(Article article) throws DuplicateInformation {
-        ArticleEntity articleFodunded = null;
+        ArticleEntity articleFounded = null;
 
         for(ArticleEntity articleEntity : articles)
             if(articleEntity.getId().equals(article.getId()))
-                articleFodunded = articleEntity;
+                articleFounded = articleEntity;
 
-        if(articleFodunded == null)
+        if(articleFounded == null)
             throw new DuplicateInformation("User with id" + article.getId() + " already exists");
 
-        articleFodunded.setName( article.getName() );
-        articleFodunded.setName( articleFodunded.getName() );
-        articleFodunded.setPublicationDate(BasicDateMapper.toBasicDateEntity( article.getPublishDate() ));
+        articleFounded.setName( article.getName() );
+        articleFounded.setName( articleFounded.getName() );
+        articleFounded.setPublicationDate(BasicDateMapper.toBasicDateEntity( article.getPublishDate() ));
 
-        return ArticleMapper.toArticle(articleFodunded);
+        return ArticleMapper.toArticle(articleFounded);
     }
 
     private void generateBaseInfo(){

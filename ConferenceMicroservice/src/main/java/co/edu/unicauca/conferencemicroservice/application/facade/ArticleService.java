@@ -128,10 +128,13 @@ public class ArticleService implements IArticleService {
         if(id==null)
             throw new InvalidValue("Id null is not valid");
 
+        Article articleExist = findArticleByID(id);
+
+
         return articleRepository.deleteArticleById(id);
     }
 
-    //TODO check this functin in detail
+    //TODO check this function in detail
     @Override
     public Article exist(String id) throws NotFound {
         return null;

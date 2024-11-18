@@ -12,7 +12,7 @@ public class Article {
     private String idConference;
 
     /**
-     * Main constructor of Article class, if some value is invalid throw INvalidValue
+     * Main constructor of Article class, if some value is invalid throw InvalidValue
      * @param id must be not null or empty
      * @param name must be not null or empty
      * @param idAuthor must be not null or empty
@@ -25,7 +25,7 @@ public class Article {
         validateString("id author", idAuthor);
         validateString("Keywords ", keyWords);
         validateString("idConference", idConference);
-        validatePublisDate(publishDate);
+        validatePublishDate(publishDate);
         this.id = id;
         this.name = name;
         this.idAuthor = idAuthor;
@@ -55,7 +55,7 @@ public class Article {
             throw  new InvalidValue(name + " is empty");
     }
 
-    private void validatePublisDate(BasicDate publishDate){
+    private void validatePublishDate(BasicDate publishDate){
         if(publishDate == null)
             throw  new InvalidValue("publish is null");
     }

@@ -115,14 +115,14 @@ public class ConferenceRepository implements IConferenceRepository {
     }
 
     private void generateBaseInfo() {
-        // Inicialización de datos básicos
+        // Initialize basic db
         conferences.add(new ConferenceEntity(
                 "9876",
                 "Tech Conference",
                 "An advanced tech conference",
                 new BasicDateEntity(16,8,2024),
                 new BasicDateEntity(17,8,2024),
-                "Important tipics",
+                "Important topics",
                 "5555",
                 "Important conference",
                 true)
