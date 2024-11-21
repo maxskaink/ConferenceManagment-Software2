@@ -1,4 +1,4 @@
-package co.edu.unicauca.conferencemicroservice.application.builder;
+package co.edu.unicauca.conferencemicroservice.domain.builder;
 
 public interface IBuilderArticle {
     /**

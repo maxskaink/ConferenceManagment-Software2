@@ -1,4 +1,4 @@
-package co.edu.unicauca.conferencemicroservice.application.dto;
+package co.edu.unicauca.conferencemicroservice.infrastructure.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

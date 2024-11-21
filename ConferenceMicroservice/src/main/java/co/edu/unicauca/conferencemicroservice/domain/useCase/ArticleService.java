@@ -1,11 +1,7 @@
-package co.edu.unicauca.conferencemicroservice.application.facade;
+package co.edu.unicauca.conferencemicroservice.domain.useCase;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import co.edu.unicauca.conferencemicroservice.application.builder.BuilderArticle;
-import co.edu.unicauca.conferencemicroservice.application.builder.DirectorBuilderArticle;
-import co.edu.unicauca.conferencemicroservice.application.dto.ArticleDTO;
+import co.edu.unicauca.conferencemicroservice.domain.builder.BuilderValidArticle;
+import co.edu.unicauca.conferencemicroservice.domain.builder.DirectorBuilderArticle;
 import co.edu.unicauca.conferencemicroservice.application.port.out.IConferenceRepository;
 import co.edu.unicauca.conferencemicroservice.domain.exception.InvalidValue;
 import co.edu.unicauca.conferencemicroservice.domain.exception.NotFound;
@@ -16,14 +12,12 @@ import co.edu.unicauca.conferencemicroservice.application.port.out.IArticleRepos
 import co.edu.unicauca.conferencemicroservice.application.port.out.IEventsHandler;
 import java.util.List;
 
-@Service
 public class ArticleService implements IArticleService {
 
     private final IArticleRepository articleRepository;
     private final IConferenceRepository conferenceRepository;
     private final IEventsHandler eventsHandler;
 
-    @Autowired
     public ArticleService(
             IArticleRepository repository,
             IConferenceRepository conferenceRepository,
@@ -35,12 +29,12 @@ public class ArticleService implements IArticleService {
     }
 
     @Override
-    public Article save(ArticleDTO article) {
+    public Article save(Article article) {
         if(article == null)
             throw new InvalidValue("Need an instance of article");
 
         //instance of builder and create the article
-        BuilderArticle builder = new BuilderArticle(
+        BuilderValidArticle builder = new BuilderValidArticle(
                 article,
                 conferenceRepository
         );
@@ -87,7 +81,7 @@ public class ArticleService implements IArticleService {
     }
 
     @Override
-    public Article update(String id, ArticleDTO article) throws InvalidValue, NotFound {
+    public Article update(String id, Article article) throws InvalidValue, NotFound {
         if(id==null)
             throw new InvalidValue("Id null is invalid");
         if(article == null)
@@ -104,7 +98,7 @@ public class ArticleService implements IArticleService {
         }
 
         //instance of builder and create the article
-        BuilderArticle builder = new BuilderArticle(
+        BuilderValidArticle builder = new BuilderValidArticle(
                 article,
                 conferenceRepository
         );

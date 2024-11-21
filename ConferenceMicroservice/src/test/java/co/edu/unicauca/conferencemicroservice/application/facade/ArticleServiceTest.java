@@ -1,10 +1,10 @@
 package co.edu.unicauca.conferencemicroservice.application.facade;
 
-import co.edu.unicauca.conferencemicroservice.application.dto.ArticleDTO;
+import co.edu.unicauca.conferencemicroservice.infrastructure.dto.ArticleDTO;
 import co.edu.unicauca.conferencemicroservice.application.port.out.IArticleRepository;
 import co.edu.unicauca.conferencemicroservice.application.port.out.IConferenceRepository;
 import co.edu.unicauca.conferencemicroservice.application.port.out.IEventsHandler;
-import co.edu.unicauca.conferencemicroservice.application.facade.ArticleService;
+import co.edu.unicauca.conferencemicroservice.domain.useCase.ArticleService;
 import co.edu.unicauca.conferencemicroservice.domain.exception.InvalidValue;
 import co.edu.unicauca.conferencemicroservice.domain.model.Article;
 import co.edu.unicauca.conferencemicroservice.domain.model.valueObjects.BasicDate;
@@ -15,11 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Arrays;
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ArticleServiceTest {

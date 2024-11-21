@@ -1,15 +1,16 @@
 package co.edu.unicauca.conferencemicroservice.infrastructure.controller;
 
+import org.apache.catalina.mapper.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import co.edu.unicauca.conferencemicroservice.application.dto.ArticleDTO;
-import co.edu.unicauca.conferencemicroservice.application.dto.ListArticleAuthorDTO;
-import co.edu.unicauca.conferencemicroservice.application.dto.ListArticleConferenceDTO;
-import co.edu.unicauca.conferencemicroservice.application.mapper.MapperArticle;
-import co.edu.unicauca.conferencemicroservice.application.mapper.MapperConference;
+import co.edu.unicauca.conferencemicroservice.infrastructure.dto.ArticleDTO;
+import co.edu.unicauca.conferencemicroservice.infrastructure.dto.ListArticleAuthorDTO;
+import co.edu.unicauca.conferencemicroservice.infrastructure.dto.ListArticleConferenceDTO;
+import co.edu.unicauca.conferencemicroservice.infrastructure.mapper.MapperArticle;
+import co.edu.unicauca.conferencemicroservice.infrastructure.mapper.MapperConference;
 import co.edu.unicauca.conferencemicroservice.application.port.in.IArticleService;
 import co.edu.unicauca.conferencemicroservice.application.port.in.IConferenceService;
 import co.edu.unicauca.conferencemicroservice.domain.model.Article;
@@ -38,7 +39,10 @@ public class ArticleController {
     ){
         // Assuming who try to it is an author
         articleDTO.setIdConference(idConference);
-        Article articleCreated = articleService.save(articleDTO);
+        articleDTO.setId("default");
+        Article articleCreated = articleService.save(
+                MapperArticle.toArticle(articleDTO)
+        );
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body( MapperArticle.toArticleDTO(articleCreated) );
@@ -92,9 +96,13 @@ public class ArticleController {
             @RequestBody ArticleDTO article,
             @PathVariable String idArticle
     ){
+        article.setId(idArticle);
         //Assuming the user is an author
         ArticleDTO articleUpdated = MapperArticle.toArticleDTO(
-                articleService.update(idArticle, article)
+                articleService.update(
+                        idArticle,
+                        MapperArticle.toArticle(article)
+                )
         );
         return ResponseEntity
                 .status(HttpStatus.OK)
