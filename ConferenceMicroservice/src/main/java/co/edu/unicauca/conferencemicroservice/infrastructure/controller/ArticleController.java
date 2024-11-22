@@ -13,7 +13,7 @@ import co.edu.unicauca.conferencemicroservice.application.mapper.MapperConferenc
 import co.edu.unicauca.conferencemicroservice.application.port.in.IArticleService;
 import co.edu.unicauca.conferencemicroservice.application.port.in.IConferenceService;
 import co.edu.unicauca.conferencemicroservice.domain.model.Article;
-import org.springframework.security.access.prepost.PreAuthorize;
+
 import java.util.ArrayList;
 import java.util.List;
 
