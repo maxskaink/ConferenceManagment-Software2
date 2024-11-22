@@ -1,0 +1,27 @@
+server:
+  port: 8083 # Puerto del Gateway
+
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: conference-service
+          uri: http://localhost:8081 # URL del microservicio de conferencias
+          predicates:
+            - Path=/api/conferences/** # Rutas que redirige al microservicio
+        - id: article-service
+          uri: http://localhost:8082 # URL del microservicio de art�culos
+          predicates:
+            - Path=/api/articles/** # Rutas que redirige al microservicio
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:9090/realms/ConferenceMaster
+          jwk-set-uri: ${spring.security.oauth2.resourceserver.jwt.issuer-uri}
+keycloak:
+  auth-server-url: http://localhost:9090/realms/ConferenceMaster # Direcci�n del servidor de Keycloak (ajustada a 9090)
+  realm: ConferenceMaster # Nombre del Realm
+  resource: api-gateway # Cliente configurado en Keycloak
+  public-client: true # Usar un cliente p�blico (sin credenciales secretas)
+  principal-attribute: preferred_username # Atributo para identificar al usuario
