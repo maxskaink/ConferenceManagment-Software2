@@ -13,6 +13,7 @@ import co.edu.unicauca.conferencemicroservice.application.mapper.MapperConferenc
 import co.edu.unicauca.conferencemicroservice.application.port.in.IArticleService;
 import co.edu.unicauca.conferencemicroservice.application.port.in.IConferenceService;
 import co.edu.unicauca.conferencemicroservice.domain.model.Article;
+import org.springframework.security.access.prepost.PreAuthorize;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +27,7 @@ public class ArticleController {
     public ArticleController(
             IArticleService articleService,
             IConferenceService conferenceService
-    ){
+    ) {
         this.articleService = articleService;
         this.conferenceService = conferenceService;
     }
@@ -35,30 +36,30 @@ public class ArticleController {
     public ResponseEntity<ArticleDTO> createArticleInConference(
             @RequestBody ArticleDTO articleDTO,
             @PathVariable String idConference
-    ){
+    ) {
         // Assuming who try to it is an author
         articleDTO.setIdConference(idConference);
         Article articleCreated = articleService.save(articleDTO);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body( MapperArticle.toArticleDTO(articleCreated) );
+                .body(MapperArticle.toArticleDTO(articleCreated));
     }
 
     @GetMapping("/conferences/{idConference}")
-    public ResponseEntity<ListArticleConferenceDTO> getListArticlesConferences(@PathVariable String idConference){
+    public ResponseEntity<ListArticleConferenceDTO> getListArticlesConferences(@PathVariable String idConference) {
         ListArticleConferenceDTO response = new ListArticleConferenceDTO();
 
         response.setConference(
-                MapperConference.toConferenceDTO( conferenceService.findConferenceById(idConference) )
+                MapperConference.toConferenceDTO(conferenceService.findConferenceById(idConference))
         );
 
         List<Article> articles = articleService.findArticleByConference(idConference);
         List<ArticleDTO> articlesDTO = new ArrayList<>();
 
-        for(Article article: articles)
+        for (Article article : articles)
             articlesDTO.add(MapperArticle.toArticleDTO(article));
 
-        response.setArticles( articlesDTO );
+        response.setArticles(articlesDTO);
         response.setCantArticles(articlesDTO.size());
 
         return ResponseEntity
@@ -67,15 +68,15 @@ public class ArticleController {
     }
 
     @GetMapping("/author/{idAuthor}")
-    public ResponseEntity<ListArticleAuthorDTO> getListArticleByAuthor(@PathVariable String idAuthor){
+    public ResponseEntity<ListArticleAuthorDTO> getListArticleByAuthor(@PathVariable String idAuthor) {
         ListArticleAuthorDTO response = new ListArticleAuthorDTO();
 
-        response.setAuthor( idAuthor );
+        response.setAuthor(idAuthor);
 
         List<Article> articles = articleService.findArticleByAuthor(idAuthor);
         List<ArticleDTO> articlesDTO = new ArrayList<>();
 
-        for(Article article: articles)
+        for (Article article : articles)
             articlesDTO.add(MapperArticle.toArticleDTO(article));
 
         response.setArticles(articlesDTO);
@@ -88,10 +89,11 @@ public class ArticleController {
     }
 
     @PutMapping("/{idArticle}")
+
     public ResponseEntity<ArticleDTO> updateArticle(
             @RequestBody ArticleDTO article,
             @PathVariable String idArticle
-    ){
+    ) {
         //Assuming the user is an author
         ArticleDTO articleUpdated = MapperArticle.toArticleDTO(
                 articleService.update(idArticle, article)
