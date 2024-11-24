@@ -11,7 +11,7 @@ services:
     networks:
       - app-network
     depends_on:
-      - keycloak
+      - rabbitmq
 
   review-service:
     build: ./review-service
@@ -50,6 +50,15 @@ services:
       - "8080:8080"
     networks:
       - app-network
+    rabbitmq:
+      build:
+        context: ./rabbitmq
+      container_name: rabbitmq
+      networks:
+        - app-network
+      ports:
+        - "5672:5672"
+        - "15672:15672"
 
 networks:
   app-network:
