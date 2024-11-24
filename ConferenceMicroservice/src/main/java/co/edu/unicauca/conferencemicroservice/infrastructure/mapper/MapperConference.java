@@ -1,6 +1,6 @@
-package co.edu.unicauca.conferencemicroservice.application.mapper;
+package co.edu.unicauca.conferencemicroservice.infrastructure.mapper;
 
-import co.edu.unicauca.conferencemicroservice.application.dto.ConferenceDTO;
+import co.edu.unicauca.conferencemicroservice.infrastructure.dto.ConferenceDTO;
 import co.edu.unicauca.conferencemicroservice.domain.model.Conference;
 
 public class MapperConference {

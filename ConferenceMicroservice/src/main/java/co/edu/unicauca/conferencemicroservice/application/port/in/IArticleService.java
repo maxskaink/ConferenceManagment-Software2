@@ -1,6 +1,5 @@
 package co.edu.unicauca.conferencemicroservice.application.port.in;
 
-import co.edu.unicauca.conferencemicroservice.application.dto.ArticleDTO;
 import co.edu.unicauca.conferencemicroservice.domain.exception.InvalidValue;
 import co.edu.unicauca.conferencemicroservice.domain.exception.NotFound;
 import co.edu.unicauca.conferencemicroservice.domain.model.Article;
@@ -12,7 +11,7 @@ public interface IArticleService {
      * @param article article to save
      * @return the article saved
      */
-    Article save(ArticleDTO article);
+    Article save(Article article);
 
     /**
      * Find article in db by ID of the conference
@@ -44,7 +43,7 @@ public interface IArticleService {
      * @throws InvalidValue if some info is invalid
      * @throws NotFound if the id doesn't exist
      */
-    Article update(String id, ArticleDTO article)  throws InvalidValue, NotFound;
+    Article update(String id, Article article)  throws InvalidValue, NotFound;
 
     /**
      * Delete an article in db

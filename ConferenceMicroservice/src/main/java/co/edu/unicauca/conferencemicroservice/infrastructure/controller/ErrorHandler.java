@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import co.edu.unicauca.conferencemicroservice.application.dto.ErrorDTO;
+import co.edu.unicauca.conferencemicroservice.infrastructure.dto.ErrorDTO;
 import co.edu.unicauca.conferencemicroservice.domain.exception.DuplicateInformation;
 import co.edu.unicauca.conferencemicroservice.domain.exception.InvalidValue;
 import co.edu.unicauca.conferencemicroservice.domain.exception.NotFound;
