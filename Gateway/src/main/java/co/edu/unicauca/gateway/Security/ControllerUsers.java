@@ -10,13 +10,19 @@ import org.springframework.web.bind.annotation.RestController;
 public class ControllerUsers {
     public ControllerUsers() {}
     @GetMapping
-    //@PreAuthorize("hasRole('Organier')")
     public String hello(){
         return "Hello World";
     }
     @GetMapping("/hello2")
-    @PreAuthorize("hasRole('Author')")
     public String hello2(){
         return "Hello World ADMIN";
+    }
+    @GetMapping("/hello4")
+    public String hello4(){
+        return "Hello World Admin";
+    }
+    @GetMapping("/hello5")
+    public String hello5(){
+        return "Hello World Admin";
     }
 }
