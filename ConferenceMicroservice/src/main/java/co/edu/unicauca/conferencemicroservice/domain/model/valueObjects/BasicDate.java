@@ -15,13 +15,13 @@ public class BasicDate {
      * @param year must be more than 1900
      */
     public BasicDate(int day, int month, int year) {
-        if(day > 31)
+        if(day > 31 || day <= 0)
             throw new InvalidValue("day must be less than than 31");
         this.day = day;
-        if(month > 12)
+        if(month > 12 || month<=0)
             throw new InvalidValue("month must be less than 12");
         this.month = month;
-        if(year < 1900)
+        if(year < 1900 || year > 2100)
             throw new InvalidValue("Year must be more than 1900");
         this.year = year;
     }

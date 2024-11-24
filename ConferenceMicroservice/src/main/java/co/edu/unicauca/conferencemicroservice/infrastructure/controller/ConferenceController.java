@@ -1,15 +1,16 @@
 package co.edu.unicauca.conferencemicroservice.infrastructure.controller;
 
+import org.apache.catalina.mapper.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import org.springframework.web.bind.annotation.*;
 
-import co.edu.unicauca.conferencemicroservice.application.dto.ConferenceDTO;
-import co.edu.unicauca.conferencemicroservice.application.dto.ListConferencesDTO;
-import co.edu.unicauca.conferencemicroservice.application.dto.ListConferencesOrganizerDTO;
-import co.edu.unicauca.conferencemicroservice.application.mapper.MapperConference;
+import co.edu.unicauca.conferencemicroservice.infrastructure.dto.ConferenceDTO;
+import co.edu.unicauca.conferencemicroservice.infrastructure.dto.ListConferencesDTO;
+import co.edu.unicauca.conferencemicroservice.infrastructure.dto.ListConferencesOrganizerDTO;
+import co.edu.unicauca.conferencemicroservice.infrastructure.mapper.MapperConference;
 import co.edu.unicauca.conferencemicroservice.application.port.in.IConferenceService;
 import co.edu.unicauca.conferencemicroservice.domain.model.Conference;
 import java.util.ArrayList;
@@ -32,8 +33,11 @@ public class ConferenceController {
     ){
         // Assuming that the idOrganizer of  conferenceDTO is valid
         // and is an organizer.
+        conferenceDTO.setId("default");
         ConferenceDTO conferenceCreated = MapperConference.toConferenceDTO(
-                conferenceService.save(conferenceDTO)
+                conferenceService.save(
+                        MapperConference.toConference(conferenceDTO)
+                )
         );
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -82,9 +86,13 @@ public class ConferenceController {
             @PathVariable String idConference,
             @RequestBody ConferenceDTO conferenceDTO
     ){
+        conferenceDTO.setId(idConference);
         //Assuming the own have permission and is active
         Conference conferenceUpdated =
-                conferenceService.updateConference(idConference, conferenceDTO);
+                conferenceService.updateConference(
+                        idConference,
+                        MapperConference.toConference(conferenceDTO)
+                );
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body( MapperConference.toConferenceDTO( conferenceUpdated ));
