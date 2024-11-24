@@ -6,7 +6,8 @@ ENV RABBITMQ_DEFAULT_USER=guest
 ENV RABBITMQ_DEFAULT_PASS=guest
 
 # Expone los puertos necesarios
-EXPOSE 5672 15672
+EXPOSE 5672 5672
+EXPOSE 15672 15672
 
 # Comando de entrada para iniciar RabbitMQ
 CMD ["rabbitmq-server"]

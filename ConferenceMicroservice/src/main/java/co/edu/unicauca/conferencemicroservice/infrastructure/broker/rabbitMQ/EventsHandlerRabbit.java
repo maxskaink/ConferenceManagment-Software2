@@ -22,20 +22,29 @@ public class EventsHandlerRabbit implements IEventsHandler {
 
     @Override
     public void sendConference(Conference conference) {
-        rabbitTemplate.convertAndSend(
-                ConfigRabbit.EXCHANGE_NAME,
-                ConfigRabbit.CONFERENCE_ROUTING_KEY,
-                conference
-        );
-        System.out.println("Conference has been sent to the broker");    }
+        try{
+            rabbitTemplate.convertAndSend(
+                    ConfigRabbit.EXCHANGE_NAME,
+                    ConfigRabbit.CONFERENCE_ROUTING_KEY,
+                    conference
+            );
+            System.out.println("Conference has been sent to the broker");
+        }catch(Exception e){
+            System.out.println("Error while sending conference to the broker\n" + e);
+        }
+    }
 
     @Override
     public void sendArticle(Article article) {
-        rabbitTemplate.convertAndSend(
-                ConfigRabbit.EXCHANGE_NAME,
-                ConfigRabbit.ARTICLE_ROUTING_KEY,
-                article
-        );
-        System.out.println("Article has been sent to the broker");
+        try{
+            rabbitTemplate.convertAndSend(
+                    ConfigRabbit.EXCHANGE_NAME,
+                    ConfigRabbit.ARTICLE_ROUTING_KEY,
+                    article
+            );
+            System.out.println("Article has been sent to the broker");
+        }catch(Exception e){
+            System.out.println("Error while sending article to the broker\n" + e);
+        }
     }
 }
