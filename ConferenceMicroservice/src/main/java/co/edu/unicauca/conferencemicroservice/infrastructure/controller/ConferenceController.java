@@ -45,7 +45,6 @@ public class ConferenceController {
     }
 
     @GetMapping
-
     public ResponseEntity<ListConferencesDTO> getConferences(){
         List<Conference> conferences = conferenceService.findAllConferencesActive();
         ListConferencesDTO response = new ListConferencesDTO();
@@ -62,7 +61,6 @@ public class ConferenceController {
     }
 
     @GetMapping("/organizer/{idOrganizer}")
-
     public ResponseEntity<ListConferencesOrganizerDTO> getConferenceOrganizer(@PathVariable String idOrganizer){
         // Assuming the idOrganizer is valid and exist the organizer
         ListConferencesOrganizerDTO response = new ListConferencesOrganizerDTO();
