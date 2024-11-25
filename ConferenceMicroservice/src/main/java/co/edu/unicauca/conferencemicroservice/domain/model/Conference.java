@@ -1,7 +1,15 @@
 package co.edu.unicauca.conferencemicroservice.domain.model;
 
 import co.edu.unicauca.conferencemicroservice.domain.exception.InvalidValue;
+import co.edu.unicauca.conferencemicroservice.domain.model.conferenceState.ConferenceClose;
+import co.edu.unicauca.conferencemicroservice.domain.model.conferenceState.ConferenceOpen;
+import co.edu.unicauca.conferencemicroservice.domain.model.conferenceState.IConferenceState;
 import co.edu.unicauca.conferencemicroservice.domain.model.valueObjects.BasicDate;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class Conference {
     private String id;
     private String name;
@@ -11,6 +19,7 @@ public class Conference {
     private String topic;
     private String idOrganizer;
     private String description;
+    private IConferenceState stateConference;
 
     /**
      * Constructor of conference
@@ -40,6 +49,7 @@ public class Conference {
         this.topic = topic;
         this.idOrganizer = idOrganizer;
         this.description = description;
+        initilizateConferenceState();
     }
 
     public String getId() {
@@ -123,13 +133,13 @@ public class Conference {
             BasicDate publishDate
 
     ){
-        return new Article(
+        return this.stateConference.createArticle(
                 idArticle,
                 name,
                 idAuthor,
                 keyWords,
-                this.getId(),
-                publishDate
+                publishDate,
+                this.getId()
         );
     }
 
@@ -151,6 +161,24 @@ public class Conference {
     private void validateDate(BasicDate date, String value) throws InvalidValue {
         if(date == null)
             throw  new InvalidValue("Date "+ value +" can't be null");
+    }
+
+    /**
+     * Initialize the state of the conference
+     */
+    private void initilizateConferenceState(){
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+        Date fechaActual = new Date();
+        Date finishDate = null;
+        try{
+            finishDate = formatter.parse(this.finishDate.toString());
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+        if(fechaActual.after(finishDate))
+            this.stateConference = new ConferenceClose();
+        else
+            this.stateConference = new ConferenceOpen();
     }
 
 }
