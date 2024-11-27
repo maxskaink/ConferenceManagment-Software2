@@ -27,9 +27,9 @@ public class SecurityConfig {
                         .pathMatchers(HttpMethod.PUT, "/api/{idArticle}").hasAnyAuthority( "Organizer", "Author")// Actualizar Articulo
                         .pathMatchers(HttpMethod.DELETE, "/api/{idArticle}").hasAnyAuthority( "Organizer", "Author")// Eliminar Articulo
                         //Confence Controller
-                        .pathMatchers(HttpMethod.POST, "/api/conferences").hasAuthority( "Organizer")//Solo organizer puede crear una conferencia
-                        .pathMatchers(HttpMethod.GET, "/api/conferences").permitAll()//.hasAuthority( "Organizer")//Solo organizer puede crear una conferencia
-                        .pathMatchers(HttpMethod.GET, "/api/conferences/organizer/{idOrganizer}").hasAuthority( "Organizer")
+                        .pathMatchers(HttpMethod.POST, "/api/conferences").hasAuthority("Organizer")//Solo organizer puede crear una conferencia
+                        .pathMatchers(HttpMethod.GET, "/api/conferences").hasAnyAuthority("Organizer", "Author")//.hasAuthority( "Organizer")//Solo organizer puede crear una conferencia
+                        .pathMatchers(HttpMethod.GET, "/api/conferences/organizer/{idOrganizer}").hasAnyAuthority("Organizer", "Author")
                         .pathMatchers(HttpMethod.PUT, "/api/conferences/{idOrganizer}").hasAuthority( "Organizer")// Actualizar conferencia
                         .pathMatchers(HttpMethod.GET, "/api/conferences/{idOrganizer}").hasAnyAuthority( "Organizer")// Eliminar conferencia
 
