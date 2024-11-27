@@ -8,6 +8,9 @@
 - Esteban Santiago Escandón Causaya
 
 ---
+## Documentacion rutas
+En este enlance puedes encontrar la documentacion de los endpoints de los microservicios:
+`https://documenter.getpostman.com/view/38742501/2sAYBXAAhN`
 
 ## Requisitos previos
 

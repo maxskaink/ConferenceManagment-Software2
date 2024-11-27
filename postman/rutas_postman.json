@@ -1,0 +1,844 @@
+{
+	"info": {
+		"_postman_id": "d0fd4e05-3ecb-4fcf-b1ff-e96baacfe2a1",
+		"name": "Micro Conference",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "38742501"
+	},
+	"item": [
+		{
+			"name": "login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();",
+							"pm.collectionVariables.set(\"access_token\", jsonData.access_token);",
+							"",
+							"pm.test(\"Response code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Access token is set in collection variable\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.collectionVariables.set(\"access_token\", jsonData.access_token);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "grant_type",
+							"value": "password",
+							"type": "text"
+						},
+						{
+							"key": "client_id",
+							"value": "Microservice-API",
+							"description": "\n",
+							"type": "text"
+						},
+						{
+							"key": "username",
+							"value": "pablo",
+							"description": "\n",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "pablo",
+							"type": "text"
+						},
+						{
+							"key": "client_secret",
+							"value": "EWSLJUc4tca3KyA26LcjiwX5rJiYiJDH",
+							"type": "text"
+						}
+					]
+				},
+				"url": "{{PATH_KEYCLOAK}}/realms/ConferenceMaster/protocol/openid-connect/token"
+			},
+			"response": []
+		},
+		{
+			"name": "Crear conferencia",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 201\", function () {",
+							"  pm.expect(pm.response.code).to.equal(201);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Response has the required fields\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    pm.expect(responseData.id).to.exist;",
+							"    pm.expect(responseData.name).to.exist;",
+							"    pm.expect(responseData.startDate).to.exist;",
+							"    pm.expect(responseData.finishDate).to.exist;",
+							"    pm.expect(responseData.place).to.exist;",
+							"    pm.expect(responseData.topic).to.exist;",
+							"    pm.expect(responseData.idOrganizer).to.exist;",
+							"    pm.expect(responseData.description).to.exist;",
+							"});",
+							"",
+							"",
+							"pm.test(\"Start date and finish date contain valid day, month, and year values\", function () {",
+							"    const responseData = pm.response.json();",
+							"",
+							"    pm.expect(responseData.startDate).to.have.property('day').that.is.a('number').within(1, 31);",
+							"    pm.expect(responseData.startDate).to.have.property('month').that.is.a('number').within(1, 12);",
+							"    pm.expect(responseData.startDate).to.have.property('year').that.is.a('number').greaterThan(0);",
+							"",
+							"    pm.expect(responseData.finishDate).to.have.property('day').that.is.a('number').within(1, 31);",
+							"    pm.expect(responseData.finishDate).to.have.property('month').that.is.a('number').within(1, 12);",
+							"    pm.expect(responseData.finishDate).to.have.property('year').that.is.a('number').greaterThan(0);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Place is a non-empty string\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    pm.expect(responseData.place).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Place should not be empty\");",
+							"});",
+							"",
+							"",
+							"pm.test(\"Response time is less than 200ms\", function () {",
+							"  pm.expect(pm.response.responseTime).to.be.below(200);",
+							"});",
+							"",
+							"let data = pm.response.json();",
+							"pm.collectionVariables.set(\"id_conference\", data.id);",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{access_token}}"
+					}
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Machin learning en Salud\",\r\n    \"startDate\": {\r\n        \"day\":   24,\r\n        \"month\":  12,\r\n        \"year\": 2024\r\n    },\r\n    \"finishDate\":{\r\n        \"day\":   24,\r\n        \"month\":  12,\r\n        \"year\":2024\t\r\n    },\r\n    \"place\": \"CDU Unicauca\",\r\n    \"topic\": \"Machin learning, Salud\",\r\n    \"idOrganizer\": \"ID_DEL_ORGANIZADOR\",\r\n    \"description\": \"Conferencia significativa sobre machin leanrning y como puede ayudar a la salud en colombia\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{PATH}}/conferences",
+				"description": "### Create Conference\n\nThis endpoint allows the user to create a new conference.\n\n#### Request\n\n- Method: POST\n    \n- URL: `http://localhost:8081/api/conferences`\n    \n- Body:\n    \n    - name (string, required): The name of the conference.\n        \n    - startDate (object, required): The start date of the conference.\n        \n        - day (number, required): The day of the start date.\n            \n        - month (number, required): The month of the start date.\n            \n        - year (number, required): The year of the start date.\n            \n    - finishDate (object, required): The finish date of the conference.\n        \n        - day (number, required): The day of the finish date.\n            \n        - month (number, required): The month of the finish date.\n            \n        - year (number, required): The year of the finish date.\n            \n    - place (string, required): The location of the conference.\n        \n    - topic (string, required): The topic of the conference.\n        \n    - idOrganizer (string, required): The ID of the conference organizer.\n        \n    - description (string, required): Description of the conference.\n        \n\n#### Response\n\nThe response is in JSON format and represents the newly created conference.\n\n``` json\n{\n  \"type\": \"object\",\n  \"properties\": {\n    \"id\": {\n      \"type\": \"string\"\n    },\n    \"name\": {\n      \"type\": \"string\"\n    },\n    \"startDate\": {\n      \"type\": \"object\",\n      \"properties\": {\n        \"day\": {\n          \"type\": \"number\"\n        },\n        \"month\": {\n          \"type\": \"number\"\n        },\n        \"year\": {\n          \"type\": \"number\"\n        }\n      }\n    },\n    \"finishDate\": {\n      \"type\": \"object\",\n      \"properties\": {\n        \"day\": {\n          \"type\": \"number\"\n        },\n        \"month\": {\n          \"type\": \"number\"\n        },\n        \"year\": {\n          \"type\": \"number\"\n        }\n      }\n    },\n    \"place\": {\n      \"type\": \"string\"\n    },\n    \"topic\": {\n      \"type\": \"string\"\n    },\n    \"idOrganizer\": {\n      \"type\": \"string\"\n    },\n    \"description\": {\n      \"type\": \"string\"\n    }\n  }\n}\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "Listar conferencias",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 202\", function () {",
+							"  pm.response.to.have.status(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Response time is less than 200ms\", function () {",
+							"  pm.expect(pm.response.responseTime).to.be.below(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Response has the required fields\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    pm.expect(responseData.conferences).to.be.an('array');",
+							"    ",
+							"    responseData.conferences.forEach(function(conference) {",
+							"        pm.expect(conference.id).to.exist;",
+							"        pm.expect(conference.name).to.exist;",
+							"        pm.expect(conference.startDate).to.exist;",
+							"        pm.expect(conference.finishDate).to.exist;",
+							"        pm.expect(conference.place).to.exist;",
+							"        pm.expect(conference.topic).to.exist;",
+							"        pm.expect(conference.idOrganizer).to.exist;",
+							"        pm.expect(conference.description).to.exist;",
+							"    });",
+							"});",
+							"",
+							"",
+							"pm.test(\"Start and finish dates are in valid date format\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData.conferences).to.be.an('array');",
+							"  ",
+							"    responseData.conferences.forEach(function(conference) {",
+							"        pm.expect(conference.startDate).to.be.an('object');",
+							"        pm.expect(conference.startDate).to.have.property('day').that.is.a('number');",
+							"        pm.expect(conference.startDate).to.have.property('month').that.is.a('number');",
+							"        pm.expect(conference.startDate).to.have.property('year').that.is.a('number');",
+							"",
+							"        pm.expect(conference.finishDate).to.be.an('object');",
+							"        pm.expect(conference.finishDate).to.have.property('day').that.is.a('number');",
+							"        pm.expect(conference.finishDate).to.have.property('month').that.is.a('number');",
+							"        pm.expect(conference.finishDate).to.have.property('year').that.is.a('number');",
+							"    });",
+							"});",
+							"",
+							"",
+							"pm.test(\"TotalConferences is a non-negative integer\", function () {",
+							"  const responseData = pm.response.json();",
+							"  ",
+							"  pm.expect(responseData.totalConferences).to.be.a('number');",
+							"  pm.expect(responseData.totalConferences).to.be.at.least(0);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{access_token}}"
+					}
+				},
+				"method": "GET",
+				"header": [],
+				"url": "{{PATH}}/conferences",
+				"description": "### GET /api/conferences\n\nThis endpoint retrieves a list of conferences.\n\n#### Request\n\nThis endpoint does not require any request body.\n\n#### Response\n\nThe response will be a JSON object with the following schema:\n\n``` json\n{\n  \"type\": \"object\",\n  \"properties\": {\n    \"totalConferences\": {\n      \"type\": \"integer\"\n    },\n    \"conferences\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\": {\n          \"id\": {\n            \"type\": \"string\"\n          },\n          \"name\": {\n            \"type\": \"string\"\n          },\n          \"startDate\": {\n            \"type\": \"object\",\n            \"properties\": {\n              \"day\": {\n                \"type\": \"integer\"\n              },\n              \"month\": {\n                \"type\": \"integer\"\n              },\n              \"year\": {\n                \"type\": \"integer\"\n              }\n            }\n          },\n          \"finishDate\": {\n            \"type\": \"object\",\n            \"properties\": {\n              \"day\": {\n                \"type\": \"integer\"\n              },\n              \"month\": {\n                \"type\": \"integer\"\n              },\n              \"year\": {\n                \"type\": \"integer\"\n              }\n            }\n          },\n          \"place\": {\n            \"type\": \"string\"\n          },\n          \"topic\": {\n            \"type\": \"string\"\n          },\n          \"idOrganizer\": {\n            \"type\": \"string\"\n          },\n          \"description\": {\n            \"type\": \"string\"\n          }\n        }\n      }\n    }\n  }\n}\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "LIstar por organizador",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"  pm.response.to.have.status(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Response time is less than 300ms\", function () {",
+							"  pm.expect(pm.response.responseTime).to.be.below(300);",
+							"});",
+							"",
+							"",
+							"pm.test(\"TotalConference should be an integer\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData.totalConference).to.be.a('number');",
+							"});",
+							"",
+							"",
+							"pm.test(\"IdOrganizer should be a string\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    pm.expect(responseData.idOrganizer).to.be.a('string');",
+							"});",
+							"",
+							"",
+							"pm.test(\"Conferences response schema is valid\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    pm.expect(responseData.conferences).to.be.an('array').and.to.have.lengthOf.at.least(1);",
+							"    ",
+							"    responseData.conferences.forEach(function(conference) {",
+							"        pm.expect(conference).to.have.property('id').that.is.a('string');",
+							"        pm.expect(conference).to.have.property('name').that.is.a('string');",
+							"        ",
+							"        pm.expect(conference.startDate).to.be.an('object');",
+							"        pm.expect(conference.startDate).to.have.property('day').that.is.a('number');",
+							"        pm.expect(conference.startDate).to.have.property('month').that.is.a('number');",
+							"        pm.expect(conference.startDate).to.have.property('year').that.is.a('number');",
+							"        ",
+							"        pm.expect(conference.finishDate).to.be.an('object');",
+							"        pm.expect(conference.finishDate).to.have.property('day').that.is.a('number');",
+							"        pm.expect(conference.finishDate).to.have.property('month').that.is.a('number');",
+							"        pm.expect(conference.finishDate).to.have.property('year').that.is.a('number');",
+							"        ",
+							"        pm.expect(conference).to.have.property('place').that.is.a('string');",
+							"        pm.expect(conference).to.have.property('topic').that.is.a('string');",
+							"        pm.expect(conference).to.have.property('idOrganizer').that.is.a('string');",
+							"        pm.expect(conference).to.have.property('description').that.is.a('string');",
+							"    });",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{access_token}}"
+					}
+				},
+				"method": "GET",
+				"header": [],
+				"url": "{{PATH}}/conferences/organizer/ID_DEL_ORGANIZADOR",
+				"description": "### GET /api/conferences/organizer/5555\n\nThis endpoint retrieves the conferences organized by the specified organizer.\n\n#### Request\n\nThere are no request parameters for this endpoint.\n\n#### Response\n\nThe response will be in JSON format and will have the following schema:\n\n``` json\n{\n  \"type\": \"object\",\n  \"properties\": {\n    \"totalConference\": {\n      \"type\": \"integer\"\n    },\n    \"idOrganizer\": {\n      \"type\": \"string\"\n    },\n    \"conferences\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\": {\n          \"id\": {\n            \"type\": \"string\"\n          },\n          \"name\": {\n            \"type\": \"string\"\n          },\n          \"startDate\": {\n            \"type\": \"object\",\n            \"properties\": {\n              \"day\": {\n                \"type\": \"integer\"\n              },\n              \"month\": {\n                \"type\": \"integer\"\n              },\n              \"year\": {\n                \"type\": \"integer\"\n              }\n            }\n          },\n          \"finishDate\": {\n            \"type\": \"object\",\n            \"properties\": {\n              \"day\": {\n                \"type\": \"integer\"\n              },\n              \"month\": {\n                \"type\": \"integer\"\n              },\n              \"year\": {\n                \"type\": \"integer\"\n              }\n            }\n          },\n          \"place\": {\n            \"type\": \"string\"\n          },\n          \"topic\": {\n            \"type\": \"string\"\n          },\n          \"idOrganizer\": {\n            \"type\": \"string\"\n          },\n          \"description\": {\n            \"type\": \"string\"\n          }\n        }\n      }\n    }\n  }\n}\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "Actualizar Conferencia",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Response has the required fields\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    pm.expect(responseData.id).to.exist;",
+							"    pm.expect(responseData.name).to.exist;",
+							"    pm.expect(responseData.startDate).to.exist;",
+							"    pm.expect(responseData.finishDate).to.exist;",
+							"    pm.expect(responseData.place).to.exist;",
+							"    pm.expect(responseData.topic).to.exist;",
+							"    pm.expect(responseData.idOrganizer).to.exist;",
+							"    pm.expect(responseData.description).to.exist;",
+							"});",
+							"",
+							"",
+							"pm.test(\"Start date is in a valid format with day, month, and year\", function () {",
+							"  const responseData = pm.response.json();",
+							"",
+							"  pm.expect(responseData.startDate).to.be.an('object');",
+							"  pm.expect(responseData.startDate.day).to.be.a('number');",
+							"  pm.expect(responseData.startDate.month).to.be.a('number');",
+							"  pm.expect(responseData.startDate.year).to.be.a('number');",
+							"});",
+							"",
+							"",
+							"pm.test(\"Finish date is in a valid format with day, month, and year\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData.finishDate).to.be.an('object');",
+							"    pm.expect(responseData.finishDate.day).to.be.a('number');",
+							"    pm.expect(responseData.finishDate.month).to.be.a('number');",
+							"    pm.expect(responseData.finishDate.year).to.be.a('number');",
+							"});",
+							"",
+							"",
+							"pm.test(\"Organizer ID is a non-empty string\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData.idOrganizer).to.be.a('string');",
+							"    pm.expect(responseData.idOrganizer).to.have.lengthOf.at.least(1, \"Organizer ID should not be empty\");",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{access_token}}"
+					}
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"An advanced tech conference and a lot more - plus\",\r\n    \"startDate\": {\r\n        \"day\": 16,\r\n        \"month\": 8,\r\n        \"year\": 2024\r\n    },\r\n    \"finishDate\": {\r\n        \"day\": 17,\r\n        \"month\": 12,\r\n        \"year\": 2024\r\n    },\r\n    \"place\": \"Tech Conference\",\r\n    \"topic\": \"Important tipics\",\r\n    \"idOrganizer\": \"ID_DEL_ORGANIZADOR\",\r\n    \"description\": \"Important conference\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{PATH}}/conferences/{{id_conference}}",
+				"description": "This endpoint allows updating conference details by sending an HTTP PUT request to [http://localhost:8081/api/conferences/9876](http://localhost:8081/api/conferences/9876). The request should include a JSON payload in the raw request body type, containing the updated conference information such as name, start date, finish date, place, topic, organizer ID, and description.\n\n### Request Body\n\n- `name`: (string) The name of the conference.\n    \n- `startDate`: (object) The start date of the conference with day, month, and year.\n    \n- `finishDate`: (object) The finish date of the conference with day, month, and year.\n    \n- `place`: (string) The location of the conference.\n    \n- `topic`: (string) The topic of the conference.\n    \n- `idOrganizer`: (string) The ID of the conference organizer.\n    \n- `description`: (string) A description of the conference.\n    \n\n### Response\n\nUpon successful execution, the response will have a status code of 200 and a JSON object with the updated conference details. The response includes the following fields:\n\n- `id`: (string) The ID of the conference.\n    \n- `name`: (string) The name of the conference.\n    \n- `startDate`: (object) The start date of the conference with day, month, and year.\n    \n- `finishDate`: (object) The finish date of the conference with day, month, and year.\n    \n- `place`: (string) The location of the conference.\n    \n- `topic`: (string) The topic of the conference.\n    \n- `idOrganizer`: (string) The ID of the conference organizer.\n    \n- `description`: (string) A description of the conference."
+			},
+			"response": []
+		},
+		{
+			"name": "Crear articulo en una conferencia",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 201\", function () {",
+							"    pm.expect(pm.response.code).to.equal(201);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Response has the required fields\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    pm.expect(responseData.id).to.exist;",
+							"    pm.expect(responseData.name).to.exist;",
+							"    pm.expect(responseData.idAuthor).to.exist;",
+							"    pm.expect(responseData.keyWords).to.exist;",
+							"    pm.expect(responseData.publishDate).to.exist;",
+							"    pm.expect(responseData.idConference).to.exist;",
+							"});",
+							"",
+							"",
+							"pm.test(\"Publish date is in a valid format - day, month, year\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData.publishDate).to.be.an('object');",
+							"    pm.expect(responseData.publishDate.day).to.be.a('number');",
+							"    pm.expect(responseData.publishDate.month).to.be.a('number');",
+							"    pm.expect(responseData.publishDate.year).to.be.a('number');",
+							"});",
+							"",
+							"",
+							"pm.test(\"Name is a non-empty string\", function () {",
+							"  const responseData = pm.response.json();",
+							"  ",
+							"  pm.expect(responseData).to.be.an('object');",
+							"  pm.expect(responseData.name).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Name should be a non-empty string\");",
+							"});",
+							"",
+							"",
+							"pm.test(\"IdConference should not be empty\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData.idConference).to.exist.and.to.not.equal(\"\");",
+							"});",
+							"",
+							"let data = pm.response.json();",
+							"pm.collectionVariables.set(\"id_article\", data.id);",
+							"pm.collectionVariables.set(\"id_author\", data.idAuthor);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{access_token}}"
+					}
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"nombre del articulo\",\r\n    \"idAuthor\": \"ID_AUTHOR\",\r\n    \"keyWords\": \"Palabras claves del articulo\",\r\n    \"publishDate\":{\r\n        \"day\":   17,\r\n        \"month\":  8,\r\n        \"year\":2024\r\n    }\r\n}\r\n\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{PATH}}/articles/conferences/{{id_conference}}",
+				"description": "The endpoint makes an HTTP POST request to create a new article for a conference with the provided ID. The request body should include the name of the article, ID of the author, keywords, and the publish date in the format of day, month, and year.\n\n### Request Body\n\n- name (string): The name of the article.\n    \n- idAuthor (string): The ID of the author.\n    \n- keyWords (string): Keywords related to the article.\n    \n- publishDate (object):\n    \n    - day (number): The day of the publish date.\n        \n    - month (number): The month of the publish date.\n        \n    - year (number): The year of the publish date.\n        \n\n### Response (201 - Created)\n\nThe response will be in JSON format with the following schema:\n\n``` json\n{\n  \"id\": \"\",\n  \"name\": \"\",\n  \"idAuthor\": \"\",\n  \"keyWords\": \"\",\n  \"publishDate\": {\n    \"day\": 0,\n    \"month\": 0,\n    \"year\": 0\n  },\n  \"idConference\": \"\"\n}\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "listar articulos por conferencia",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Response has the required fields\", function () {",
+							"    const responseData = pm.response.json();",
+							"",
+							"    pm.expect(responseData).to.have.property('conference');",
+							"    pm.expect(responseData.conference).to.be.an('object');",
+							"    pm.expect(responseData.conference).to.have.all.keys('id', 'name', 'startDate', 'finishDate', 'place', 'topic', 'idOrganizer', 'description');",
+							"",
+							"    pm.expect(responseData).to.have.property('cantArticles');",
+							"    pm.expect(responseData.cantArticles).to.be.a('number');",
+							"",
+							"    pm.expect(responseData).to.have.property('articles');",
+							"    pm.expect(responseData.articles).to.be.an('array');",
+							"    responseData.articles.forEach(function(article) {",
+							"        pm.expect(article).to.have.all.keys('id', 'name', 'idAuthor', 'keyWords', 'publishDate', 'idConference');",
+							"        pm.expect(article.publishDate).to.be.an('object').and.to.have.all.keys('day', 'month', 'year');",
+							"    });",
+							"});",
+							"",
+							"",
+							"pm.test(\"Start date should be before or equal to finish date\", function () {",
+							"    const responseData = pm.response.json();",
+							"",
+							"    pm.expect(responseData.conference.startDate.year).to.be.at.most(responseData.conference.finishDate.year);",
+							"    pm.expect(responseData.conference.startDate.month).to.be.at.most(responseData.conference.finishDate.month);",
+							"    pm.expect(responseData.conference.startDate.day).to.be.at.most(responseData.conference.finishDate.day);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Articles array is present and has the expected number of elements\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.have.property('articles').that.is.an('array');",
+							"    pm.expect(responseData.articles).to.have.lengthOf(responseData.cantArticles);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Response time is less than 200ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(200);",
+							"});",
+							"",
+							"pm.test(\"The name of each article is a non-empty string\", function () {",
+							"    const responseData = pm.response.json();",
+							"",
+							"    pm.expect(responseData.articles).to.be.an('array');",
+							"    responseData.articles.forEach(function(article) {",
+							"        pm.expect(article.name).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Name should not be empty\");",
+							"        pm.expect(article.idAuthor).to.be.a('string').and.to.have.lengthOf.at.least(1, \"idAuthor should not be empty\");",
+							"        pm.expect(article.keyWords).to.be.a('string').and.to.have.lengthOf.at.least(1, \"keyWords should not be empty\");",
+							"        pm.expect(article.idConference).to.be.a('string').and.to.have.lengthOf.at.least(1, \"idConference should not be empty\");",
+							"    });",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{access_token}}"
+					}
+				},
+				"method": "GET",
+				"header": [],
+				"url": "{{PATH}}/articles/conferences/{{id_conference}}",
+				"description": "### GET /api/articles/conferences/9876\n\nThis endpoint retrieves information about a specific conference with the ID \"9876\".\n\n#### Request Body\n\nThis request does not require a request body.\n\n#### Response\n\n- Status: 200\n    \n- Content-Type: application/json\n    \n\n``` json\n{\n  \"conference\": {\n    \"id\": \"\",\n    \"name\": \"\",\n    \"startDate\": {\n      \"day\": 0,\n      \"month\": 0,\n      \"year\": 0\n    },\n    \"finishDate\": {\n      \"day\": 0,\n      \"month\": 0,\n      \"year\": 0\n    },\n    \"place\": \"\",\n    \"topic\": \"\",\n    \"idOrganizer\": \"\",\n    \"description\": \"\"\n  },\n  \"cantArticles\": 0,\n  \"articles\": [\n    {\n      \"id\": \"\",\n      \"name\": \"\",\n      \"idAuthor\": \"\",\n      \"keyWords\": \"\",\n      \"publishDate\": {\n        \"day\": 0,\n        \"month\": 0,\n        \"year\": 0\n      },\n      \"idConference\": \"\"\n    }\n  ]\n}\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "Listar Articulos por autor",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Content-Type header is application/json\", function () {",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+							"});",
+							"",
+							"",
+							"pm.test(\"Response has the required fields - author, totalArticles, and articles\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    pm.expect(responseData.author).to.exist;",
+							"    pm.expect(responseData.totalArticles).to.exist;",
+							"    pm.expect(responseData.articles).to.exist;",
+							"});",
+							"",
+							"",
+							"pm.test(\"Articles array is present and contains the expected number of elements\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData.articles).to.exist;",
+							"    pm.expect(responseData.articles).to.be.an('array');",
+							"    pm.expect(responseData.articles).to.have.lengthOf(responseData.totalArticles);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Response time is less than 200ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(200);",
+							"});",
+							"",
+							"pm.test(\"The response should be a JSON object\", function () {",
+							"    const responseData = pm.response.json();",
+							"    pm.expect(responseData).to.be.an('object');",
+							"});",
+							"",
+							"pm.test(\"Each article in the 'articles' array should have the required properties\", function () {",
+							"    const responseData = pm.response.json();",
+							"    responseData.articles.forEach(function(article) {",
+							"        pm.expect(article).to.have.property('id');",
+							"        pm.expect(article).to.have.property('name');",
+							"        pm.expect(article).to.have.property('idAuthor');",
+							"        pm.expect(article).to.have.property('keyWords');",
+							"        pm.expect(article).to.have.property('publishDate');",
+							"        pm.expect(article).to.have.property('idConference');",
+							"    });",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{access_token}}"
+					}
+				},
+				"method": "GET",
+				"header": [],
+				"url": "{{PATH}}/articles/author/{{id_author}}",
+				"description": "This API endpoint makes an HTTP GET request to retrieve articles written by a specific author. The request should be made to [http://localhost:8081/api/articles/author/1111](http://localhost:8081/api/articles/author/1111).\n\n### Request Body\n\nThis request does not require a request body.\n\n### Response Body\n\nThe response will be in JSON format with the following structure:\n\n- `author`: The name of the author.\n    \n- `totalArticles`: The total number of articles written by the author.\n    \n- `articles`: An array of articles with the following properties:\n    \n    - `id`: The unique identifier of the article.\n        \n    - `name`: The title of the article.\n        \n    - `idAuthor`: The unique identifier of the author.\n        \n    - `keyWords`: Keywords associated with the article.\n        \n    - `publishDate`: The publication date of the article in the format {day, month, year}.\n        \n    - `idConference`: The unique identifier of the conference where the article was published.\n        \n\nThe status code for a successful response is 200, and the content type is application/json."
+			},
+			"response": []
+		},
+		{
+			"name": "Actualizar ARTICULO",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.expect(pm.response.code).to.equal(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Content type is application/json\", function () {",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+							"});",
+							"",
+							"",
+							"pm.test(\"Response has the required fields\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    pm.expect(responseData).to.have.property('id');",
+							"    pm.expect(responseData).to.have.property('name');",
+							"    pm.expect(responseData).to.have.property('idAuthor');",
+							"    pm.expect(responseData).to.have.property('keyWords');",
+							"    pm.expect(responseData).to.have.property('publishDate');",
+							"    pm.expect(responseData).to.have.property('idConference');",
+							"});",
+							"",
+							"",
+							"pm.test(\"Publish date contains day, month, and year fields\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData.publishDate).to.be.an('object');",
+							"    pm.expect(responseData.publishDate).to.have.property('day');",
+							"    pm.expect(responseData.publishDate).to.have.property('month');",
+							"    pm.expect(responseData.publishDate).to.have.property('year');",
+							"});",
+							"",
+							"",
+							"pm.test(\"Response time is less than 200ms\", function () {",
+							"  pm.expect(pm.response.responseTime).to.be.below(200);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{access_token}}"
+					}
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"{{id_article}}\",\r\n    \"name\": \"Conference 1 - edited\",\r\n    \"idAuthor\": \"{{id_author}}\",\r\n    \"keyWords\": \"important\",\r\n    \"publishDate\": {\r\n        \"day\": 16,\r\n        \"month\": 8,\r\n        \"year\": 2024\r\n    },\r\n    \"idConference\": \"{{id_conference}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{PATH}}/articles/{{id_article}}",
+				"description": "### Update Article\n\nThis endpoint is used to update an article with the specified ID.\n\n#### Request Body\n\n- `id` (string) - The ID of the article.\n    \n- `name` (string) - The updated name of the article.\n    \n- `idAuthor` (string) - The ID of the author of the article.\n    \n- `keyWords` (string) - Keywords associated with the article.\n    \n- `publishDate` (object) - The updated publish date of the article, containing day, month, and year.\n    \n\n#### Response\n\n- Status: 404\n    \n- Content-Type: application/json\n    \n- `error` (string) - Error message, if any.\n    \n- `message` (string) - Additional information or message."
+			},
+			"response": []
+		},
+		{
+			"name": "Eliminar Conferencia",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Response time is less than 200ms\", function () {",
+							"  pm.expect(pm.response.responseTime).to.be.below(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Validate the response schema for id, name, startDate, finishDate, place, topic, idOrganizer, and description fields\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    pm.expect(responseData.id).to.be.a('string');",
+							"    pm.expect(responseData.name).to.be.a('string');",
+							"    pm.expect(responseData.startDate).to.be.an('object');",
+							"    pm.expect(responseData.finishDate).to.be.an('object');",
+							"    pm.expect(responseData.place).to.be.a('string');",
+							"    pm.expect(responseData.topic).to.be.a('string');",
+							"    pm.expect(responseData.idOrganizer).to.be.a('string');",
+							"    pm.expect(responseData.description).to.be.a('string');",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{access_token}}"
+					}
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": "{{PATH}}/conferences/{{id_conference}}",
+				"description": "### Delete Conference\n\nThis endpoint is used to delete a specific conference by its unique identifier.\n\n#### Request Body\n\nThis request does not require a request body.\n\n#### Response\n\n- Status: 200\n    \n- Content-Type: application/json\n    \n\nThe response will include the details of the deleted conference in JSON format, with the following fields:\n\n- id: The unique identifier of the conference\n    \n- name: The name of the conference\n    \n- startDate: The start date of the conference\n    \n- finishDate: The finish date of the conference\n    \n- place: The location of the conference\n    \n- topic: The topic of the conference\n    \n- idOrganizer: The unique identifier of the conference organizer\n    \n- description: The description of the conference"
+			},
+			"response": []
+		},
+		{
+			"name": "BORRAR ARTICULO",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.expect(pm.response.code).to.equal(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Response time is less than 200ms\", function () {",
+							"  pm.expect(pm.response.responseTime).to.be.below(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Validate the response schema for id, name, idAuthor, keyWords, publishDate, and idConference properties\", function () {",
+							"    const responseData = pm.response.json();",
+							"",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    pm.expect(responseData.id).to.be.a('string');",
+							"    pm.expect(responseData.name).to.be.a('string');",
+							"    pm.expect(responseData.idAuthor).to.be.a('string');",
+							"    pm.expect(responseData.keyWords).to.be.a('string');",
+							"    pm.expect(responseData.publishDate).to.be.an('object');",
+							"    pm.expect(responseData.publishDate.day).to.be.a('number');",
+							"    pm.expect(responseData.publishDate.month).to.be.a('number');",
+							"    pm.expect(responseData.publishDate.year).to.be.a('number');",
+							"    pm.expect(responseData.idConference).to.be.a('string');",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{access_token}}"
+					}
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{PATH}}/articles/{{id_article}}",
+				"description": "### DELETE /api/articles/{articleId}\n\nThis endpoint is used to delete the article with the specified ID.\n\n#### Request\n\nNo request body is required for this endpoint. The article ID is specified in the URL path.\n\n- `articleId` (path parameter) - The unique identifier of the article to be deleted.\n    \n\n#### Response\n\nThe response for this request is a JSON object with the following schema:\n\n``` json\n{\n  \"id\": \"string\",\n  \"name\": \"string\",\n  \"idAuthor\": \"string\",\n  \"keyWords\": \"string\",\n  \"publishDate\": {\n    \"day\": \"number\",\n    \"month\": \"number\",\n    \"year\": \"number\"\n  },\n  \"idConference\": \"string\"\n}\n\n ```\n\n- `id` (string) - The unique identifier of the article.\n    \n- `name` (string) - The name of the article.\n    \n- `idAuthor` (string) - The unique identifier of the author of the article.\n    \n- `keyWords` (string) - Keywords associated with the article.\n    \n- `publishDate` (object) - The date when the article was published, with day, month, and year as separate properties.\n    \n- `idConference` (string) - The unique identifier of the conference associated with the article."
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "access_token",
+			"value": ""
+		},
+		{
+			"key": "id_conference",
+			"value": ""
+		},
+		{
+			"key": "id_article",
+			"value": ""
+		},
+		{
+			"key": "id_author",
+			"value": ""
+		}
+	]
+}
