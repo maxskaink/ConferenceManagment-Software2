@@ -5,23 +5,25 @@ FROM maven:3.9.4-eclipse-temurin-21 AS build
 WORKDIR /app
 
 # Copia el archivo de configuración de Maven (pom.xml) y el script wait-for-it
-COPY pom.xml .
+COPY pom.xml . 
 COPY wait-for-it.sh ./wait-for-it.sh
 
-# Descarga las dependencias (esto se cacheará si no cambia el pom.xml)
-RUN mvn dependency:go-offline -B
+# Asegúrate de dar permisos de ejecución al script wait-for-it.sh
 RUN chmod +x wait-for-it.sh
+
+# Descarga las dependencias de Maven (esto se cacheará si el pom.xml no cambia)
+RUN mvn dependency:go-offline -B
 
 # Copia el resto del código fuente del microservicio
 COPY src ./src
 
-# Compila el proyecto y empaqueta el archivo JAR
+# Compila el proyecto y genera el archivo JAR sin ejecutar pruebas
 RUN mvn clean package -DskipTests
 
 # Etapa 2: Generación de la imagen final
 FROM eclipse-temurin:21-jre-alpine
 
-# Instala bash y curl para ejecutar wait-for-it.sh
+# Instala bash y curl, necesarios para ejecutar wait-for-it.sh
 RUN apk add --no-cache bash curl
 
 # Establece el directorio de trabajo en el contenedor
@@ -34,11 +36,11 @@ COPY --from=build /app/wait-for-it.sh wait-for-it.sh
 # Da permisos de ejecución al script wait-for-it
 RUN chmod +x wait-for-it.sh
 
-# Configuración de variables de entorno, opcional según tus necesidades
+# Configuración de variables de entorno (ajustar según necesidades)
 ENV JAVA_OPTS=""
 
-# Exponer el puerto en el que corre la aplicación
+# Expone el puerto donde correrá la aplicación
 EXPOSE 8081
 
 # Comando de inicio para esperar al discovery-service y luego iniciar la aplicación
-ENTRYPOINT ["./wait-for-it.sh", "discovery-service:8761", "--", "sh", "-c", "java $JAVA_OPTS -jar app.jar"]
+ENTRYPOINT ["bash", "wait-for-it.sh", "discovery-service:8761", "--", "sh", "-c", "java $JAVA_OPTS -jar app.jar"]
