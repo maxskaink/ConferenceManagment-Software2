@@ -5,10 +5,13 @@ FROM maven:3.9.4-eclipse-temurin-21 AS build
 WORKDIR /app
 
 # Copia el archivo de configuración de Maven (pom.xml) y el script wait-for-it
-COPY pom.xml . 
+COPY pom.xml .
 COPY wait-for-it.sh ./wait-for-it.sh
 
-# Asegúrate de dar permisos de ejecución al script wait-for-it.sh
+# Convierte wait-for-it.sh a formato Unix para evitar problemas con \r
+RUN apt-get update && apt-get install -y dos2unix && dos2unix wait-for-it.sh
+
+# Da permisos de ejecución al script wait-for-it.sh
 RUN chmod +x wait-for-it.sh
 
 # Descarga las dependencias de Maven (esto se cacheará si el pom.xml no cambia)
