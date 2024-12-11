@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package views;
 
 import java.awt.Color;
@@ -10,40 +6,55 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
+import mapper.Mapper;
 import models.Conference;
 import models.ConferenceDTO;
 import models.ListConferencesOrganizerDTO;
+import serviceFactory.ServiceFactory;
 import services.ServiceConference;
 import utilities.Utilities;
-/**
- *
- * @author Isabela Sánchez Saavedra <isanchez@unicauca.edu.co>
- */
+import utilities.ViewManager;
+
 public class VProfileOrganizer extends javax.swing.JFrame{
-    private String idOrganizer;
+    private final String idOrganizer;
+    private final String authToken;
     private ServiceConference serviceConferences;
+    private ServiceFactory serviceFactory;
+    private Runnable refreshCallback;
+    private ListConferencesOrganizerDTO conferencesByOrganizer;
 
     /**
      * Creates new form JProfileOrganizer
+     * @param serviceFactory
+     * @param idOrganizer
+     * @param token
      */
-    public VProfileOrganizer(ServiceConference service, String idOrganizer) {
-        initComponents();
-        this.serviceConferences = service;
+    public VProfileOrganizer(ServiceFactory serviceFactory, String idOrganizer, String token) throws Exception {
+        this.serviceFactory = ServiceFactory.getInstance();
+        this.serviceConferences = serviceFactory.getServiceConference();
         this.idOrganizer = idOrganizer;
-        //ListConferencesOrganizerDTO conferencesByOrganizer = service.listConferencesByOrganizer(this.idOrganizer);
-        //loadConferences(conferencesByOrganizer);
+        this.authToken = token;
+        initComponents();
+        try {
+            this.conferencesByOrganizer = serviceConferences.getConferencesByOrganizer(authToken, this.idOrganizer);
+            loadConferences(conferencesByOrganizer);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error al cargar las conferencias: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     public void loadConferences(ListConferencesOrganizerDTO conferenceByOrganizer) {
         List<ConferenceDTO> conferencesDTO =  conferenceByOrganizer.getConferences();
         List<Conference> conferences = new ArrayList<Conference>();
         for(ConferenceDTO conference : conferencesDTO) {
-            //conferences.add(MapperConference.DTOToConference(conference));
+            conferences.add(Mapper.DTOToConference(conference));
         }
-        if (conferences.isEmpty()) {
+        if (conferenceByOrganizer == null || conferenceByOrganizer.getConferences() == null) {
             jPanelNoConferences.setVisible(true);
             jScrollPaneConferences.setVisible(false);  // Ocultar el JScrollPane si no hay conferencias
         } else {
@@ -118,12 +129,11 @@ public class VProfileOrganizer extends javax.swing.JFrame{
         jPanelMinimize = new javax.swing.JPanel();
         jLabelMinimize = new javax.swing.JLabel();
         jLabelLogo = new javax.swing.JLabel();
-        jPanelProfile = new javax.swing.JPanel();
-        jLabelProfile = new javax.swing.JLabel();
         jPanelConferencesHeader = new javax.swing.JPanel();
         jLabelConferences = new javax.swing.JLabel();
         jPanelMessages = new javax.swing.JPanel();
         jLabelMessages = new javax.swing.JLabel();
+        jComboBoxProfile = new javax.swing.JComboBox<>();
         jLabelConf1 = new javax.swing.JLabel();
         jLabelConf2 = new javax.swing.JLabel();
         jLabelConf3 = new javax.swing.JLabel();
@@ -319,42 +329,17 @@ public class VProfileOrganizer extends javax.swing.JFrame{
         jLabelLogo.setText("meeting");
         jPanelHeader.add(jLabelLogo, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 0, -1, 72));
 
-        jPanelProfile.setBackground(new java.awt.Color(24, 17, 67));
-        jPanelProfile.setMaximumSize(new java.awt.Dimension(60, 18));
-        jPanelProfile.setMinimumSize(new java.awt.Dimension(60, 18));
-        jPanelProfile.setPreferredSize(new java.awt.Dimension(60, 18));
-
-        jLabelProfile.setFont(new java.awt.Font("Montserrat", 1, 14)); // NOI18N
-        jLabelProfile.setForeground(new java.awt.Color(255, 255, 255));
-        jLabelProfile.setText("Mi perfil");
-        jLabelProfile.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jLabelProfile.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jLabelProfile.setMaximumSize(new java.awt.Dimension(60, 18));
-        jLabelProfile.setMinimumSize(new java.awt.Dimension(60, 18));
-        jLabelProfile.setName(""); // NOI18N
-        jLabelProfile.setPreferredSize(new java.awt.Dimension(60, 18));
-
-        javax.swing.GroupLayout jPanelProfileLayout = new javax.swing.GroupLayout(jPanelProfile);
-        jPanelProfile.setLayout(jPanelProfileLayout);
-        jPanelProfileLayout.setHorizontalGroup(
-            jPanelProfileLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelProfileLayout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(jLabelProfile, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        );
-        jPanelProfileLayout.setVerticalGroup(
-            jPanelProfileLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabelProfile, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
-
-        jPanelHeader.add(jPanelProfile, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 0, -1, 72));
-
         jPanelConferencesHeader.setBackground(new java.awt.Color(24, 17, 67));
 
         jLabelConferences.setFont(new java.awt.Font("Montserrat", 1, 14)); // NOI18N
         jLabelConferences.setForeground(new java.awt.Color(255, 255, 255));
         jLabelConferences.setText("Conferencias");
         jLabelConferences.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabelConferences.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabelConferencesMouseClicked(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanelConferencesHeaderLayout = new javax.swing.GroupLayout(jPanelConferencesHeader);
         jPanelConferencesHeader.setLayout(jPanelConferencesHeaderLayout);
@@ -391,6 +376,16 @@ public class VProfileOrganizer extends javax.swing.JFrame{
         );
 
         jPanelHeader.add(jPanelMessages, new org.netbeans.lib.awtextra.AbsoluteConstraints(642, 0, -1, 72));
+
+        jComboBoxProfile.setBackground(new java.awt.Color(24, 17, 67));
+        jComboBoxProfile.setFont(new java.awt.Font("Montserrat", 1, 14)); // NOI18N
+        jComboBoxProfile.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "author", "organizer" }));
+        jComboBoxProfile.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBoxProfileActionPerformed(evt);
+            }
+        });
+        jPanelHeader.add(jComboBoxProfile, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 15, -1, 40));
 
         jPanelBackground.add(jPanelHeader, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 800, 70));
 
@@ -468,18 +463,73 @@ public class VProfileOrganizer extends javax.swing.JFrame{
     }//GEN-LAST:event_jPanelHeaderMousePressed
 
     private void jButtonRegisterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonRegisterActionPerformed
-        //VCreateConference createConferenceWindow = new VCreateConference(serviceConferences, idOrganizer, this::refreshConferencesById, serviceUser);
-        //createConferenceWindow.setVisible(true);
+        VCreateConference createConferenceWindow = new VCreateConference(serviceFactory, authToken, idOrganizer, refreshCallback);
+        createConferenceWindow.setVisible(true);
     }//GEN-LAST:event_jButtonRegisterActionPerformed
 
+    private void jLabelConferencesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelConferencesMouseClicked
+        try {
+            ViewManager viewManager = ViewManager.getInstance();
+
+            // Verifica si la vista de conferencias ya está abierta
+            if (!viewManager.isViewOpen("conferences")) {
+                VConferences conferencesView = new VConferences(serviceFactory, idOrganizer, refreshCallback, authToken);
+                viewManager.registerView("conferences", conferencesView);
+                conferencesView.setVisible(true);
+            } else {
+                // Lleva la ventana al frente si ya está abierta
+                JFrame conferencesView = viewManager.getView("conferences");
+                conferencesView.toFront();
+                conferencesView.repaint();
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error al abrir la vista de conferencias: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_jLabelConferencesMouseClicked
+
+    private void jComboBoxProfileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBoxProfileActionPerformed
+        Object selectedItem = jComboBoxProfile.getSelectedItem();
+        boolean condicion = "author".equals(selectedItem);
+        if (condicion) {
+            try {
+                ViewManager viewManager = ViewManager.getInstance();
+
+                // Verifica si la vista de perfil ya está abierta
+                if (!viewManager.isViewOpen("profile")) {
+                    VProfile profileView = new VProfile(serviceFactory, idOrganizer, authToken);
+                    viewManager.registerView("profile", profileView);
+                    profileView.setVisible(true);
+                } else {
+                    // Lleva la ventana al frente si ya está abierta
+                    JFrame profileView = viewManager.getView("profile");
+                    profileView.toFront();
+                    profileView.repaint();
+                }
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Error al abrir la vista de perfil: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                e.printStackTrace();
+            }
+        }
+    }//GEN-LAST:event_jComboBoxProfileActionPerformed
+
     public void refreshConferencesById() {
-        //ListConferencesOrganizerDTO conferences = serviceConferences.listConferencesByOrganizer(idOrganizer);
-        //loadConferences(conferences);
+        ListConferencesOrganizerDTO conferences;
+        try {
+            conferences = serviceConferences.getConferencesByOrganizer(authToken, idOrganizer);
+            loadConferences(conferences);
+        } catch (Exception ex) {
+            Logger.getLogger(VProfileOrganizer.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public void update(Object o) {
-        //this.serviceConferences = (ServiceConference) o;
-        //loadConferences(serviceConferences.listConferencesByOrganizer(idOrganizer));
+        this.serviceConferences = (ServiceConference) o;
+        try {
+            loadConferences(serviceConferences.getConferencesByOrganizer(authToken, idOrganizer));
+        } catch (Exception ex) {
+            Logger.getLogger(VProfileOrganizer.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
     }
 
@@ -547,18 +597,27 @@ public class VProfileOrganizer extends javax.swing.JFrame{
                 Conference selectedConference = conferences.get(jTableConferences.getSelectedRow());
 
                 if (action.equals("editar")) {
-                    VUpdateConference updateWindow = new VUpdateConference(serviceConferences, idOrganizer, selectedConference, refreshCallback);
+                    VUpdateConference updateWindow = new VUpdateConference(serviceFactory, idOrganizer, selectedConference, authToken, refreshCallback);
                     updateWindow.setVisible(true);  // Mostrar la ventana para editar
                 } else if (action.equals("borrar")) {
-                    //service.deleteConference(selectedConference.getIdConference());
+                    try {
+                        serviceConferences.deleteConference(authToken, selectedConference.getId());
+                    } catch (Exception ex) {
+                        Logger.getLogger(VProfileOrganizer.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                     if (refreshCallback != null) {
                         refreshCallback.run();
                     }
                 } else if (action.equals("ver")) {
                     // Lógica para ver más detalles
-                    //String idConference = selectedConference.getIdConference();
-                    //VConferenceInfo infoWindow = new VConferenceInfo(service, idConference);
-                    //infoWindow.setVisible(true);  // Mostrar la ventana con la información de la conferencia
+                    String idConference = selectedConference.getId();
+                    VConferenceOrganizer infoWindow;
+                    try {
+                        infoWindow = new VConferenceOrganizer(serviceFactory, idConference, idOrganizer, authToken);
+                        infoWindow.setVisible(true);  // Mostrar la ventana con la información de la conferencia
+                    } catch (Exception ex) {
+                        Logger.getLogger(VProfileOrganizer.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
             }
             isPushed = false;
@@ -580,6 +639,7 @@ public class VProfileOrganizer extends javax.swing.JFrame{
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonRegister;
+    private javax.swing.JComboBox<String> jComboBoxProfile;
     private javax.swing.JLabel jLabelConf1;
     private javax.swing.JLabel jLabelConf2;
     private javax.swing.JLabel jLabelConf3;
@@ -594,7 +654,6 @@ public class VProfileOrganizer extends javax.swing.JFrame{
     private javax.swing.JLabel jLabelNoC2;
     private javax.swing.JLabel jLabelNoC3;
     private javax.swing.JLabel jLabelNoC4;
-    private javax.swing.JLabel jLabelProfile;
     private javax.swing.JPanel jPanelBackground;
     private javax.swing.JPanel jPanelConferences;
     private javax.swing.JPanel jPanelConferencesHeader;
@@ -603,7 +662,6 @@ public class VProfileOrganizer extends javax.swing.JFrame{
     private javax.swing.JPanel jPanelMessages;
     private javax.swing.JPanel jPanelMinimize;
     private javax.swing.JPanel jPanelNoConferences;
-    private javax.swing.JPanel jPanelProfile;
     private javax.swing.JScrollPane jScrollPaneConferences;
     private javax.swing.JTable jTableConferences;
     private javax.swing.JTextField jTextFieldSearch;

@@ -1,42 +1,39 @@
 package views;
-import services.ServiceConference;
+
 import java.awt.Color;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import mapper.Mapper;
 
+import services.ServiceConference;
 import utilities.Utilities;
-
 import models.Conference;
+import serviceFactory.ServiceFactory;
 import services.ServiceArticle;
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
+import utilities.ViewManager;
 
-/**
- *
- * @author Isabela Mosquera Fernandez <isabelamosquera@unicauca.edu.co>
- */
 public class VConferenceInfo extends javax.swing.JFrame {
-    private String idConference;
-    private String idAuthor;
-    private Conference conference;
-    private ServiceConference serviceConferences;
-    private ServiceArticle serviceArticle;
+    private final ServiceFactory serviceFactory;
+    private final String idAuthor;
+    private final Conference conference;
+    private final ServiceConference serviceConferences;
+    private final ServiceArticle serviceArticle;
+    private final String authToken;
     
-    /**
-     * Creates new form 
-     */
-   
-    public VConferenceInfo(ServiceConference service,ServiceArticle serviceArticle,Conference conference, String idAuthor) {
+    public VConferenceInfo(ServiceFactory serviceFactory, String idConference, String idAuthor, String token) throws Exception {       
+        this.serviceFactory = ServiceFactory.getInstance();
+        this.serviceConferences = serviceFactory.getServiceConference();
+        this.serviceArticle = serviceFactory.getServiceArticle();
+        this.idAuthor = idAuthor;
+        this.authToken = token;
+        this.conference = Mapper.DTOToConference(serviceConferences.getConferenceById(token, idConference));
         initComponents();
-        this.serviceConferences = service;
-        this.serviceArticle=serviceArticle;
-        this.idAuthor=idAuthor;
-        this.conference = conference;
         mostrarDatos(conference);
         mostrarBoton(conference);
     }
 
-    public void mostrarDatos(Conference conference ){
+
+    public void mostrarDatos(Conference conference){
        jLabelShownName.setText(conference.getName());
        jLabelShownDateStart.setText("Desde: "+conference.getStartDate());
        jLabelShownDateEnds.setText("Hasta: " + conference.getFinishDate());
@@ -45,13 +42,13 @@ public class VConferenceInfo extends javax.swing.JFrame {
        jLabelShownTopic.setText(conference.getTopic());
     }
     public void mostrarBoton(Conference conference){
-     if(true==false){
+     if(conference.isState()){
         jButtonNoOpen.setVisible(false);
         jButtonIsOpen.setVisible(true);
      }
-     else{
-       jButtonNoOpen.setVisible(false);
-       jButtonIsOpen.setVisible(true);
+     else {
+       jButtonNoOpen.setVisible(true);
+       jButtonIsOpen.setVisible(false);
      }
     }
     /**
@@ -185,10 +182,20 @@ public class VConferenceInfo extends javax.swing.JFrame {
         jLabelProfile.setFont(new java.awt.Font("Montserrat", 1, 14)); // NOI18N
         jLabelProfile.setText("Mi perfil");
         jLabelProfile.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabelProfile.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabelProfileMouseClicked(evt);
+            }
+        });
 
         jLabelConferences.setFont(new java.awt.Font("Montserrat", 1, 14)); // NOI18N
         jLabelConferences.setText("Conferencias");
         jLabelConferences.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabelConferences.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabelConferencesMouseClicked(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanelHeaderLayout = new javax.swing.GroupLayout(jPanelHeader);
         jPanelHeader.setLayout(jPanelHeaderLayout);
@@ -200,7 +207,7 @@ public class VConferenceInfo extends javax.swing.JFrame {
                 .addComponent(jLabelProfile)
                 .addGap(65, 65, 65)
                 .addComponent(jLabelConferences)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 292, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 328, Short.MAX_VALUE)
                 .addComponent(jLabelLogo)
                 .addGap(55, 55, 55)
                 .addComponent(jPanelExit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -390,10 +397,52 @@ public class VConferenceInfo extends javax.swing.JFrame {
     }//GEN-LAST:event_jLabelMinimizeMouseClicked
 
     private void jButtonIsOpenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonIsOpenActionPerformed
-        VPapers createPaperWindow = new VPapers(serviceConferences,serviceArticle, conference,idAuthor);
+        VPapers createPaperWindow = new VPapers(serviceFactory, conference, idAuthor, authToken);
         createPaperWindow.setVisible(true); 
         this.setVisible(false);
     }//GEN-LAST:event_jButtonIsOpenActionPerformed
+
+    private void jLabelProfileMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelProfileMouseClicked
+        try {
+            ViewManager viewManager = ViewManager.getInstance();
+
+            // Verifica si la vista de perfil ya está abierta
+            if (!viewManager.isViewOpen("profile")) {
+                VProfile profileView = new VProfile(serviceFactory, idAuthor, authToken);
+                viewManager.registerView("profile", profileView);
+                profileView.setVisible(true);
+            } else {
+                // Lleva la ventana al frente si ya está abierta
+                JFrame profileView = viewManager.getView("profile");
+                profileView.toFront();
+                profileView.repaint();
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error al abrir la vista de perfil: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_jLabelProfileMouseClicked
+
+    private void jLabelConferencesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelConferencesMouseClicked
+        try {
+            ViewManager viewManager = ViewManager.getInstance();
+
+            // Verifica si la vista de conferencias ya está abierta
+            if (!viewManager.isViewOpen("conferences")) {
+                VConferences conferencesView = new VConferences(serviceFactory, idAuthor, () -> {}, authToken);
+                viewManager.registerView("conferences", conferencesView);
+                conferencesView.setVisible(true);
+            } else {
+                // Lleva la ventana al frente si ya está abierta
+                JFrame conferencesView = viewManager.getView("conferences");
+                conferencesView.toFront();
+                conferencesView.repaint();
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error al abrir la vista de conferencias: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_jLabelConferencesMouseClicked
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

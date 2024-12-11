@@ -5,6 +5,7 @@ import java.awt.Font;
 import java.awt.event.MouseEvent;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -88,35 +89,49 @@ public class Utilities {
         }
     }
 
-    /**
-     * Convierte una cadena de texto en un objeto BasicDate.
-     * 
-     * @param dateString Fecha en formato "dd-MM-yyyy" (ejemplo: "15-12-2024").
-     * @return Objeto BasicDate con la fecha proporcionada.
-     * @throws IllegalArgumentException Si el formato de la fecha es inválido.
-     */
-    public static BasicDate parseBasicDate(String dateString) {
-        try {
-            // Dividir la cadena por el delimitador "-"
-            String[] parts = dateString.split("-");
-            if (parts.length != 3) {
+    public static BasicDate parseBasicDate(Object input) {
+        if (input instanceof String) {
+            // Manejo de cadenas de texto
+            String dateString = (String) input;
+            try {
+                // Dividir la cadena por el delimitador "-"
+                String[] parts = dateString.split("-");
+                if (parts.length != 3) {
+                    throw new IllegalArgumentException("Formato de fecha inválido. Use 'dd-MM-yyyy'.");
+                }
+
+                // Extraer día, mes y año
+                int day = Integer.parseInt(parts[0]);
+                int month = Integer.parseInt(parts[1]);
+                int year = Integer.parseInt(parts[2]);
+
+                // Validar valores (opcional)
+                if (day < 1 || day > 31 || month < 1 || month > 12 || year < 1900) {
+                    throw new IllegalArgumentException("Valores de fecha fuera de rango.");
+                }
+
+                // Crear y retornar el objeto BasicDate
+                return new BasicDate(day, month, year);
+            } catch (NumberFormatException e) {
                 throw new IllegalArgumentException("Formato de fecha inválido. Use 'dd-MM-yyyy'.");
             }
+        } else if (input instanceof Date) {
+            // Manejo de objetos Date
+            Date date = (Date) input;
 
-            // Extraer día, mes y año
-            int day = Integer.parseInt(parts[0]);
-            int month = Integer.parseInt(parts[1]);
-            int year = Integer.parseInt(parts[2]);
+            // Usar Calendar para extraer día, mes y año
+            java.util.Calendar calendar = java.util.Calendar.getInstance();
+            calendar.setTime(date);
 
-            // Validar valores (opcional)
-            if (day < 1 || day > 31 || month < 1 || month > 12 || year < 1) {
-                throw new IllegalArgumentException("Valores de fecha fuera de rango.");
-            }
+            int day = calendar.get(java.util.Calendar.DAY_OF_MONTH);
+            int month = calendar.get(java.util.Calendar.MONTH) + 1; // Los meses empiezan desde 0
+            int year = calendar.get(java.util.Calendar.YEAR);
 
             // Crear y retornar el objeto BasicDate
             return new BasicDate(day, month, year);
-        } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Formato de fecha inválido. Use 'dd-MM-yyyy'.");
+        } else {
+            throw new IllegalArgumentException("Tipo de entrada no soportado. Use String ('dd-MM-yyyy') o Date.");
         }
-    }    
+    }
+
 }

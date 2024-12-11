@@ -27,6 +27,14 @@ public class ArticleDTO {
         this.publishDate = publishDate;
         this.idConference = idConference;
     }
+    
+    public ArticleDTO(String name, String idAuthor, String keyWords, BasicDate publishDate, String idConference) {
+        this.name = name;
+        this.idAuthor = idAuthor;
+        this.keyWords = keyWords;
+        this.publishDate = publishDate;
+        this.idConference = idConference;
+    }
 
     public String getId() {
         return id;

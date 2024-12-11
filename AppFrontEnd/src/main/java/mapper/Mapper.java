@@ -1,8 +1,14 @@
 package mapper;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import models.Article;
 import models.ArticleDTO;
 import models.BasicDate;
 import models.ConferenceDTO;
+import models.Conference;
+import models.ListConferencesDTO;
+import models.ListArticleConferencesDTO;
+import models.ListConferencesOrganizerDTO;
 
 public class Mapper {
     // Convertir JSON a ConferenceDTO
@@ -33,42 +39,58 @@ public class Mapper {
         conferenceDTO.setFinishDate(finishDate);
 
         return conferenceDTO;
+    }    
+    
+    public static ListConferencesDTO jsonToListConferencesDTO(String json) throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.readValue(json, ListConferencesDTO.class);
+    }
+    
+    public static ListConferencesOrganizerDTO jsonToListConferencesOrganizerDTO(String json) throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.readValue(json, ListConferencesOrganizerDTO.class);
+    }
+    
+    public static ListArticleConferencesDTO jsonToListArticleConferencesDTO(String json) throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.readValue(json, ListArticleConferencesDTO.class);
     }
 
     // Convertir ConferenceDTO a JSON
     public static String conferenceDTOToJson(ConferenceDTO conferenceDTO) {
-        return """
-        {
-            "name": "%s",
-            "place": "%s",
-            "topic": "%s",
-            "idOrganizer": "%s",
-            "description": "%s",
-            "startDate": {
-                "day": %d,
-                "month": %d,
-                "year": %d
-            },
-            "finishDate": {
-                "day": %d,
-                "month": %d,
-                "year": %d
-            }
-        }
-        """.formatted(
-            conferenceDTO.getName(),
-            conferenceDTO.getPlace(),
-            conferenceDTO.getTopic(),
-            conferenceDTO.getIdOrganizer(),
-            conferenceDTO.getDescription(),
-            conferenceDTO.getStartDate().getDay(),
-            conferenceDTO.getStartDate().getMonth(),
-            conferenceDTO.getStartDate().getYear(),
-            conferenceDTO.getFinishDate().getDay(),
-            conferenceDTO.getFinishDate().getMonth(),
-            conferenceDTO.getFinishDate().getYear()
-        );
+    return """
+    {
+        "name": "%s",
+        "startDate": {
+            "day": %d,
+            "month": %d,
+            "year": %d
+        },
+        "finishDate": {
+            "day": %d,
+            "month": %d,
+            "year": %d
+        },
+        "place": "%s",
+        "topic": "%s",
+        "idOrganizer": "%s",
+        "description": "%s"
     }
+    """.formatted(
+        conferenceDTO.getName(),
+        conferenceDTO.getStartDate().getDay(),
+        conferenceDTO.getStartDate().getMonth(),
+        conferenceDTO.getStartDate().getYear(),
+        conferenceDTO.getFinishDate().getDay(),
+        conferenceDTO.getFinishDate().getMonth(),
+        conferenceDTO.getFinishDate().getYear(),
+        conferenceDTO.getPlace(),
+        conferenceDTO.getTopic(),
+        conferenceDTO.getIdOrganizer(),
+        conferenceDTO.getDescription()
+    );
+}
+
 
     // Convertir JSON a ArticleDTO
     public static ArticleDTO jsonToArticleDTO(String json) {
@@ -148,4 +170,53 @@ public class Mapper {
         }
         return currentJson.replace("\"", "");
     }
+
+    public static ConferenceDTO conferenceToDTO(Conference conference) {
+        return new ConferenceDTO(
+                conference.getId(), // ID de la conferencia
+                conference.getName(), // Nombre de la conferencia
+                conference.getStartDate(), // Fecha de inicio
+                conference.getFinishDate(), // Fecha de finalización
+                conference.getPlace(), // Lugar
+                conference.getTopic(), // Tema
+                conference.getIdOrganizer(), // ID del organizador
+                conference.getDescription() // Descripción
+        );
+    }
+
+    public static Conference DTOToConference(ConferenceDTO dto) {
+        return new Conference(
+                dto.getId(), // ID de la conferencia
+                dto.getName(), // Nombre de la conferencia
+                dto.getStartDate(), // Fecha de inicio
+                dto.getFinishDate(), // Fecha de finalización
+                dto.getPlace(), // Lugar
+                dto.getTopic(), // Tema
+                dto.getIdOrganizer(), // ID del organizador
+                dto.getDescription() // Descripción
+        );
+    }
+
+    public static ArticleDTO articleToDTO(Article article) {
+        return new ArticleDTO(
+                article.getId(), // ID del artículo
+                article.getName(), // Nombre del artículo
+                article.getIdAuthor(), // ID del autor
+                article.getKeyWords(), // Palabras clave
+                article.getPublishDate(), // Fecha de publicación
+                article.getIdConference() // ID de la conferencia
+        );
+    }
+
+    public static Article DTOToArticle(ArticleDTO dto) {
+        return new Article(
+                dto.getId(), // ID del artículo
+                dto.getName(), // Nombre del artículo
+                dto.getIdAuthor(), // ID del autor
+                dto.getKeyWords(), // Palabras clave
+                dto.getPublishDate(), // Fecha de publicación
+                dto.getIdConference() // ID de la conferencia
+        );
+    }
+
 }

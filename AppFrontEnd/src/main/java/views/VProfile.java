@@ -1,38 +1,35 @@
 package views;
 
 import java.awt.Color;
-import models.User;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import serviceFactory.ServiceFactory;
 import services.ServiceArticle;
 import services.ServiceConference;
 import utilities.Utilities;
+import utilities.ViewManager;
 
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
-
-/**
- *
- * @author Isabela Sánchez Saavedra <isanchez@unicauca.edu.co>
- */
 public class VProfile extends javax.swing.JFrame {
-    User user;
-    ServiceConference serviceConference;
-    ServiceArticle serviceArticle;
-    Runnable refreshCallback;
+    private final ServiceConference serviceConference;
+    private final ServiceArticle serviceArticle;
+    private final String idUser;
+    private ServiceFactory serviceFactory;    
+    private String authToken;
     /**
      * Creates new form VLogin
      */
-    public VProfile(User user) {
-        initComponents();
-        ServiceFactory serviceFactory = ServiceFactory.getInstance();
-        this.user = user;
-        //this.serviceArticle = serviceFactory.getServiceArticle();
+    public VProfile(ServiceFactory serviceFactory, String idUser, String authToken) {        
+        this.serviceFactory = ServiceFactory.getInstance();
+        this.serviceArticle = serviceFactory.getServiceArticle();
         this.serviceConference = serviceFactory.getServiceConference();
-        //this.serviceUser = serviceFactory.getServiceUser();
+        this.idUser = idUser;
+        this.authToken = authToken;
+        initComponents();
         displayUserInfo();
     }
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -170,6 +167,7 @@ public class VProfile extends javax.swing.JFrame {
         jPanelHeader.add(jLabelLogo, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 0, -1, 60));
 
         jLabelProfile.setFont(new java.awt.Font("Montserrat", 1, 14)); // NOI18N
+        jLabelProfile.setForeground(new java.awt.Color(193, 255, 114));
         jLabelProfile.setText("Mi perfil");
         jLabelProfile.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jPanelHeader.add(jLabelProfile, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 0, -1, 60));
@@ -344,48 +342,45 @@ public class VProfile extends javax.swing.JFrame {
     }//GEN-LAST:event_jLabelMinimizeMouseClicked
 
     private void jComboBoxProfileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBoxProfileActionPerformed
-        boolean primerCondicion = jComboBoxProfile.isVisible();
-        Object selectedItem= jComboBoxProfile.getSelectedItem();
-        boolean segundaCondicion = "organizer".equals(selectedItem); 
-        if (primerCondicion&& segundaCondicion ) {
-                String idOrganizer = user.getId();
-                VProfileOrganizer profileOrganizer = new VProfileOrganizer(serviceConference, idOrganizer);
+        Object selectedItem = jComboBoxProfile.getSelectedItem();
+        boolean condicion = "organizer".equals(selectedItem);
+        if (condicion) {
+            VProfileOrganizer profileOrganizer;
+            try {
+                profileOrganizer = new VProfileOrganizer(serviceFactory, idUser, authToken);
                 profileOrganizer.setVisible(true);
+            } catch (Exception ex) {
+                System.out.println("No hay conferencias");
             }
+        }
     }//GEN-LAST:event_jComboBoxProfileActionPerformed
 
     private void jLabelConferencesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelConferencesMouseClicked
-        String idAuthor =  user.getId();
+        try {
+            ViewManager viewManager = ViewManager.getInstance();
 
-        // Crear una Runnable para la callback de refresco (puedes personalizarlo según tus necesidades)
-        Runnable refreshCallback = () -> {
-            // Aquí puedes definir lo que quieres que haga al refrescar
-            System.out.println("Refrescar la lista de conferencias");
-        };
-
-        // Crear la instancia de VConferences
-        VConferences vConferences = new VConferences(serviceConference, serviceArticle, idAuthor, refreshCallback);
-
-        // Mostrar la vista de VConferences
-        vConferences.setVisible(true);
+            // Verifica si la vista de conferencias ya está abierta
+            if (!viewManager.isViewOpen("conferences")) {
+                VConferences conferencesView = new VConferences(serviceFactory, idUser, () -> {}, authToken);
+                viewManager.registerView("conferences", conferencesView);
+                conferencesView.setVisible(true);
+            } else {
+                // Lleva la ventana al frente si ya está abierta
+                JFrame conferencesView = viewManager.getView("conferences");
+                conferencesView.toFront();
+                conferencesView.repaint();
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error al abrir la vista de conferencias: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
     }//GEN-LAST:event_jLabelConferencesMouseClicked
 
-    private boolean isUserOrganizer(User user) {
-        //String role = serviceUser.getUserRole(user);
-        //return role.equals("organizer");
-        return false;
-    }
-    
     private void displayUserInfo() {
-        jLabelFullName.setText(user.getName());
-        jLabelShownCode.setText(String.valueOf(user.getId())); 
+        jLabelFullName.setText("Pablo Perez");
+        jLabelShownCode.setText(String.valueOf(idUser)); 
         jLabelShownTheme.setText("Tema genérico"); 
-        
-        if (isUserOrganizer(user)) {
-            this.jComboBoxProfile.setVisible(true); // Mostrar el ComboBox
-        } else {
-            this.jComboBoxProfile.setVisible(false);
-        }
+        this.jComboBoxProfile.setVisible(true); 
     }
     
 

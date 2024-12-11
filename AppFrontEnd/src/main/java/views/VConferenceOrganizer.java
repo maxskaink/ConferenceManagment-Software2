@@ -2,7 +2,6 @@ package views;
 
 import models.Article;
 import models.ListArticleConferencesDTO;
-import models.User;
 import models.Conference;
 import services.*;
 import utilities.Utilities;
@@ -13,35 +12,38 @@ import javax.swing.*;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
+import mapper.Mapper;
+import serviceFactory.ServiceFactory;
 
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
-
-/**
- *
- * @author Isabela Sánchez Saavedra <isanchez@unicauca.edu.co>
- */
 public class VConferenceOrganizer extends javax.swing.JFrame {
+     private ServiceFactory serviceFactory;
      private ServiceConference serviceConference;
      private ServiceArticle serviceArticle;
      private String idConference;
+     private String idAuthor;
+     private String authToken;
+     private Conference conference;
     /**
      * Creates new form VLogin
      */
-    public VConferenceOrganizer(ServiceConference serviceConference, ServiceArticle serviceArticle ,String idConference) {
+    public VConferenceOrganizer(ServiceFactory serviceFactory, String idConference, String idAuthor, String token) throws Exception {
         initComponents();
-        this.serviceArticle=serviceArticle;
-        this.serviceConference=serviceConference;
-        this.idConference=idConference;
-        //Conference conference= MapperConference.DTOToConference(serviceConference.getConference(idConference));
-        //jLabelShownName.setText(conference.getName());
-        //ListArticleConferencesDTO articles = serviceArticle.listArticlesByConference(idConference);
-        //listPapers(articles);
-    }   
+        this.serviceFactory = ServiceFactory.getInstance();
+        this.serviceArticle = serviceFactory.getServiceArticle();
+        this.serviceConference = serviceFactory.getServiceConference();
+        this.idConference = idConference;
+        this.idAuthor = idAuthor;
+        this.authToken = token;
+        this.conference = Mapper.DTOToConference(serviceConference.getConferenceById(authToken, idConference));
+        jLabelShownName.setText(conference.getName());
+        ListArticleConferencesDTO articles = serviceArticle.getArticlesByConference(authToken, idConference);
+        listPapers(articles);
+    }
+  
     
     public void listPapers(ListArticleConferencesDTO ArticlesDTO) {
         List<Article> Articles = ArticlesDTO.getArticles();
@@ -63,10 +65,8 @@ public class VConferenceOrganizer extends javax.swing.JFrame {
            MyTable.addColumn("Informacion");  // Nueva columna para 
            MyTable.addColumn("Asignacion");  // Columna para "Ver más"
 
-            for (Article art : Articles) {                
-                //User author=serviceUser.getUser(art.getIdAuthor());
-                //String nombreAutor=author.getName();
-                //MyTable.addRow(new Object[]{nombreAutor,art.getName(), "INF", "Asignacion"});
+            for (Article art : Articles) {
+                MyTable.addRow(new Object[]{idAuthor, art.getName(), "INF", "Asignacion"});
             }
           
            jTableArticles.setModel(MyTable);   
@@ -369,8 +369,13 @@ public class VConferenceOrganizer extends javax.swing.JFrame {
     }//GEN-LAST:event_jLabelMinimizeMouseClicked
     
     public void refreshArticlesById() {
-        //ListArticleConferencesDTO articles = serviceArticle.listArticlesByConference(idConference);
-        //listPapers(articles);
+        ListArticleConferencesDTO articles;
+         try {
+             articles = serviceArticle.getArticlesByConference(authToken, idConference);
+            listPapers(articles);
+         } catch (Exception ex) {
+             Logger.getLogger(VConferenceOrganizer.class.getName()).log(Level.SEVERE, null, ex);
+         }
     }
 
     

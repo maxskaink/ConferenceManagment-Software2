@@ -1,27 +1,23 @@
 package views;
 
 import java.awt.Color;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import models.User;
+import serviceFactory.ServiceFactory;
+import services.ServiceConference;
+import services.ServiceArticle;
 import services.ServiceAuth;
 
 import utilities.Utilities;
+import utilities.ViewManager;
 
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
-
-/**
- *
- * @author Isabela Sánchez Saavedra <isanchez@unicauca.edu.co>
- */
 public class VLogin extends javax.swing.JFrame {
-
+    private ServiceFactory serviceFactory;
     /**
      * Creates new form VLogin
      */
-    public VLogin() {
+    public VLogin(ServiceFactory serviceFactory) {
+        this.serviceFactory = ServiceFactory.getInstance();
         initComponents();
     }
 
@@ -370,48 +366,55 @@ public class VLogin extends javax.swing.JFrame {
     }//GEN-LAST:event_jLabelMinimizeMouseExited
 
     private void jButtonLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonLoginActionPerformed
-        String email = jTextFieldEmail.getText();
-        String password = String.valueOf(jPasswordField.getPassword());
-
-        try {
-            // Intenta iniciar sesión
-            //User loggedInUser = serviceUser.loginUser(email, password);
-            User loggedInUser = new User(
-                    "671ecead4d86b707328ef6cf",
-                    "Miguel Super ADmin",
-                    "mangel@algo",
-                    "password",
-                    "tu casa",
-                    "organizer",
-                    111111111);
-            // Si el login es exitoso, abre la ventana VProfile
-            VProfile vProfile = new VProfile(loggedInUser); // Pasa el usuario a VProfile
-            vProfile.setVisible(true); // Muestra la ventana de perfil
-            this.dispose(); // Cierra la ventana de login
-        } catch (RuntimeException e) {
-            // Manejo de errores en caso de login fallido
-            JOptionPane.showMessageDialog(this, "Login fallido: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }//GEN-LAST:event_jButtonLoginActionPerformed
-
-    private void login() {
         String username = jTextFieldEmail.getText();
         String password = new String(jPasswordField.getPassword());
+
         try {
-            // Obtener token del ServiceAuth
+            // Crear instancia de ServiceAuth
             ServiceAuth authService = new ServiceAuth();
-            String token = authService.login(username, password); // Implementa un método para login
 
-            JOptionPane.showMessageDialog(this, "Login exitoso");
-            this.dispose(); // Cerrar la ventana de login
+            // Obtener el token del usuario autenticado
+            String tokenResponse = authService.login(username, password);
 
-            // Pasar el token al resto de la aplicación
-            //new MainWindow(token).setVisible(true);
+            // Extraer el access_token del JSON
+            String accessToken = tokenResponse.substring(tokenResponse.indexOf("access_token\":\"") + 15);
+            accessToken = accessToken.substring(0, accessToken.indexOf("\""));
+
+            // Extraer el ID del usuario desde el token decodificado
+            String userId = "12345";
+
+            // Mostrar mensaje de éxito
+            JOptionPane.showMessageDialog(this, "Inicio de sesión exitoso");
+
+            // Obtener otros servicios desde la fábrica
+            ServiceConference serviceConference = serviceFactory.getServiceConference();
+            ServiceArticle serviceArticle = serviceFactory.getServiceArticle();
+            
+            try {
+                ViewManager viewManager = ViewManager.getInstance();
+
+                // Verifica si la vista de conferencias ya está abierta
+                if (!viewManager.isViewOpen("conferences")) {
+                    VConferences conferencesView = new VConferences(serviceFactory, userId, () -> {}, accessToken);
+                    viewManager.registerView("conferences", conferencesView);
+                    conferencesView.setVisible(true);
+                } else {
+                    // Lleva la ventana al frente si ya está abierta
+                    JFrame conferencesView = viewManager.getView("conferences");
+                    conferencesView.toFront();
+                    conferencesView.repaint();
+                }
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Error al abrir la vista de conferencias: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                e.printStackTrace();
+            }
+            // Cerrar la ventana de login
+            this.dispose();
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error en el login: " + e.getMessage());
+            // Manejo de errores
+            JOptionPane.showMessageDialog(this, "Error en el inicio de sesión: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
-    }
-
+    }//GEN-LAST:event_jButtonLoginActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonLogin;

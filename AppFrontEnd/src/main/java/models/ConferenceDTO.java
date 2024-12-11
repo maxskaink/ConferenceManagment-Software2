@@ -10,6 +10,17 @@ public class ConferenceDTO {
     private String      idOrganizer;
     private String      description;
 
+    public ConferenceDTO(String id, String name, BasicDate startDate, BasicDate finishDate, String place, String topic, String idOrganizer, String description) {
+        this.id = id;
+        this.name = name;
+        this.startDate = startDate;
+        this.finishDate = finishDate;
+        this.place = place;
+        this.topic = topic;
+        this.idOrganizer = idOrganizer;
+        this.description = description;
+    }
+    
     public ConferenceDTO(String name, BasicDate startDate, BasicDate finishDate, String place, String topic, String idOrganizer, String description) {
         this.name = name;
         this.startDate = startDate;

@@ -4,19 +4,24 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import mapper.Mapper;
 import models.ArticleDTO;
+import models.ListArticleConferencesDTO;
 
 public class ServiceArticle {
 
     private static final String BASE_URL = "http://localhost:8083/api/articles"; // {{PATH}}/articles
     private final HttpClient httpClient;
+    
+    private ArticleDTO article;
+    private ListArticleConferencesDTO articlesList;
 
     public ServiceArticle() {
         this.httpClient = HttpClient.newHttpClient();
     }
 
     // Listar artículos de una conferencia
-    public String getArticlesByConference(String token, String idConference) throws Exception {
+    public ListArticleConferencesDTO getArticlesByConference(String token, String idConference) throws Exception {
         String url = BASE_URL + "/conferences/" + idConference;
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
@@ -26,14 +31,15 @@ public class ServiceArticle {
 
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         if (response.statusCode() == 200) {
-            return response.body();
+            articlesList = Mapper.jsonToListArticleConferencesDTO(response.body());
+            return articlesList;
         } else {
             throw new RuntimeException("Failed to fetch articles by conference: " + response.body());
         }
     }
 
     // Listar artículos de un autor
-    public String getArticlesByAuthor(String token, String idAuthor) throws Exception {
+    public ListArticleConferencesDTO getArticlesByAuthor(String token, String idAuthor) throws Exception {
         String url = BASE_URL + "/author/" + idAuthor;
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
@@ -43,14 +49,15 @@ public class ServiceArticle {
 
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         if (response.statusCode() == 200) {
-            return response.body();
+            articlesList = Mapper.jsonToListArticleConferencesDTO(response.body());
+            return articlesList;
         } else {
             throw new RuntimeException("Failed to fetch articles by author: " + response.body());
         }
     }
 
     // Crear un artículo dentro de una conferencia
-    public String createArticle(String token, ArticleDTO article) throws Exception {
+    public ArticleDTO createArticle(String token, ArticleDTO article) throws Exception {
         // Convertir el ArticleDTO a JSON manualmente
         String articleJson = """
     {
@@ -79,7 +86,8 @@ public class ServiceArticle {
 
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         if (response.statusCode() == 201) {
-            return response.body();
+            article = Mapper.jsonToArticleDTO(response.body());
+            return article;
         } else {
             throw new RuntimeException("Failed to create article: " + response.body());
         }

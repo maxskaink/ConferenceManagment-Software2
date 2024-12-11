@@ -1,39 +1,44 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package views;
 
 import java.awt.Color;
+import java.util.Date;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import models.BasicDate;
 import models.Conference;
+import models.ConferenceDTO;
+import serviceFactory.ServiceFactory;
 import services.ServiceConference;
 import utilities.Utilities;
+import static utilities.Utilities.parseBasicDate;
+import utilities.ViewManager;
 
-/**
- *
- * @author Isabela Sánchez Saavedra <isanchez@unicauca.edu.co>
- */
 public class VUpdateConference extends javax.swing.JFrame {
 
-    private Conference conference;
-    private ServiceConference serviceConferences;
-    private VProfileOrganizer profileOrganizer;
-    private String idOrganizer;
-    private Runnable refreshCallback;
+    private final Conference conference;
+    private final ServiceConference serviceConferences;
+    private final ServiceFactory serviceFactory;
+    private final String authToken;
+    private final String idOrganizer;
+    private final Runnable refreshCallback;
 
     /**
      * Creates new form VProfileOrganizer
+     * @param serviceFactory
+     * @param idOrganizer
+     * @param conference
      */
-    public VUpdateConference(ServiceConference serviceConferences, String idOrganizer, Conference conference, Runnable refreshCallback) {
+    public VUpdateConference(ServiceFactory serviceFactory, String idOrganizer, Conference conference, String token, Runnable refreshCallback) {
         initComponents();
-        this.serviceConferences = serviceConferences;
+        this.serviceFactory = ServiceFactory.getInstance();
+        this.serviceConferences = serviceFactory.getServiceConference();
         this.idOrganizer = idOrganizer;
         this.conference = conference;
+        this.authToken = token;
         this.refreshCallback = refreshCallback;
         fillFields();
     }
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -60,14 +65,14 @@ public class VUpdateConference extends javax.swing.JFrame {
         jTextFieldName = new javax.swing.JTextField();
         jTextFieldPlace = new javax.swing.JTextField();
         jLabelPlace = new javax.swing.JLabel();
-        jTextFieldStartDate = new javax.swing.JTextField();
         jLabelStartDate = new javax.swing.JLabel();
         jTextFieldTheme = new javax.swing.JTextField();
         jLabelTheme = new javax.swing.JLabel();
         jTextFieldDescription = new javax.swing.JTextField();
         jLabelDescription = new javax.swing.JLabel();
-        jTextFieldFinishDate = new javax.swing.JTextField();
         jLabelFinishDate = new javax.swing.JLabel();
+        jTextFieldStartDate = new com.toedter.calendar.JDateChooser();
+        jTextFieldFinishDate = new com.toedter.calendar.JDateChooser();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setUndecorated(true);
@@ -182,6 +187,11 @@ public class VUpdateConference extends javax.swing.JFrame {
         jLabelProfile.setMinimumSize(new java.awt.Dimension(60, 18));
         jLabelProfile.setName(""); // NOI18N
         jLabelProfile.setPreferredSize(new java.awt.Dimension(60, 18));
+        jLabelProfile.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabelProfileMouseClicked(evt);
+            }
+        });
         jPanelHeader.add(jLabelProfile, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 0, -1, 60));
 
         jLabelConferences.setFont(new java.awt.Font("Montserrat", 1, 14)); // NOI18N
@@ -268,26 +278,6 @@ public class VUpdateConference extends javax.swing.JFrame {
         jLabelPlace.setText("LUGAR");
         jPanelBackground.add(jLabelPlace, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 170, -1, -1));
 
-        jTextFieldStartDate.setBackground(new java.awt.Color(255, 255, 255));
-        jTextFieldStartDate.setFont(new java.awt.Font("Montserrat", 0, 12)); // NOI18N
-        jTextFieldStartDate.setForeground(new java.awt.Color(153, 153, 153));
-        jTextFieldStartDate.setText("00/00/0000");
-        jTextFieldStartDate.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        jTextFieldStartDate.setMaximumSize(new java.awt.Dimension(270, 30));
-        jTextFieldStartDate.setMinimumSize(new java.awt.Dimension(270, 30));
-        jTextFieldStartDate.setPreferredSize(new java.awt.Dimension(270, 30));
-        jTextFieldStartDate.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                jTextFieldStartDateFocusLost(evt);
-            }
-        });
-        jTextFieldStartDate.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mousePressed(java.awt.event.MouseEvent evt) {
-                jTextFieldStartDateMousePressed(evt);
-            }
-        });
-        jPanelBackground.add(jTextFieldStartDate, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 270, -1, -1));
-
         jLabelStartDate.setFont(new java.awt.Font("Montserrat", 0, 14)); // NOI18N
         jLabelStartDate.setForeground(new java.awt.Color(0, 0, 0));
         jLabelStartDate.setText("FECHA DE INICIO");
@@ -343,30 +333,16 @@ public class VUpdateConference extends javax.swing.JFrame {
         jLabelDescription.setText("DESCRIPCIÓN");
         jPanelBackground.add(jLabelDescription, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 330, -1, -1));
 
-        jTextFieldFinishDate.setBackground(new java.awt.Color(255, 255, 255));
-        jTextFieldFinishDate.setFont(new java.awt.Font("Montserrat", 0, 12)); // NOI18N
-        jTextFieldFinishDate.setForeground(new java.awt.Color(153, 153, 153));
-        jTextFieldFinishDate.setText("00/00/0000");
-        jTextFieldFinishDate.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        jTextFieldFinishDate.setMaximumSize(new java.awt.Dimension(270, 30));
-        jTextFieldFinishDate.setMinimumSize(new java.awt.Dimension(270, 30));
-        jTextFieldFinishDate.setPreferredSize(new java.awt.Dimension(270, 30));
-        jTextFieldFinishDate.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                jTextFieldFinishDateFocusLost(evt);
-            }
-        });
-        jTextFieldFinishDate.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mousePressed(java.awt.event.MouseEvent evt) {
-                jTextFieldFinishDateMousePressed(evt);
-            }
-        });
-        jPanelBackground.add(jTextFieldFinishDate, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 270, -1, -1));
-
         jLabelFinishDate.setFont(new java.awt.Font("Montserrat", 0, 14)); // NOI18N
         jLabelFinishDate.setForeground(new java.awt.Color(0, 0, 0));
         jLabelFinishDate.setText("FECHA DE FIN");
         jPanelBackground.add(jLabelFinishDate, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 250, -1, -1));
+
+        jTextFieldStartDate.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        jPanelBackground.add(jTextFieldStartDate, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 270, 270, -1));
+
+        jTextFieldFinishDate.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        jPanelBackground.add(jTextFieldFinishDate, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 270, 270, -1));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -419,45 +395,33 @@ public class VUpdateConference extends javax.swing.JFrame {
             // Obtener datos de los campos de texto
             String name = jTextFieldName.getText();
             String place = jTextFieldPlace.getText();
-            String startDate = jTextFieldStartDate.getText();
-            String finishDate = jTextFieldFinishDate.getText();
+            Date startDate = jTextFieldStartDate.getDate();
+            Date finishDate = jTextFieldFinishDate.getDate();
             String theme = jTextFieldTheme.getText();
             String description = jTextFieldDescription.getText();
 
             // Validar los datos
-            if (name.isEmpty() || place.isEmpty() || startDate.isEmpty() || finishDate.isEmpty() || theme.isEmpty()) {
+            if (name.isEmpty() || place.isEmpty() || startDate == null || finishDate == null || theme.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
-            String[] startDateParts = startDate.split("/");
-            String[] finishDateParts = finishDate.split("/");
-
             try {
-                // Crear el objeto BasicDate para la fecha de inicio
-                BasicDate startBasicDate = new BasicDate(
-                        Integer.parseInt(startDateParts[0]), // día
-                        Integer.parseInt(startDateParts[1]), // mes
-                        Integer.parseInt(startDateParts[2]) // año
-                );
+                // Crear el objeto BasicDate
+                BasicDate startBasicDate = parseBasicDate(startDate);                
+                BasicDate finishBasicDate = parseBasicDate(finishDate);
 
-                // Crear el objeto BasicDate para la fecha de fin
-                BasicDate finishBasicDate = new BasicDate(
-                        Integer.parseInt(finishDateParts[0]),
-                        Integer.parseInt(finishDateParts[1]),
-                        Integer.parseInt(finishDateParts[2])
-                );
 
                 // Crear un nuevo objeto Conference con las fechas formateadas
-                Conference newConference = new Conference(
+                ConferenceDTO newConference = new ConferenceDTO(
                         name, description, startBasicDate, finishBasicDate, place, theme,
                         this.conference.getId(), idOrganizer
                 );
-
+                String response = serviceConferences.updateConference(authToken, conference.getId(), newConference);
                 // Editar la conferencia
-                //if (serviceConferences.updateConference(MapperConference.conferenceToDTO(newConference, null), conference.getIdConference()) == null) {
-                //    throw new Exception("No se pudo actualizar");
-                //}
+                if (response == null || response.isEmpty()) {
+                    throw new Exception("No se pudo actualizar");
+                }
 
                 if (refreshCallback != null) {
                     refreshCallback.run();  // Ejecutamos el método de refresco
@@ -483,8 +447,6 @@ public class VUpdateConference extends javax.swing.JFrame {
 
     private void fillFields() {
         jTextFieldName.setText(conference.getName());
-        jTextFieldStartDate.setText( conference.getStartDate().toString() );
-        jTextFieldFinishDate.setText( conference.getFinishDate().toString() );
         jTextFieldPlace.setText(conference.getPlace());
         jTextFieldTheme.setText(conference.getTopic());
         jTextFieldDescription.setText(conference.getDescription());
@@ -506,22 +468,6 @@ public class VUpdateConference extends javax.swing.JFrame {
         Utilities.resetFieldFocusLost(jTextFieldPlace, "Lugar de la conferencia", Color.gray, Color.black);
     }//GEN-LAST:event_jTextFieldPlaceFocusLost
 
-    private void jTextFieldStartDateMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextFieldStartDateMousePressed
-        Utilities.resetFieldOnPress(jTextFieldStartDate, "00/00/0000", Color.gray, Color.black);
-    }//GEN-LAST:event_jTextFieldStartDateMousePressed
-
-    private void jTextFieldStartDateFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextFieldStartDateFocusLost
-        Utilities.resetFieldFocusLost(jTextFieldStartDate, "00/00/0000", Color.gray, Color.black);
-    }//GEN-LAST:event_jTextFieldStartDateFocusLost
-
-    private void jTextFieldFinishDateMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextFieldFinishDateMousePressed
-        Utilities.resetFieldOnPress(jTextFieldFinishDate, "00/00/0000", Color.gray, Color.black);
-    }//GEN-LAST:event_jTextFieldFinishDateMousePressed
-
-    private void jTextFieldFinishDateFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextFieldFinishDateFocusLost
-        Utilities.resetFieldFocusLost(jTextFieldFinishDate, "00/00/0000", Color.gray, Color.black);
-    }//GEN-LAST:event_jTextFieldFinishDateFocusLost
-
     private void jTextFieldDescriptionMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextFieldDescriptionMousePressed
         Utilities.resetFieldOnPress(jTextFieldDescription, "Descripción de la conferencia", Color.gray, Color.black);
     }//GEN-LAST:event_jTextFieldDescriptionMousePressed
@@ -539,15 +485,46 @@ public class VUpdateConference extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextFieldThemeFocusLost
 
     private void jLabelConferencesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelConferencesMouseClicked
-        if (profileOrganizer == null || !profileOrganizer.isDisplayable()) {
-            //profileOrganizer = new VProfileOrganizer(serviceConferences, idOrganizer, serviceUser);
+        try {
+            ViewManager viewManager = ViewManager.getInstance();
 
-            profileOrganizer.setVisible(true);
-        } else {
-            profileOrganizer.toFront();
-            profileOrganizer.repaint();
+            // Verifica si la vista de conferencias ya está abierta
+            if (!viewManager.isViewOpen("conferences")) {
+                VConferences conferencesView = new VConferences(serviceFactory, idOrganizer, refreshCallback, authToken);
+                viewManager.registerView("conferences", conferencesView);
+                conferencesView.setVisible(true);
+            } else {
+                // Lleva la ventana al frente si ya está abierta
+                JFrame conferencesView = viewManager.getView("conferences");
+                conferencesView.toFront();
+                conferencesView.repaint();
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error al abrir la vista de conferencias: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
     }//GEN-LAST:event_jLabelConferencesMouseClicked
+
+    private void jLabelProfileMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelProfileMouseClicked
+        try {
+            ViewManager viewManager = ViewManager.getInstance();
+
+            // Verifica si la vista de perfil ya está abierta
+            if (!viewManager.isViewOpen("profileorg")) {
+                VProfileOrganizer profileView = new VProfileOrganizer(serviceFactory, idOrganizer, authToken);
+                viewManager.registerView("profileorg", profileView);
+                profileView.setVisible(true);
+            } else {
+                // Lleva la ventana al frente si ya está abierta
+                JFrame profileView = viewManager.getView("profileorg");
+                profileView.toFront();
+                profileView.repaint();
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error al abrir la vista de perfil: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_jLabelProfileMouseClicked
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -570,10 +547,10 @@ public class VUpdateConference extends javax.swing.JFrame {
     private javax.swing.JPanel jPanelHeader;
     private javax.swing.JPanel jPanelMinimize;
     private javax.swing.JTextField jTextFieldDescription;
-    private javax.swing.JTextField jTextFieldFinishDate;
+    private com.toedter.calendar.JDateChooser jTextFieldFinishDate;
     private javax.swing.JTextField jTextFieldName;
     private javax.swing.JTextField jTextFieldPlace;
-    private javax.swing.JTextField jTextFieldStartDate;
+    private com.toedter.calendar.JDateChooser jTextFieldStartDate;
     private javax.swing.JTextField jTextFieldTheme;
     // End of variables declaration//GEN-END:variables
 }

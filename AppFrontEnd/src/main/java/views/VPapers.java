@@ -2,39 +2,39 @@ package views;
 
 import services.ServiceArticle;
 import services.ServiceConference;
+import static utilities.Utilities.parseBasicDate;
 
 import java.awt.Color;
+import java.util.Date;
 import javax.swing.JOptionPane;
+import models.ArticleDTO;
 import models.Conference;
 import models.BasicDate;
+import serviceFactory.ServiceFactory;
 import utilities.Utilities;
 
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
-
-/**
- *
- * @author Isabela Mosquera Fernanandez <isabelamosquera@unicauca.edu.co>
- */
 public class VPapers extends javax.swing.JFrame {
-    private String idAuthor;
-    private ServiceConference serviceConferences;
-    private ServiceArticle serviceArticle;
-    private Conference conference;
+    private final String idAuthor;
+    private final ServiceFactory serviceFactory;
+    private final ServiceConference serviceConferences;
+    private final ServiceArticle serviceArticle;
+    private final Conference conference;
+    private final String authToken;
     /**
      * Creates new form VLogin
+     * @param serviceFactory
+     * @param conferenceIN
+     * @param idAuthor
+     * @param token
      */
-    public VPapers(ServiceConference service, ServiceArticle serviceArticle, Conference conferenceIN, String idAuthor) {
-        this.serviceConferences=service;
-        this.serviceArticle=serviceArticle;
-        this.idAuthor=idAuthor;
-        this.serviceArticle = serviceArticle;
-        this.conference= conferenceIN;
-
+    public VPapers(ServiceFactory serviceFactory, Conference conferenceIN, String idAuthor, String token) {
+        this.serviceFactory = ServiceFactory.getInstance();
+        this.serviceConferences = serviceFactory.getServiceConference();
+        this.serviceArticle = serviceFactory.getServiceArticle();
+        this.idAuthor = idAuthor;
+        this.authToken = token;
+        this.conference = conferenceIN;
         initComponents();
-
         jLabelShownName.setText(conference.getName());
     }
 
@@ -58,13 +58,13 @@ public class VPapers extends javax.swing.JFrame {
         jLabelNameArt1 = new javax.swing.JLabel();
         jTextFieldResumen = new javax.swing.JTextField();
         jLabelKeyWords = new javax.swing.JLabel();
-        jTextFieldDate = new javax.swing.JTextField();
         jLabelDate = new javax.swing.JLabel();
         jTextFieldKeyWords = new javax.swing.JTextField();
         jLabelResumen = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
         jTextFieldAutors = new javax.swing.JTextField();
         jTextFieldUpArchive = new javax.swing.JTextField();
+        jTextFieldDate = new com.toedter.calendar.JDateChooser();
         jPanelHeader = new javax.swing.JPanel();
         jPanelExit = new javax.swing.JPanel();
         jLabelExit = new javax.swing.JLabel();
@@ -148,15 +148,6 @@ public class VPapers extends javax.swing.JFrame {
         jLabelKeyWords.setForeground(new java.awt.Color(1, 143, 166));
         jLabelKeyWords.setText("PALABRAS CLAVE");
 
-        jTextFieldDate.setBackground(new java.awt.Color(255, 255, 255));
-        jTextFieldDate.setFont(new java.awt.Font("Montserrat", 0, 12)); // NOI18N
-        jTextFieldDate.setForeground(new java.awt.Color(153, 153, 153));
-        jTextFieldDate.setText("00/00/00");
-        jTextFieldDate.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        jTextFieldDate.setMaximumSize(new java.awt.Dimension(270, 30));
-        jTextFieldDate.setMinimumSize(new java.awt.Dimension(270, 30));
-        jTextFieldDate.setPreferredSize(new java.awt.Dimension(270, 30));
-
         jLabelDate.setFont(new java.awt.Font("Montserrat", 0, 14)); // NOI18N
         jLabelDate.setForeground(new java.awt.Color(1, 143, 166));
         jLabelDate.setText("FECHA DE PUBLICACION");
@@ -205,6 +196,10 @@ public class VPapers extends javax.swing.JFrame {
         jTextFieldUpArchive.setText("SUBIR ARCHIVO");
         jTextFieldUpArchive.setToolTipText("");
 
+        jTextFieldDate.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        jTextFieldDate.setDateFormatString("dd-MM-yyyy");
+        jTextFieldDate.setMaxSelectableDate(new Date(new Date().getTime() - 24L * 60 * 60 * 1000));
+
         javax.swing.GroupLayout jBackgroundLayout = new javax.swing.GroupLayout(jBackground);
         jBackground.setLayout(jBackgroundLayout);
         jBackgroundLayout.setHorizontalGroup(
@@ -233,7 +228,7 @@ public class VPapers extends javax.swing.JFrame {
                                         .addComponent(jLabelResumen, javax.swing.GroupLayout.Alignment.LEADING)
                                         .addComponent(jLabelDate, javax.swing.GroupLayout.Alignment.LEADING)
                                         .addComponent(jTextFieldResumen, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(jTextFieldDate, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                                        .addComponent(jTextFieldDate, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                             .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap(31, Short.MAX_VALUE))
         );
@@ -249,9 +244,9 @@ public class VPapers extends javax.swing.JFrame {
                     .addComponent(jLabelNameArt1)
                     .addComponent(jLabelDate))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jBackgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextFieldDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextFieldName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jBackgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jTextFieldName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jTextFieldDate, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jBackgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabelAutors)
@@ -455,7 +450,7 @@ public class VPapers extends javax.swing.JFrame {
             String name = jTextFieldName.getText();
             String authors = jTextFieldAutors.getText();
             String keyWords = jTextFieldKeyWords.getText();
-            String dateWrite = jTextFieldDate.getText();
+            Date dateWrite = jTextFieldDate.getDate();
             String resumen = jTextFieldResumen.getText();
             String archive = jTextFieldUpArchive.getText();
 
@@ -465,21 +460,15 @@ public class VPapers extends javax.swing.JFrame {
                 return;
             }
 
-            String[] dateParts = dateWrite.split("/");
-
             try {
                 // Crear el objeto BasicDate
-                BasicDate date = new BasicDate(
-                        Integer.parseInt(dateParts[0]), // día
-                        Integer.parseInt(dateParts[1]), // mes
-                        Integer.parseInt(dateParts[2]) // año
-                );
+                BasicDate date = parseBasicDate(dateWrite);
 
                 // Crear un nuevo objeto Article con la fecha formateada
-                //Article newArticle = new Article(name, idAuthor, conference.getIdConference(), keyWords, date);
+                ArticleDTO newArticle = new ArticleDTO(name, idAuthor, keyWords, date, conference.getId());
 
                 // Registrar el artículo
-                //serviceArticle.addArticleToConference(conference.getIdConference(), newArticle);
+                serviceArticle.createArticle(authToken, newArticle);
 
                 // Mostrar mensaje de éxito
                 JOptionPane.showMessageDialog(this, "Artículo enviado con éxito", "Éxito", JOptionPane.INFORMATION_MESSAGE);
@@ -518,7 +507,7 @@ public class VPapers extends javax.swing.JFrame {
     private javax.swing.JPanel jPanelHeader;
     private javax.swing.JPanel jPanelMinimize;
     private javax.swing.JTextField jTextFieldAutors;
-    private javax.swing.JTextField jTextFieldDate;
+    private com.toedter.calendar.JDateChooser jTextFieldDate;
     private javax.swing.JTextField jTextFieldKeyWords;
     private javax.swing.JTextField jTextFieldName;
     private javax.swing.JTextField jTextFieldResumen;

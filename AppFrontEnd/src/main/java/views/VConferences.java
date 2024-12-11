@@ -10,41 +10,45 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
+import mapper.Mapper;
+import serviceFactory.ServiceFactory;
 import services.ServiceArticle;
 import services.ServiceConference;
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
-/**
- *
- * @author Isabela Sánchez Saavedra <isanchez@unicauca.edu.co>
- */
+import utilities.ViewManager;
+
 public class VConferences extends javax.swing.JFrame{
     private ServiceConference service;
-    private ServiceArticle serviceArticle;
-    private ListConferencesDTO conferenceList;
-    private Runnable refreshCallback; 
-    private String idAuthor;
+    private final ServiceArticle serviceArticle;
+    private ServiceFactory serviceFactory;
+    private final ListConferencesDTO conferenceList;
+    private final Runnable refreshCallback; 
+    private final String idAuthor;
+    private final String authToken;
 
     /**
      * Creates new form VLogin
      */
-    public VConferences(ServiceConference service, ServiceArticle serviceArticle, String idAuthor, Runnable refreshCallback) {
-        this.service = service;
-        this.serviceArticle=serviceArticle;
-        this.idAuthor=idAuthor;
+    public VConferences(ServiceFactory serviceFactory, String idAuthor, Runnable refreshCallback, String token) throws Exception {
+        this.serviceFactory = ServiceFactory.getInstance();
+        this.service = serviceFactory.getServiceConference();
+        this.serviceArticle = serviceFactory.getServiceArticle();
+        this.idAuthor = idAuthor;
         this.refreshCallback = refreshCallback;
+        this.authToken = token;
         initComponents();
-        //ListConferencesDTO conferences = service.listConferences();
-        //this.conferenceList = conferences;
-        //loadConferences(conferences);
+        ListConferencesDTO conferences = service.getAllConferences(authToken);
+        this.conferenceList = conferences;
+        loadConferences(conferences);
     }
 
     /**
@@ -188,9 +192,15 @@ public class VConferences extends javax.swing.JFrame{
         jLabelProfile.setMinimumSize(new java.awt.Dimension(60, 18));
         jLabelProfile.setName(""); // NOI18N
         jLabelProfile.setPreferredSize(new java.awt.Dimension(60, 18));
+        jLabelProfile.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabelProfileMouseClicked(evt);
+            }
+        });
         jPanelHeader.add(jLabelProfile, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 0, -1, 60));
 
         jLabelConferences.setFont(new java.awt.Font("Montserrat", 1, 14)); // NOI18N
+        jLabelConferences.setForeground(new java.awt.Color(193, 255, 114));
         jLabelConferences.setText("Conferencias");
         jLabelConferences.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jPanelHeader.add(jLabelConferences, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 0, -1, 60));
@@ -340,11 +350,32 @@ public class VConferences extends javax.swing.JFrame{
         refreshConferences();
     }//GEN-LAST:event_jButtonRefreshMouseClicked
 
+    private void jLabelProfileMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelProfileMouseClicked
+        try {
+            ViewManager viewManager = ViewManager.getInstance();
+
+            // Verifica si la vista de perfil ya está abierta
+            if (!viewManager.isViewOpen("profile")) {
+                VProfile profileView = new VProfile(serviceFactory, idAuthor, authToken);
+                viewManager.registerView("profile", profileView);
+                profileView.setVisible(true);
+            } else {
+                // Lleva la ventana al frente si ya está abierta
+                JFrame profileView = viewManager.getView("profile");
+                profileView.toFront();
+                profileView.repaint();
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error al abrir la vista de perfil: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_jLabelProfileMouseClicked
+
     public void loadConferences(ListConferencesDTO conferencesDTO) {
         List<ConferenceDTO> conferencesDTOList = conferencesDTO.getConferences();
         List<Conference> conferences = new ArrayList<>();
         for (ConferenceDTO conferencesdto: conferencesDTOList){
-            //conferences.add(MapperConference.DTOToConference(conferencesdto));
+            conferences.add(Mapper.DTOToConference(conferencesdto));
         }
 
         if (conferences.isEmpty()) {
@@ -374,7 +405,8 @@ public class VConferences extends javax.swing.JFrame{
             jTableConferences.setModel(model);
 
             jTableConferences.getColumnModel().getColumn(2).setCellRenderer(new ButtonRenderer());
-            jTableConferences.getColumnModel().getColumn(2).setCellEditor(new ButtonEditor(new JCheckBox(), conferences, service, this::refreshConferences));
+            jTableConferences.getColumnModel().getColumn(2).setCellEditor(new ButtonEditor(new JCheckBox(), conferences, serviceFactory, this::refreshConferences));
+
 
             jTableConferences.getColumnModel().getColumn(0).setPreferredWidth(200);
             jTableConferences.getColumnModel().getColumn(1).setPreferredWidth(100);
@@ -385,16 +417,24 @@ public class VConferences extends javax.swing.JFrame{
     }
 
     private void refreshConferences() {
-        //ListConferencesDTO updatedConferences = service.listConferences();
-        //loadConferences(updatedConferences);
+        try {
+            ListConferencesDTO updatedConferences = service.getAllConferences(authToken);
+            loadConferences(updatedConferences);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error al actualizar las conferencias: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
-
 
     public void update(Object o) {
-        //service = (ServiceConference)o;
-        //loadConferences(service.listConferences());
+        try {
+            service = (ServiceConference) o;
+            loadConferences(service.getAllConferences(authToken));
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error al actualizar las conferencias: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
-    
+
+
     
 // Clase para renderizar un botón en la celda
     class ButtonRenderer extends JButton implements TableCellRenderer {
@@ -412,68 +452,70 @@ public class VConferences extends javax.swing.JFrame{
 
 // Clase para manejar la edición de la celda con el botón
     class ButtonEditor extends DefaultCellEditor {
+    private JButton button;
+    private String label;
+    private boolean isPushed;
+    private List<Conference> conferences;
+    private ServiceFactory serviceFactory; // Añadir el ServiceFactory
+    private Runnable refreshCallback; 
 
-        private JButton button;
-        private String label;
-        private boolean isPushed;
-        private List<Conference> conferences;
-        private ServiceConference service;  // Añadir el servicio como atributo
-        private Runnable refreshCallback; 
-
-        public ButtonEditor(JCheckBox checkBox, List<Conference> conferences, ServiceConference service, Runnable refreshCallback) {
-            super(checkBox);
-            this.conferences = conferences;
-            this.service = service;  // Inicializar el servicio
-            this.refreshCallback = refreshCallback;  // Guardar el callback
-            button = new JButton();
-            button.setOpaque(true);
-            button.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    fireEditingStopped();
-                }
-            });
-        }
-
-        @Override
-        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-            label = (value == null) ? "" : value.toString();
-            button.setText(label);
-            isPushed = true;
-            return button;
-        }
-
-        @Override
-        public Object getCellEditorValue() {
-            if (isPushed) {
-                // Obtener la conferencia seleccionada
-                Conference selectedConference = conferences.get(jTableConferences.getSelectedRow());
-
-                // Obtener el id de la conferencia seleccionada
-                //String idConference = selectedConference.getIdConference();
-                   
-                for(Conference conference: conferences){
-                    //if(conference.getIdConference().equals(idConference)){
-                    //    VConferenceInfo infoWindow = new VConferenceInfo(service,serviceArticle, conference, idAuthor);
-                     //   infoWindow.setVisible(true);  // Mostrar la ventana con la información de la conferencia
-                    //}
-                }
-                // Abrir la ventana VConferenceInfo con el service y el idConference
+    public ButtonEditor(JCheckBox checkBox, List<Conference> conferences, ServiceFactory serviceFactory, Runnable refreshCallback) {
+        super(checkBox);
+        this.conferences = conferences;
+        this.serviceFactory = ServiceFactory.getInstance(); // Inicializar el ServiceFactory
+        this.refreshCallback = refreshCallback; // Guardar el callback
+        button = new JButton();
+        button.setOpaque(true);
+        button.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                fireEditingStopped();
             }
-            isPushed = false;
-            return label;
-        }
-
-        @Override
-        public boolean stopCellEditing() {
-            isPushed = false;
-            return super.stopCellEditing();
-        }
-
-        @Override
-        protected void fireEditingStopped() {
-            super.fireEditingStopped();
-        }
+        });
     }
+
+    @Override
+    public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+        label = (value == null) ? "" : value.toString();
+        button.setText(label);
+        isPushed = true;
+        return button;
+    }
+
+    @Override
+    public Object getCellEditorValue() {
+        if (isPushed) {
+            // Obtener la conferencia seleccionada
+            Conference selectedConference = conferences.get(jTableConferences.getSelectedRow());
+
+            try {
+                // Abrir la ventana VConferenceInfo con el ServiceFactory y la información de la conferencia
+                VConferenceInfo infoWindow = new VConferenceInfo(
+                    serviceFactory,
+                    selectedConference.getId(),
+                    idAuthor,
+                    authToken
+                );
+                infoWindow.setVisible(true); // Mostrar la ventana
+            } catch (Exception ex) {
+                Logger.getLogger(VConferences.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        isPushed = false;
+        return label;
+    }
+
+    @Override
+    public boolean stopCellEditing() {
+        isPushed = false;
+        return super.stopCellEditing();
+    }
+
+    @Override
+    protected void fireEditingStopped() {
+        super.fireEditingStopped();
+    }
+}
+
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
