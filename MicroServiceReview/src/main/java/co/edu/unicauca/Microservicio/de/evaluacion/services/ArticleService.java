@@ -48,9 +48,6 @@ public class ArticleService implements IArticleService {
             todosDisponibles = validateEvaluator(evaluadoresDisponibles, evaluadoresSeleccionados.get(i)) ;
         }
 
-
-
-
         if (!todosDisponibles) {
             throw new IllegalArgumentException("Algunos evaluadores seleccionados no están disponibles.");
         }

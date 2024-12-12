@@ -16,7 +16,7 @@ import co.edu.unicauca.Microservicio.de.evaluacion.services.IEvaluatorService;
 
 @RestController 
 @Component  
-@RequestMapping("/evaluator") 
+@RequestMapping("/review/evaluator")
 public class EvaluatorController { 
     @Autowired 
     IEvaluatorService evaluatorService; 
