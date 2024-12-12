@@ -318,7 +318,8 @@ public class VProfile extends javax.swing.JFrame {
     }//GEN-LAST:event_jPanelHeaderMouseDragged
 
     private void jLabelExitMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelExitMouseClicked
-        Utilities.exitApp();
+        ViewManager viewManager = ViewManager.getInstance();
+        viewManager.closeView("profile");
     }//GEN-LAST:event_jLabelExitMouseClicked
 
     private void jLabelExitMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelExitMouseEntered

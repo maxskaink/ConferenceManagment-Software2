@@ -18,14 +18,14 @@ public class ServiceConference {
     public ServiceConference() {
         this.httpClient = HttpClient.newHttpClient();
     }
-
+   
     // Listar todas las conferencias
     public ListConferencesDTO getAllConferences(String token) throws Exception {
         HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create(BASE_URL))
-            .header("Authorization", "Bearer " + token)
-            .GET()
-            .build();
+                .uri(URI.create(BASE_URL))
+                .header("Authorization", "Bearer " + token)
+                .GET()
+                .build();
 
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         if (response.statusCode() == 200) {
@@ -35,6 +35,7 @@ public class ServiceConference {
             throw new RuntimeException("Failed to fetch conferences: " + response.body());
         }
     }
+
 
     // Listar conferencias de un organizador
     public ListConferencesOrganizerDTO getConferencesByOrganizer(String token, String idOrganizer) throws Exception {
@@ -47,9 +48,10 @@ public class ServiceConference {
 
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         if (response.statusCode() == 200) {
-            return Mapper.jsonToListConferencesOrganizerDTO(response.body());
+            ListConferencesOrganizerDTO list = Mapper.jsonToListConferencesOrganizerDTO(response.body());
+            return list;
         } else {
-            return null;
+            throw new RuntimeException("Failed to fetch conferences by organizer: " + response.body());
         }
     }
 
@@ -74,8 +76,6 @@ public class ServiceConference {
             throw new RuntimeException("Failed to create conference: " + response.body());
         }
     }
-
-
 
     // Actualizar una conferencia
     public String updateConference(String token, String idConference, ConferenceDTO conference) throws Exception {
@@ -124,6 +124,4 @@ public class ServiceConference {
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("No se encontró la conferencia con ID: " + idConference));
     }
-
-
 }

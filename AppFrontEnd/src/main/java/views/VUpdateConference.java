@@ -450,6 +450,8 @@ public class VUpdateConference extends javax.swing.JFrame {
         jTextFieldPlace.setText(conference.getPlace());
         jTextFieldTheme.setText(conference.getTopic());
         jTextFieldDescription.setText(conference.getDescription());
+        jTextFieldStartDate.setDate(Utilities.toDate(conference.getStartDate()));        
+        jTextFieldFinishDate.setDate(Utilities.toDate(conference.getFinishDate()));
     }
 
     private void jTextFieldNameMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextFieldNameMousePressed

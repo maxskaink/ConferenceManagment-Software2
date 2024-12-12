@@ -353,7 +353,6 @@ public class VConferences extends javax.swing.JFrame{
     private void jLabelProfileMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelProfileMouseClicked
         try {
             ViewManager viewManager = ViewManager.getInstance();
-
             // Verifica si la vista de perfil ya está abierta
             if (!viewManager.isViewOpen("profile")) {
                 VProfile profileView = new VProfile(serviceFactory, idAuthor, authToken);
@@ -424,16 +423,6 @@ public class VConferences extends javax.swing.JFrame{
             JOptionPane.showMessageDialog(this, "Error al actualizar las conferencias: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-
-    public void update(Object o) {
-        try {
-            service = (ServiceConference) o;
-            loadConferences(service.getAllConferences(authToken));
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error al actualizar las conferencias: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
 
     
 // Clase para renderizar un botón en la celda
@@ -514,6 +503,7 @@ public class VConferences extends javax.swing.JFrame{
     protected void fireEditingStopped() {
         super.fireEditingStopped();
     }
+    
 }
 
 

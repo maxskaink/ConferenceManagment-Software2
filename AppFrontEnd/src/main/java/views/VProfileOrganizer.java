@@ -44,7 +44,7 @@ public class VProfileOrganizer extends javax.swing.JFrame{
             this.conferencesByOrganizer = serviceConferences.getConferencesByOrganizer(authToken, this.idOrganizer);
             loadConferences(conferencesByOrganizer);
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error al cargar las conferencias: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            System.out.println("No tiene conferencias.");
         }
     }
 
@@ -523,17 +523,6 @@ public class VProfileOrganizer extends javax.swing.JFrame{
         }
     }
 
-    public void update(Object o) {
-        this.serviceConferences = (ServiceConference) o;
-        try {
-            loadConferences(serviceConferences.getConferencesByOrganizer(authToken, idOrganizer));
-        } catch (Exception ex) {
-            Logger.getLogger(VProfileOrganizer.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-    }
-
-    
     // Clase para renderizar un botón en la celda
     class ButtonRenderer extends JButton implements TableCellRenderer {
 
@@ -595,8 +584,8 @@ public class VProfileOrganizer extends javax.swing.JFrame{
             if (isPushed) {
                 // Obtener la conferencia seleccionada
                 Conference selectedConference = conferences.get(jTableConferences.getSelectedRow());
-
                 if (action.equals("editar")) {
+                    
                     VUpdateConference updateWindow = new VUpdateConference(serviceFactory, idOrganizer, selectedConference, authToken, refreshCallback);
                     updateWindow.setVisible(true);  // Mostrar la ventana para editar
                 } else if (action.equals("borrar")) {
@@ -635,7 +624,7 @@ public class VProfileOrganizer extends javax.swing.JFrame{
             super.fireEditingStopped();
         }
     }
-
+    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonRegister;
