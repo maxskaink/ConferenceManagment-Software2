@@ -18,18 +18,20 @@ import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
+import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import mapper.Mapper;
 import serviceFactory.ServiceFactory;
+import serviceObserver.Observer;
 import services.ServiceArticle;
 import services.ServiceConference;
 import utilities.ViewManager;
 
-public class VConferences extends javax.swing.JFrame{
-    private ServiceConference service;
+public class VConferences extends javax.swing.JFrame implements Observer{
+    private final ServiceConference service;
     private final ServiceArticle serviceArticle;
-    private ServiceFactory serviceFactory;
+    private final ServiceFactory serviceFactory;
     private final ListConferencesDTO conferenceList;
     private final Runnable refreshCallback; 
     private final String idAuthor;
@@ -319,6 +321,7 @@ public class VConferences extends javax.swing.JFrame{
     }//GEN-LAST:event_jPanelHeaderMouseDragged
 
     private void jLabelExitMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelExitMouseClicked
+        service.getSubject().removeObserver(this);
         Utilities.exitApp();
     }//GEN-LAST:event_jLabelExitMouseClicked
 
@@ -424,6 +427,23 @@ public class VConferences extends javax.swing.JFrame{
         }
     }
 
+    @Override
+    public void update(Object arg) {
+        SwingUtilities.invokeLater(() -> {
+            if (arg == null) {
+                System.out.println("El argumento es null.");
+            } else {
+                System.out.println("Tipo de argumento recibido: " + arg.getClass().getName());
+            }
+
+            if (arg instanceof ListConferencesDTO) {
+                System.out.println("Entra en el if");
+                ListConferencesDTO updatedList = (ListConferencesDTO) arg;
+                loadConferences(updatedList);
+            }
+        });
+    }
+
     
 // Clase para renderizar un botón en la celda
     class ButtonRenderer extends JButton implements TableCellRenderer {
@@ -503,7 +523,6 @@ public class VConferences extends javax.swing.JFrame{
     protected void fireEditingStopped() {
         super.fireEditingStopped();
     }
-    
 }
 
 
