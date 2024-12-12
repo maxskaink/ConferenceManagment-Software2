@@ -22,7 +22,8 @@ public class ArticleRepository implements  IArticleRepository{
     public ArticleRepository() {
         articles = new ArrayList<Article>();
         articles.add(new Article("1000", "Juan", "100002", "allg", new ArrayList<>()));
-    }
+        articles.add(new Article("1001", "Camilo", "100003", "allg", new ArrayList<>()));
+    }   
 
     @Override
     public Article save(Article article) {

@@ -100,6 +100,8 @@ public class VConferenceOrganizer extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTableArticles = new javax.swing.JTable();
         jPanelBackground = new javax.swing.JPanel();
         jPanelHeader = new javax.swing.JPanel();
         jPanelExit = new javax.swing.JPanel();
@@ -110,14 +112,24 @@ public class VConferenceOrganizer extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabelShownName = new javax.swing.JLabel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jTableArticles = new javax.swing.JTable();
         jTextField1 = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTableNoArticles = new javax.swing.JTable();
-        jButton2 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
+
+        jTableArticles.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null}
+            },
+            new String [] {
+                "Autores", "Nombre del articulo", "Calificación"
+            }
+        ));
+        jScrollPane1.setViewportView(jTableArticles);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setLocationByPlatform(true);
@@ -211,7 +223,6 @@ public class VConferenceOrganizer extends javax.swing.JFrame {
 
         jLabelLogo.setFont(new java.awt.Font("Montserrat", 1, 18)); // NOI18N
         jLabelLogo.setForeground(new java.awt.Color(193, 255, 114));
-        jLabelLogo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/triangle32.png"))); // NOI18N
         jLabelLogo.setText("meeting");
 
         javax.swing.GroupLayout jPanelHeaderLayout = new javax.swing.GroupLayout(jPanelHeader);
@@ -273,21 +284,6 @@ public class VConferenceOrganizer extends javax.swing.JFrame {
 
         jPanelBackground.add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 80, 520, 70));
 
-        jTableArticles.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null}
-            },
-            new String [] {
-                "Autores", "Nombre del articulo", "Calificación"
-            }
-        ));
-        jScrollPane1.setViewportView(jTableArticles);
-
-        jPanelBackground.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 220, 680, 270));
-
         jTextField1.setBackground(new java.awt.Color(255, 255, 255));
         jTextField1.setText("Ingrese el nombre del articulo que desea buscar");
         jPanelBackground.add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 180, 510, 30));
@@ -295,7 +291,7 @@ public class VConferenceOrganizer extends javax.swing.JFrame {
         jButton1.setBackground(new java.awt.Color(94, 23, 235));
         jButton1.setFont(new java.awt.Font("Montserrat", 1, 14)); // NOI18N
         jButton1.setText("Info del Paper");
-        jPanelBackground.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 70, 170, 30));
+        jPanelBackground.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 100, 170, 30));
 
         jTableNoArticles.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -310,12 +306,7 @@ public class VConferenceOrganizer extends javax.swing.JFrame {
         ));
         jScrollPane2.setViewportView(jTableNoArticles);
 
-        jPanelBackground.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 220, 680, 270));
-
-        jButton2.setBackground(new java.awt.Color(94, 23, 235));
-        jButton2.setFont(new java.awt.Font("Montserrat", 1, 14)); // NOI18N
-        jButton2.setText("Asignación");
-        jPanelBackground.add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 110, 170, 30));
+        jPanelBackground.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 220, 700, 270));
 
         jButton4.setBackground(new java.awt.Color(94, 23, 235));
         jButton4.setFont(new java.awt.Font("Montserrat", 1, 14)); // NOI18N
@@ -467,7 +458,6 @@ public class VConferenceOrganizer extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton4;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabelExit;

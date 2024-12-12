@@ -38,6 +38,7 @@ public class ArticleService implements IArticleService {
         }
         return false;
     }
+    @Override
     public Article asignarEvaluadores(String articuloId, List<Evaluator> evaluadoresSeleccionados) {
         // Obtener evaluadores disponibles
         List<Evaluator> evaluadoresDisponibles = evaluatorService.FindAvailable();
@@ -48,15 +49,14 @@ public class ArticleService implements IArticleService {
             todosDisponibles = validateEvaluator(evaluadoresDisponibles, evaluadoresSeleccionados.get(i)) ;
         }
 
-
-
-
         if (!todosDisponibles) {
+            System.out.println("Algunos evaluadores seleccionados no están disponibles.");
             throw new IllegalArgumentException("Algunos evaluadores seleccionados no están disponibles.");
         }
 
         // Validar número de evaluadores
         if (evaluadoresSeleccionados.size() < 2 || evaluadoresSeleccionados.size() > 5) {
+            System.out.println("El número de evaluadores debe estar entre 2 y 5.");
             throw new IllegalArgumentException("El número de evaluadores debe estar entre 2 y 5.");
         }
 

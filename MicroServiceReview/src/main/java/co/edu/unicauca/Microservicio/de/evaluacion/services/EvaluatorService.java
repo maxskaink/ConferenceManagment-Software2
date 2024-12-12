@@ -66,7 +66,4 @@ public class EvaluatorService implements IEvaluatorService {
             .filter(evaluador -> evaluador.getArticles() == null || evaluador.getArticles().size() < 3)
             .collect(Collectors.toList());
     }
-
  }
-
-
