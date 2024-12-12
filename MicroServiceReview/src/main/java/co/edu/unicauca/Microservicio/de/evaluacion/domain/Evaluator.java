@@ -3,22 +3,13 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package co.edu.unicauca.Microservicio.de.evaluacion.domain;
-import co.edu.unicauca.Microservicio.de.evaluacion.domain.Article;
 import java.util.List;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.Table;
 
-@Entity
-@Table(name = "Evaluadores")
+
 public class Evaluator {
-    @Id
     private String id;
     private String name;
     private String email;
-    @ManyToMany(cascade = CascadeType.ALL)
     private List<Article> articles;
     public Evaluator() {
         

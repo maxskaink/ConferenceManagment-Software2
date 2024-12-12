@@ -5,27 +5,18 @@
 package co.edu.unicauca.Microservicio.de.evaluacion.domain;
 
 import java.util.List;
-import jakarta.persistence.Id;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.Table;
 
 /**
  *
  * @author ismos
  */
 
-@Entity
-@Table(name = "Article")
 public class Article {
-     @Id
     private String id;
     private String name;
     private String idAuthor;
     private String keyWords;
-    
-    @ManyToMany(cascade = CascadeType.ALL)
+
     private List<Evaluator> Evaluadores;
    
    
