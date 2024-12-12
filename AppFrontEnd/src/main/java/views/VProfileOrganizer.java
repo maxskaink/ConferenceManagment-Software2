@@ -517,11 +517,26 @@ public class VProfileOrganizer extends javax.swing.JFrame{
         ListConferencesOrganizerDTO conferences;
         try {
             conferences = serviceConferences.getConferencesByOrganizer(authToken, idOrganizer);
-            loadConferences(conferences);
+
+            if (conferences == null || conferences.getConferences().isEmpty()) {
+                // Si no hay conferencias, mostrar el mensaje y ocultar la tabla
+                jPanelNoConferences.setVisible(true);
+                jScrollPaneConferences.setVisible(false);
+            } else {
+                // Si hay conferencias, actualizamos la tabla
+                loadConferences(conferences);
+            }
         } catch (Exception ex) {
             Logger.getLogger(VProfileOrganizer.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Error al actualizar las conferencias: " + ex.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
         }
     }
+
 
     // Clase para renderizar un botón en la celda
     class ButtonRenderer extends JButton implements TableCellRenderer {
@@ -581,32 +596,53 @@ public class VProfileOrganizer extends javax.swing.JFrame{
 
         @Override
         public Object getCellEditorValue() {
-            if (isPushed) {
-                // Obtener la conferencia seleccionada
-                Conference selectedConference = conferences.get(jTableConferences.getSelectedRow());
-                if (action.equals("editar")) {
-                    
-                    VUpdateConference updateWindow = new VUpdateConference(serviceFactory, idOrganizer, selectedConference, authToken, refreshCallback);
-                    updateWindow.setVisible(true);  // Mostrar la ventana para editar
-                } else if (action.equals("borrar")) {
-                    try {
+            int selectedRow = jTableConferences.getSelectedRow();
+            if (selectedRow == -1) {
+                JOptionPane.showMessageDialog(null, "Seleccione una fila válida.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                return null;
+            }
+
+            // Continuar con la lógica si el índice es válido
+            Conference selectedConference = conferences.get(selectedRow);
+
+            if (action.equals("editar")) {
+                VUpdateConference updateWindow = new VUpdateConference(serviceFactory, idOrganizer, selectedConference, authToken, refreshCallback);
+                updateWindow.setVisible(true);
+            } else if (action.equals("borrar")) {
+                try {
+                    // Mostrar un cuadro de diálogo de confirmación
+                    int confirm = JOptionPane.showConfirmDialog(
+                            null,
+                            "¿Estás seguro de que deseas eliminar la conferencia seleccionada?",
+                            "Confirmación",
+                            JOptionPane.YES_NO_OPTION
+                    );
+
+                    // Si el usuario confirma, proceder con la eliminación
+                    if (confirm == JOptionPane.YES_OPTION) {
                         serviceConferences.deleteConference(authToken, selectedConference.getId());
-                    } catch (Exception ex) {
-                        Logger.getLogger(VProfileOrganizer.class.getName()).log(Level.SEVERE, null, ex);
+                        JOptionPane.showMessageDialog(
+                                null,
+                                "Conferencia eliminada con éxito.",
+                                "Éxito",
+                                JOptionPane.INFORMATION_MESSAGE
+                        );
+
+                        // Refrescar la tabla después de borrar
+                        if (refreshCallback != null) {
+                            refreshCallback.run();
+                        }
                     }
-                    if (refreshCallback != null) {
-                        refreshCallback.run();
-                    }
-                } else if (action.equals("ver")) {
-                    // Lógica para ver más detalles
-                    String idConference = selectedConference.getId();
-                    VConferenceOrganizer infoWindow;
-                    try {
-                        infoWindow = new VConferenceOrganizer(serviceFactory, idConference, idOrganizer, authToken);
-                        infoWindow.setVisible(true);  // Mostrar la ventana con la información de la conferencia
-                    } catch (Exception ex) {
-                        Logger.getLogger(VProfileOrganizer.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+                } catch (Exception ex) {
+                    Logger.getLogger(VProfileOrganizer.class.getName()).log(Level.SEVERE, null, ex);
+                    JOptionPane.showMessageDialog(null, "Error al eliminar conferencia: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            } else if (action.equals("ver")) {
+                try {
+                    VConferenceOrganizer infoWindow = new VConferenceOrganizer(serviceFactory, selectedConference.getId(), idOrganizer, authToken);
+                    infoWindow.setVisible(true);
+                } catch (Exception ex) {
+                    Logger.getLogger(VProfileOrganizer.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
             isPushed = false;
