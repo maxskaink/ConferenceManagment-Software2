@@ -32,10 +32,23 @@ public class ArticleController {
 
     @PostMapping("/{articuloId}/asignar-evaluadores")
     public ResponseEntity<Article> asignarEvaluadores(@PathVariable String articuloId, @RequestBody List<Evaluator> evaluadores) {
+<<<<<<< HEAD
 
             Article article = articleService.asignarEvaluadores(articuloId, evaluadores);
             return ResponseEntity.ok(article);
 
+=======
+        try {
+            Article article = articleService.asignarEvaluadores(articuloId, evaluadores);
+            return ResponseEntity.ok(article);
+        } catch (IllegalArgumentException e) {
+            // Manejar errores específicos de validación
+            return ResponseEntity.badRequest().body(null);
+        } catch (RuntimeException e) {
+            // Manejar errores de no encontrado o internos
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+>>>>>>> 53ff72f0d68a5e22859cec4e914681ae5235c330
     }
 }
 

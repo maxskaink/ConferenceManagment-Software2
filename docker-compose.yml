@@ -7,48 +7,58 @@ services:
     container_name: rabbitmq
     networks:
       - app-network
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    container_name: keycloak
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      DB_VENDOR: h2
+      KC_HOSTNAME_ADMIN_URL: http://localhost:9090  # Para acceso externo
+      KC_HOSTNAME_URL: http://keycloak:8080       # Para tokens y validación externa
+      KC_PROXY: edge
+      KC_HOSTNAME_STRICT: false                    # Permitir accesos con diferentes hostnames
+    command: start-dev --hostname-strict=false
+    volumes:
+      - ./keycloak/keycloak-realm-config.json:/opt/keycloak/data/import/keycloak-realm-config.json
     ports:
-      - "5672:5672"
-      - "15672:15672"
-      
+      - "9090:8080"  # Exposición externa
+    networks:
+      - app-network
+
+
+  discovery-service:
+    build: ./discovery-service
+    container_name: discovery-service
+    ports:
+      - "8761:8761"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - app-network
+
+  gateway:
+    build: ./Gateway
+    container_name: gateway
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    ports:
+      - "8083:8083"
+    networks:
+      - app-network
+    depends_on:
+      - discovery-service
+
   conferencia-service:
     build: ./ConferenceMicroservice
     container_name: conferencia-service
-    ports:
-      - "8081:8081" # Ajusta el puerto según lo necesites
     environment:
       - SPRING_PROFILES_ACTIVE=docker
     networks:
       - app-network
     depends_on:
+      - discovery-service
       - rabbitmq
-
-  # review-service:
-  #   build: ./review-service
-  #   container_name: review-service
-  #   ports:
-  #     - "8082:8082"
-  #   environment:
-  #     - SPRING_PROFILES_ACTIVE=docker
-  #   networks:
-  #     - app-network
-  #   depends_on:
-  #     - keycloak
-
-  # keycloak:
-  #   image: quay.io/keycloak/keycloak:latest
-  #   container_name: keycloak
-  #   environment:
-  #     - KEYCLOAK_USER=admin
-  #     - KEYCLOAK_PASSWORD=admin
-  #     - DB_VENDOR=h2
-  #     - KEYCLOAK_IMPORT=/opt/keycloak/data/import/keycloak-realm-config.json # Importar configuración
-  #   volumes:
-  #     - ./keycloak/keycloak-realm-config.json:/opt/keycloak/data/import/keycloak-realm-config.json
-  #   ports:
-  #     - "8080:8080"
-  #   networks:
-  #     - app-network
 
 networks:
   app-network:

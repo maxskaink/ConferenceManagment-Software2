@@ -13,11 +13,14 @@ import java.util.List;
  * @author ismos
  */
 public interface IArticleService {
+<<<<<<< HEAD
     /**
      *
      * @param articuloId id of article
      * @param evaluadoresSeleccionados list of Evaluators
      * @return
      */
+=======
+>>>>>>> 53ff72f0d68a5e22859cec4e914681ae5235c330
     public Article asignarEvaluadores(String articuloId, List<Evaluator> evaluadoresSeleccionados); 
 }

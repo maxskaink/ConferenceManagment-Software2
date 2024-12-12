@@ -29,7 +29,7 @@ public class ArticleRepository implements IArticleRepository {
 
         for(ArticleEntity articleEntity : articles)
             if(articleEntity.getId().equals(article.getId()))
-                throw new DuplicateInformation("User with id" + article.getId() + " already exists");
+                throw new DuplicateInformation("User with id " + article.getId() + " already exists");
 
         this.articles.add( ArticleMapper.toArticleEntity(article) );
 

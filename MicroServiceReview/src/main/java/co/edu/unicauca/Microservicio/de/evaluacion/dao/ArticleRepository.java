@@ -7,15 +7,19 @@ package co.edu.unicauca.Microservicio.de.evaluacion.dao;
 import co.edu.unicauca.Microservicio.de.evaluacion.domain.Article;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+<<<<<<< HEAD
 
 import java.util.ArrayList;
 import java.util.List;
 
+=======
+>>>>>>> 53ff72f0d68a5e22859cec4e914681ae5235c330
 /**
  *
  * @author ismos
  */
 @Repository
+<<<<<<< HEAD
 public class ArticleRepository implements  IArticleRepository{
 
     private final List<Article> articles;
@@ -40,3 +44,7 @@ public class ArticleRepository implements  IArticleRepository{
         return null;
     }
 }
+=======
+public interface ArticleRepository extends JpaRepository<Article,String> {
+}
+>>>>>>> 53ff72f0d68a5e22859cec4e914681ae5235c330

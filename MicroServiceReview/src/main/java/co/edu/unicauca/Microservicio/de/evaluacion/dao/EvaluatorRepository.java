@@ -6,15 +6,19 @@ package co.edu.unicauca.Microservicio.de.evaluacion.dao;
 import org.springframework.stereotype.Repository;
 import co.edu.unicauca.Microservicio.de.evaluacion.domain.Evaluator;
 import org.springframework.data.jpa.repository.JpaRepository;
+<<<<<<< HEAD
 
 import java.util.ArrayList;
 import java.util.List;
 
+=======
+>>>>>>> 53ff72f0d68a5e22859cec4e914681ae5235c330
 /**
  *
  * @author ismos
  */
 @Repository 
+<<<<<<< HEAD
 public class EvaluatorRepository implements  IEvaluatorsRepository{
     private final List<Evaluator> evaluators;
     public EvaluatorRepository() {
@@ -77,3 +81,6 @@ public class EvaluatorRepository implements  IEvaluatorsRepository{
         return null; // Si no se encontró, devuelve null
     }
 }
+=======
+public interface EvaluatorRepository extends JpaRepository<Evaluator, String> {}
+>>>>>>> 53ff72f0d68a5e22859cec4e914681ae5235c330
