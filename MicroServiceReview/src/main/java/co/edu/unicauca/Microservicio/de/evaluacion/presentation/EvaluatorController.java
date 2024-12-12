@@ -30,7 +30,7 @@ public class EvaluatorController {
         return evaluatorService.FindAvailable();
     }
     @PostMapping
-    public ResponseEntity<Evaluator> createEvent(@RequestBody Evaluator evaluator) {
+    public ResponseEntity<Evaluator> createEvaluator(@RequestBody Evaluator evaluator) {
         Evaluator createEvaluator = evaluatorService.create(evaluator);
         return ResponseEntity.ok(createEvaluator);
     }
