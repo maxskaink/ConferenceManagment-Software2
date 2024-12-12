@@ -349,6 +349,7 @@ public class VProfile extends javax.swing.JFrame {
             VProfileOrganizer profileOrganizer;
             try {
                 profileOrganizer = new VProfileOrganizer(serviceFactory, idUser, authToken);
+                serviceConference.getSubject().addObserver(profileOrganizer);
                 profileOrganizer.setVisible(true);
             } catch (Exception ex) {
                 System.out.println("No hay conferencias");

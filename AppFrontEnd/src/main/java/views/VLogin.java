@@ -397,6 +397,7 @@ public class VLogin extends javax.swing.JFrame {
                 if (!viewManager.isViewOpen("conferences")) {
                     VConferences conferencesView = new VConferences(serviceFactory, userId, () -> {}, accessToken);
                     viewManager.registerView("conferences", conferencesView);
+                    serviceConference.getSubject().addObserver(conferencesView);
                     conferencesView.setVisible(true);
                 } else {
                     // Lleva la ventana al frente si ya está abierta
