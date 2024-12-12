@@ -68,4 +68,11 @@ public class Evaluator {
     public void setArticles(List<Article> articles) {
         this.articles = articles;
     }
+<<<<<<< HEAD
+    public Article addArticle(Article article) {
+        this.articles.add(article);
+        return article;
+    }
+=======
+>>>>>>> 53ff72f0d68a5e22859cec4e914681ae5235c330
 }

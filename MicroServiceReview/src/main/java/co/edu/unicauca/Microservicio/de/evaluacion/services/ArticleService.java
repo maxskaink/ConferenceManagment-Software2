@@ -3,6 +3,8 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package co.edu.unicauca.Microservicio.de.evaluacion.services;
+import ch.qos.logback.classic.boolex.IEvaluator;
+import co.edu.unicauca.Microservicio.de.evaluacion.dao.IArticleRepository;
 import co.edu.unicauca.Microservicio.de.evaluacion.domain.Article;
 import co.edu.unicauca.Microservicio.de.evaluacion.domain.Evaluator;
 import co.edu.unicauca.Microservicio.de.evaluacion.dao.ArticleRepository;
@@ -17,18 +19,37 @@ import org.springframework.stereotype.Service;
 @Service
 public class ArticleService implements IArticleService {
     @Autowired
-    private ArticleRepository ArticleDao;
+    private IArticleRepository ArticleDao;
+
     
     @Autowired
-    private EvaluatorService evaluatorService;
+    private IEvaluatorService evaluatorService;
 
+    /**
+     *
+     * @param evaluadoresDisponibles evaluators to repository
+     * @param evaluadoresSeleccionados evaluators to validate
+     * @return true = validate, false =  no validate
+     */
+    public boolean  validateEvaluator(List<Evaluator> evaluadoresDisponibles,  Evaluator evaluadoresSeleccionados){
+        for(int i = 0; i < evaluadoresDisponibles.size(); i++) {
+            if(evaluadoresDisponibles.get(i).getId().equals(evaluadoresSeleccionados.getId()))
+                return true;
+        }
+        return false;
+    }
     public Article asignarEvaluadores(String articuloId, List<Evaluator> evaluadoresSeleccionados) {
         // Obtener evaluadores disponibles
         List<Evaluator> evaluadoresDisponibles = evaluatorService.FindAvailable();
 
+        boolean todosDisponibles = false;
         // Validar que los evaluadores seleccionados estén disponibles
-        boolean todosDisponibles = evaluadoresSeleccionados.stream()
-            .allMatch(evaluadoresDisponibles::contains);
+        for(int i = 0 ; i < evaluadoresSeleccionados.size(); i++) {
+            todosDisponibles = validateEvaluator(evaluadoresDisponibles, evaluadoresSeleccionados.get(i)) ;
+        }
+
+
+
 
         if (!todosDisponibles) {
             throw new IllegalArgumentException("Algunos evaluadores seleccionados no están disponibles.");
@@ -40,19 +61,19 @@ public class ArticleService implements IArticleService {
         }
 
         // Obtener el artículo
-        Article articulo = ArticleDao.findById(articuloId)
-                .orElseThrow(() -> new RuntimeException("Artículo no encontrado"));
+        Article articulo = ArticleDao.findById(articuloId);
+
 
         // Asignar evaluadores al artículo
         articulo.setEvaluadores(evaluadoresSeleccionados);
 
         // Actualizar la lista de artículos de cada evaluador
-        for (Evaluator evaluador : evaluadoresSeleccionados) {
-            if (evaluador.getArticles() == null) {
-                evaluador.setArticles(new ArrayList<>());
-            }
-            evaluador.getArticles().add(articulo);
+        for (int i = 0; i < evaluadoresDisponibles.size(); i++) {
+            Evaluator evaluador = evaluadoresDisponibles.get(i);
+            evaluador.addArticle(articulo);
+            evaluatorService.update(evaluador.getId(), evaluador);
         }
+
 
         // Guardar el artículo
         return ArticleDao.save(articulo);

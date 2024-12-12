@@ -24,38 +24,38 @@ public class EvaluatorService implements IEvaluatorService {
     private EvaluatorRepository evaluatorRepository;
     
     public List<Evaluator> findAll() {
-        return evaluatorRepository.findAll();
+        return evaluatorRepository.getAllEvaluators();
     }
 
     public Evaluator findById (String id) {
-        Optional<Evaluator> evaluatorOptional = evaluatorRepository.findById(id);
-        return evaluatorOptional.orElse(null);
+        Evaluator evaluatorOptional = evaluatorRepository.getEvaluator(id);
+        if(evaluatorOptional==null)
+            return null;
+        return evaluatorOptional;
+
     }
 
 
     public Evaluator create(Evaluator evaluator) {
-        return evaluatorRepository.save(evaluator);
+        return evaluatorRepository.saveEvaluator(evaluator);
     }
 
     public Evaluator update(String id, Evaluator evaluator) {
-        if (evaluatorRepository.existsById(id)) {
-            evaluator.setId(id);
-            return evaluatorRepository.save(evaluator);
-        }
-        return null;
+
+        return evaluatorRepository.UpdateEvaluator(id, evaluator);
     }
 
     public void deleteById(String id) {
-        evaluatorRepository.deleteById(id);
+        evaluatorRepository.deleteEvaluator(id);
     }
 
     public Evaluator save(Evaluator evaluator) {
-        return evaluatorRepository.save(evaluator);
+        return evaluatorRepository.saveEvaluator(evaluator);
     }
 
     public List<Article> getArticlesByEvaluatorId(String id) {
         Evaluator evaluator = findById(id);
-        return evaluator != null ? evaluator.getArticles() : Collections.emptyList();
+        return evaluator.getArticles();
     }
       public List<Evaluator> FindAvailable() {
         // Obtener todos los evaluadores
