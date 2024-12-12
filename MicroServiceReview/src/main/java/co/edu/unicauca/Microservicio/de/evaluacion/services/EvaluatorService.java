@@ -24,7 +24,6 @@ public class EvaluatorService implements IEvaluatorService {
     private EvaluatorRepository evaluatorRepository;
     
     public List<Evaluator> findAll() {
-<<<<<<< HEAD
         return evaluatorRepository.getAllEvaluators();
     }
 
@@ -34,19 +33,10 @@ public class EvaluatorService implements IEvaluatorService {
             return null;
         return evaluatorOptional;
 
-=======
-        return evaluatorRepository.findAll();
-    }
-
-    public Evaluator findById (String id) {
-        Optional<Evaluator> evaluatorOptional = evaluatorRepository.findById(id);
-        return evaluatorOptional.orElse(null);
->>>>>>> 53ff72f0d68a5e22859cec4e914681ae5235c330
     }
 
 
     public Evaluator create(Evaluator evaluator) {
-<<<<<<< HEAD
         return evaluatorRepository.saveEvaluator(evaluator);
     }
 
@@ -61,34 +51,11 @@ public class EvaluatorService implements IEvaluatorService {
 
     public Evaluator save(Evaluator evaluator) {
         return evaluatorRepository.saveEvaluator(evaluator);
-=======
-        return evaluatorRepository.save(evaluator);
-    }
-
-    public Evaluator update(String id, Evaluator evaluator) {
-        if (evaluatorRepository.existsById(id)) {
-            evaluator.setId(id);
-            return evaluatorRepository.save(evaluator);
-        }
-        return null;
-    }
-
-    public void deleteById(String id) {
-        evaluatorRepository.deleteById(id);
-    }
-
-    public Evaluator save(Evaluator evaluator) {
-        return evaluatorRepository.save(evaluator);
->>>>>>> 53ff72f0d68a5e22859cec4e914681ae5235c330
     }
 
     public List<Article> getArticlesByEvaluatorId(String id) {
         Evaluator evaluator = findById(id);
-<<<<<<< HEAD
         return evaluator.getArticles();
-=======
-        return evaluator != null ? evaluator.getArticles() : Collections.emptyList();
->>>>>>> 53ff72f0d68a5e22859cec4e914681ae5235c330
     }
       public List<Evaluator> FindAvailable() {
         // Obtener todos los evaluadores
