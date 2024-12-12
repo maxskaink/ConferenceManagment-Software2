@@ -261,10 +261,17 @@ public class Mapper {
                 dto.getIdConference() // ID de la conferencia
         );
     }
-    
-    public static String evaluatorToJson(Evaluator evaluator) throws Exception {
-        ObjectMapper objectMapper = new ObjectMapper();
-        return objectMapper.writeValueAsString(evaluator);
+    public static ArticleDTO jsonToArticleEvaluator(String json) {
+        ArticleDTO article = new ArticleDTO();
+        try {
+            article.setId(getValueFromJson(json, "id"));
+            article.setName(getValueFromJson(json, "name"));
+            article.setIdAuthor(getValueFromJson(json, "idAuthor"));
+            article.setKeyWords(getValueFromJson(json, "keyWords"));
+        } catch (RuntimeException e) {
+            System.err.println("Error parsing ArticleDTO from JSON: " + e.getMessage());
+        }
+        return article;
     }
 
     public static List<Evaluator> jsonToListEvaluators(String json) throws Exception {
@@ -278,9 +285,9 @@ public class Mapper {
         return objectMapper.readValue(json, Evaluator.class);
     }
 
-    public static List<Article> jsonToListArticles(String json) throws Exception {
+    public static List<ArticleDTO> jsonToListArticles(String json) throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
-        return objectMapper.readValue(json, new TypeReference<List<Article>>() {
+        return objectMapper.readValue(json, new TypeReference<List<ArticleDTO>>() {
         });
     }
 
@@ -303,6 +310,21 @@ public class Mapper {
             throw new RuntimeException("Error al convertir los datos a JSON", e);
         }
     }
+    
+    public static String evaluatorToJson(Evaluator evaluator) {
+        return """
+    {
+        "id": "%s",
+        "name": "%s",
+        "email": "%s"
+    }
+    """.formatted(
+                evaluator.getId(),
+                evaluator.getName(),
+                evaluator.getEmail()
+        );
+    }
+
 
 
 }

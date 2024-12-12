@@ -6,6 +6,7 @@
 import services.ServiceArticle;
 import services.ServiceAuth;
 import services.ServiceConference;
+import services.ServiceEvaluator;
 
 public class ServiceFactory implements IServiceFactory {
     private static ServiceFactory instance;
@@ -13,12 +14,14 @@ public class ServiceFactory implements IServiceFactory {
     private final ServiceConference conferenceService;
     private final ServiceArticle articleService;
     private final ServiceAuth authService;
+    private final ServiceEvaluator evaluatorService;
 
     // Constructor privado para implementar Singleton
     private ServiceFactory() {
         this.conferenceService = new ServiceConference();
         this.articleService = new ServiceArticle();
         this.authService = new ServiceAuth();
+        this.evaluatorService = new ServiceEvaluator();
     }
 
     // Método para obtener la instancia única de ServiceFactory
@@ -45,6 +48,11 @@ public class ServiceFactory implements IServiceFactory {
     @Override
     public ServiceAuth getServiceAuth() {
         return this.authService;
+    }
+    
+    @Override
+    public ServiceEvaluator getServiceEvaluator() {
+        return this.evaluatorService;
     }
 }
 

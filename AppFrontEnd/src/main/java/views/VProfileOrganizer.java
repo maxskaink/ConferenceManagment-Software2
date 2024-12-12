@@ -22,7 +22,8 @@ import services.ServiceConference;
 import utilities.Utilities;
 import utilities.ViewManager;
 
-public class VProfileOrganizer extends javax.swing.JFrame implements Observer{
+public class VProfileOrganizer extends javax.swing.JFrame implements Observer {
+
     private final String idOrganizer;
     private final String authToken;
     private ServiceConference serviceConferences;
@@ -32,6 +33,7 @@ public class VProfileOrganizer extends javax.swing.JFrame implements Observer{
 
     /**
      * Creates new form JProfileOrganizer
+     *
      * @param serviceFactory
      * @param idOrganizer
      * @param token
@@ -55,9 +57,9 @@ public class VProfileOrganizer extends javax.swing.JFrame implements Observer{
             jTableConferences.getCellEditor().stopCellEditing();
         }
 
-        List<ConferenceDTO> conferencesDTO =  conferenceByOrganizer.getConferences();
+        List<ConferenceDTO> conferencesDTO = conferenceByOrganizer.getConferences();
         List<Conference> conferences = new ArrayList<Conference>();
-        for(ConferenceDTO conference : conferencesDTO) {
+        for (ConferenceDTO conference : conferencesDTO) {
             conferences.add(Mapper.DTOToConference(conference));
         }
         if (conferences.isEmpty()) {
@@ -572,7 +574,6 @@ public class VProfileOrganizer extends javax.swing.JFrame implements Observer{
         });
     }
 
-
     // Clase para renderizar un botón en la celda
     class ButtonRenderer extends JButton implements TableCellRenderer {
 
@@ -641,7 +642,7 @@ public class VProfileOrganizer extends javax.swing.JFrame implements Observer{
             if (isPushed) {
                 // Verifica que haya una fila seleccionada
                 int selectedRow = jTableConferences.getSelectedRow();
-                
+
                 if (selectedRow < 0 || selectedRow >= conferences.size()) {
                     JOptionPane.showMessageDialog(null, "No se seleccionó ninguna fila válida.", "Error", JOptionPane.ERROR_MESSAGE);
                     return label; // Salir sin procesar
@@ -692,7 +693,6 @@ public class VProfileOrganizer extends javax.swing.JFrame implements Observer{
             return label;
         }
 
-
         @Override
         public boolean stopCellEditing() {
             isPushed = false;
@@ -704,7 +704,7 @@ public class VProfileOrganizer extends javax.swing.JFrame implements Observer{
             super.fireEditingStopped();
         }
     }
-    
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonRegister;

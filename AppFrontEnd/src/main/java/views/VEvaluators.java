@@ -18,37 +18,43 @@ import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import mapper.Mapper;
+import models.Evaluator;
+import models.EvaluatorDTO;
 import serviceFactory.ServiceFactory;
 import services.ServiceArticle;
 import services.ServiceConference;
+import services.ServiceEvaluator;
 import utilities.ViewManager;
 
 public class VEvaluators extends javax.swing.JFrame{
     private ServiceConference service;
     private final ServiceArticle serviceArticle;
     private ServiceFactory serviceFactory;
-    private final ListConferencesDTO conferenceList;
+    private final ServiceEvaluator serviceEvaluator;
     private final Runnable refreshCallback; 
+    private final String idArticle;
     private final String idAuthor;
     private final String authToken;
 
     /**
      * Creates new form VLogin
      */
-    public VEvaluators(ServiceFactory serviceFactory, String idAuthor, Runnable refreshCallback, String token) throws Exception {
+    public VEvaluators(ServiceFactory serviceFactory, String idArticle, String idAuthor, Runnable refreshCallback, String token) throws Exception {
         this.serviceFactory = ServiceFactory.getInstance();
         this.service = serviceFactory.getServiceConference();
         this.serviceArticle = serviceFactory.getServiceArticle();
+        this.serviceEvaluator = serviceFactory.getServiceEvaluator();
         this.idAuthor = idAuthor;
+        this.idArticle = idArticle;
         this.refreshCallback = refreshCallback;
         this.authToken = token;
         initComponents();
-        ListConferencesDTO conferences = service.getAllConferences(authToken);
-        this.conferenceList = conferences;
-        //loadConferences(conferences);
+        loadEvaluators();
+        this.jLabelArticleName.setText(idArticle);
     }
 
     /**
@@ -70,11 +76,11 @@ public class VEvaluators extends javax.swing.JFrame{
         jLabelProfile = new javax.swing.JLabel();
         jLabelConferences = new javax.swing.JLabel();
         jPanelAvailableC = new javax.swing.JPanel();
-        jButtonRefresh = new javax.swing.JButton();
         jLabelAvailableC = new javax.swing.JLabel();
+        jLabelArticleName = new javax.swing.JLabel();
         jPanelViewC = new javax.swing.JPanel();
         jScrollPaneConferences = new javax.swing.JScrollPane();
-        jTableConferences = new javax.swing.JTable();
+        jTableEvaluators = new javax.swing.JTable();
         jTextFieldSearch = new javax.swing.JTextField();
         jLabelLupa = new javax.swing.JLabel();
         jPanelNoConferences = new javax.swing.JPanel();
@@ -130,13 +136,14 @@ public class VEvaluators extends javax.swing.JFrame{
         jPanelExit.setLayout(jPanelExitLayout);
         jPanelExitLayout.setHorizontalGroup(
             jPanelExitLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelExitLayout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(jLabelExit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGroup(jPanelExitLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabelExit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanelExitLayout.setVerticalGroup(
             jPanelExitLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanelExitLayout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelExitLayout.createSequentialGroup()
                 .addComponent(jLabelExit, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
@@ -183,7 +190,7 @@ public class VEvaluators extends javax.swing.JFrame{
         jLabelLogo.setFont(new java.awt.Font("Montserrat", 1, 18)); // NOI18N
         jLabelLogo.setForeground(new java.awt.Color(193, 255, 114));
         jLabelLogo.setText("meeting");
-        jPanelHeader.add(jLabelLogo, new org.netbeans.lib.awtextra.AbsoluteConstraints(591, 0, -1, 60));
+        jPanelHeader.add(jLabelLogo, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 0, -1, 60));
 
         jLabelProfile.setFont(new java.awt.Font("Montserrat", 1, 14)); // NOI18N
         jLabelProfile.setText("Mi perfil");
@@ -201,52 +208,24 @@ public class VEvaluators extends javax.swing.JFrame{
         jPanelHeader.add(jLabelProfile, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 0, -1, 60));
 
         jLabelConferences.setFont(new java.awt.Font("Montserrat", 1, 14)); // NOI18N
-        jLabelConferences.setForeground(new java.awt.Color(193, 255, 114));
         jLabelConferences.setText("Conferencias");
         jLabelConferences.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jPanelHeader.add(jLabelConferences, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 0, -1, 60));
 
-        jPanelBackground.add(jPanelHeader, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 800, 60));
+        jPanelBackground.add(jPanelHeader, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 810, 60));
 
         jPanelAvailableC.setBackground(new java.awt.Color(94, 23, 235));
-
-        jButtonRefresh.setBackground(new java.awt.Color(24, 17, 67));
-        jButtonRefresh.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButtonRefreshMouseClicked(evt);
-            }
-        });
-        jButtonRefresh.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonRefreshActionPerformed(evt);
-            }
-        });
+        jPanelAvailableC.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabelAvailableC.setFont(new java.awt.Font("Montserrat", 1, 16)); // NOI18N
         jLabelAvailableC.setForeground(new java.awt.Color(255, 255, 255));
         jLabelAvailableC.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabelAvailableC.setText("Asignacion de evaluadores para el articulo:");
+        jPanelAvailableC.add(jLabelAvailableC, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 6, 402, 60));
 
-        javax.swing.GroupLayout jPanelAvailableCLayout = new javax.swing.GroupLayout(jPanelAvailableC);
-        jPanelAvailableC.setLayout(jPanelAvailableCLayout);
-        jPanelAvailableCLayout.setHorizontalGroup(
-            jPanelAvailableCLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelAvailableCLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabelAvailableC, javax.swing.GroupLayout.PREFERRED_SIZE, 402, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButtonRefresh, javax.swing.GroupLayout.PREFERRED_SIZE, 239, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(158, 158, 158))
-        );
-        jPanelAvailableCLayout.setVerticalGroup(
-            jPanelAvailableCLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanelAvailableCLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanelAvailableCLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabelAvailableC, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButtonRefresh, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(14, Short.MAX_VALUE))
-        );
+        jLabelArticleName.setFont(new java.awt.Font("Montserrat ExtraBold", 1, 14)); // NOI18N
+        jLabelArticleName.setText("n");
+        jPanelAvailableC.add(jLabelArticleName, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 6, 180, 60));
 
         jPanelBackground.add(jPanelAvailableC, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 80, 660, 70));
 
@@ -255,8 +234,8 @@ public class VEvaluators extends javax.swing.JFrame{
 
         jScrollPaneConferences.setBackground(new java.awt.Color(255, 255, 255));
 
-        jTableConferences.setFont(new java.awt.Font("Montserrat", 0, 14)); // NOI18N
-        jTableConferences.setModel(new javax.swing.table.DefaultTableModel(
+        jTableEvaluators.setFont(new java.awt.Font("Montserrat", 0, 14)); // NOI18N
+        jTableEvaluators.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -267,7 +246,7 @@ public class VEvaluators extends javax.swing.JFrame{
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        jScrollPaneConferences.setViewportView(jTableConferences);
+        jScrollPaneConferences.setViewportView(jTableEvaluators);
 
         jPanelViewC.add(jScrollPaneConferences, new org.netbeans.lib.awtextra.AbsoluteConstraints(15, 50, 600, 200));
 
@@ -308,8 +287,13 @@ public class VEvaluators extends javax.swing.JFrame{
 
         jButton1.setBackground(new java.awt.Color(94, 23, 235));
         jButton1.setFont(new java.awt.Font("Montserrat Medium", 0, 14)); // NOI18N
-        jButton1.setText("Guardasr cambios");
-        jButton1.setActionCommand("Guardar cambios");
+        jButton1.setForeground(new java.awt.Color(255, 255, 255));
+        jButton1.setText("Guardar cambios");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
         jPanelBackground.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 440, 250, 40));
         jButton1.getAccessibleContext().setAccessibleName("ButtonSave");
 
@@ -317,10 +301,7 @@ public class VEvaluators extends javax.swing.JFrame{
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jPanelBackground, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+            .addComponent(jPanelBackground, javax.swing.GroupLayout.DEFAULT_SIZE, 812, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -366,10 +347,6 @@ public class VEvaluators extends javax.swing.JFrame{
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextFieldSearchActionPerformed
 
-    private void jButtonRefreshMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonRefreshMouseClicked
-        refreshConferences();
-    }//GEN-LAST:event_jButtonRefreshMouseClicked
-
     private void jLabelProfileMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelProfileMouseClicked
         try {
             ViewManager viewManager = ViewManager.getInstance();
@@ -391,160 +368,113 @@ public class VEvaluators extends javax.swing.JFrame{
         }
     }//GEN-LAST:event_jLabelProfileMouseClicked
 
-    private void jButtonRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonRefreshActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButtonRefreshActionPerformed
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        saveEvaluatorAssignments();
+    }//GEN-LAST:event_jButton1ActionPerformed
 
-    public void loadEvaluator(ListConferencesDTO conferencesDTO) {
-        List<ConferenceDTO> conferencesDTOList = conferencesDTO.getConferences();
-        List<Conference> conferences = new ArrayList<>();
-        for (ConferenceDTO conferencesdto: conferencesDTOList){
-            conferences.add(Mapper.DTOToConference(conferencesdto));
-        }
+    private void loadEvaluators() {
+        try {
+            List<EvaluatorDTO> evaluators = serviceEvaluator.getAvailableEvaluators();
 
-        if (conferences.isEmpty()) {
-            jPanelNoConferences.setVisible(true);
-            jScrollPaneConferences.setVisible(false);
-        } else {
-            jPanelNoConferences.setVisible(false);
-            jScrollPaneConferences.setVisible(true);
-
-            // Crear un modelo de tabla personalizado
             DefaultTableModel model = new DefaultTableModel() {
                 @Override
                 public boolean isCellEditable(int row, int column) {
-                    return column == 2;  // Solo la columna del botón es editable
+                    return column == 2; // Solo la columna de selección es editable
+                }
+
+                @Override
+                public Class<?> getColumnClass(int columnIndex) {
+                    // Devolver el tipo correcto para cada columna
+                    if (columnIndex == 2) {
+                        return Boolean.class; // Columna de selección como Boolean
+                    }
+                    return String.class; // Otras columnas como String
                 }
             };
 
+            // Agregar columnas al modelo
+            model.addColumn("Evaluator");
             model.addColumn("Nombre");
-            model.addColumn("Fecha de Inicio");
-            model.addColumn("");  // Columna vacía para el botón
-            
+            model.addColumn("Seleccionar");
 
-            for (Conference conf : conferences) {
-                model.addRow(new Object[]{conf.getName(), conf.getStartDate().toString(), "Ver más..."});
+            // Agregar filas al modelo
+            for (EvaluatorDTO evaluator : evaluators) {
+                model.addRow(new Object[]{evaluator, evaluator.getName(), false}); // Selección como Boolean
             }
+            jTableEvaluators.setModel(model);
 
-            jTableConferences.setModel(model);
+            // Configurar el renderizador y el editor para la columna de selección (Boolean)
+            jTableEvaluators.getColumnModel().getColumn(2).setCellRenderer(jTableEvaluators.getDefaultRenderer(Boolean.class));
+            jTableEvaluators.getColumnModel().getColumn(2).setCellEditor(jTableEvaluators.getDefaultEditor(Boolean.class));
 
-            jTableConferences.getColumnModel().getColumn(2).setCellRenderer(new ButtonRenderer());
-            jTableConferences.getColumnModel().getColumn(2).setCellEditor(new ButtonEditor(new JCheckBox(), conferences, serviceFactory, this::refreshConferences));
+            // Ocultar la columna del evaluador completo
+            jTableEvaluators.getColumnModel().getColumn(0).setMinWidth(0);
+            jTableEvaluators.getColumnModel().getColumn(0).setMaxWidth(0);
+            jTableEvaluators.getColumnModel().getColumn(0).setWidth(0);
 
-
-            jTableConferences.getColumnModel().getColumn(0).setPreferredWidth(200);
-            jTableConferences.getColumnModel().getColumn(1).setPreferredWidth(100);
-            jTableConferences.getColumnModel().getColumn(2).setPreferredWidth(100);
-            
-            jTableConferences.setRowHeight(40);
-        }
-    }
-
-    private void refreshConferences() {
-        try {
-            ListConferencesDTO updatedConferences = service.getAllConferences(authToken);
-            //loadConferences(updatedConferences);
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error al actualizar las conferencias: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error al cargar evaluadores: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
     }
-
-    public void update(Object o) {
-        try {
-            service = (ServiceConference) o;
-            //loadConferences(service.getAllConferences(authToken));
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error al actualizar las conferencias: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
 
     
-// Clase para renderizar un botón en la celda
-    class ButtonRenderer extends JButton implements TableCellRenderer {
-
-        public ButtonRenderer() {
-            setOpaque(true);
-        }
-
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            setText((value == null) ? "" : value.toString());
-            return this;
-        }
-    }
-
-// Clase para manejar la edición de la celda con el botón
-    class ButtonEditor extends DefaultCellEditor {
-    private JButton button;
-    private String label;
-    private boolean isPushed;
-    private List<Conference> conferences;
-    private ServiceFactory serviceFactory; // Añadir el ServiceFactory
-    private Runnable refreshCallback; 
-
-    public ButtonEditor(JCheckBox checkBox, List<Conference> conferences, ServiceFactory serviceFactory, Runnable refreshCallback) {
-        super(checkBox);
-        this.conferences = conferences;
-        this.serviceFactory = ServiceFactory.getInstance(); // Inicializar el ServiceFactory
-        this.refreshCallback = refreshCallback; // Guardar el callback
-        button = new JButton();
-        button.setOpaque(true);
-        button.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                fireEditingStopped();
-            }
-        });
+    class CheckBoxRenderer extends JCheckBox implements TableCellRenderer {
+    public CheckBoxRenderer() {
+        setHorizontalAlignment(SwingConstants.CENTER); // Centrar el checkbox
     }
 
     @Override
-    public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-        label = (value == null) ? "" : value.toString();
-        button.setText(label);
-        isPushed = true;
-        return button;
+    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+        setSelected(value != null && (boolean) value); // Establecer el estado del checkbox
+        return this;
     }
+}
 
-    @Override
-    public Object getCellEditorValue() {
-        if (isPushed) {
-            // Obtener la conferencia seleccionada
-            Conference selectedConference = conferences.get(jTableConferences.getSelectedRow());
+    
+    private void saveEvaluatorAssignments() {
+        List<EvaluatorDTO> selectedEvaluators = new ArrayList<>();
 
-            try {
-                // Abrir la ventana VConferenceInfo con el ServiceFactory y la información de la conferencia
-                VConferenceInfo infoWindow = new VConferenceInfo(
-                    serviceFactory,
-                    selectedConference.getId(),
-                    idAuthor,
-                    authToken
-                );
-                infoWindow.setVisible(true); // Mostrar la ventana
-            } catch (Exception ex) {
-                Logger.getLogger(VEvaluators.class.getName()).log(Level.SEVERE, null, ex);
+        for (int i = 0; i < jTableEvaluators.getRowCount(); i++) {
+            Boolean isSelected = (Boolean) jTableEvaluators.getValueAt(i, 2); // Verifica si está seleccionado
+            if (isSelected != null && isSelected) {
+                // Obtener el evaluador completo desde la fila (columna oculta)
+                EvaluatorDTO evaluator = (EvaluatorDTO) jTableEvaluators.getValueAt(i, 0);
+                selectedEvaluators.add(evaluator);
             }
         }
-        isPushed = false;
-        return label;
+        
+        for (int i = 0; i < jTableEvaluators.getRowCount(); i++) {
+            Boolean isSelected = (Boolean) jTableEvaluators.getValueAt(i, 2); // Verifica si está seleccionado
+            if (isSelected != null && isSelected) {
+                // Obtener el evaluador completo desde la fila (columna oculta)
+                EvaluatorDTO evaluator = (EvaluatorDTO) jTableEvaluators.getValueAt(i, 0);
+                selectedEvaluators.add(evaluator);
+            }
+        }
+
+        if (selectedEvaluators.size() < 2 || selectedEvaluators.size() > 5) {
+            JOptionPane.showMessageDialog(this, "Debe seleccionar entre 2 y 5 evaluadores.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        try {
+            // Llamar al servicio para asignar evaluadores
+            serviceEvaluator.assignEvaluatorsToArticle(idArticle, selectedEvaluators);
+            JOptionPane.showMessageDialog(this, "Evaluadores asignados exitosamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            dispose(); // Cerrar la ventana
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error al asignar evaluadores: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
     }
 
-    @Override
-    public boolean stopCellEditing() {
-        isPushed = false;
-        return super.stopCellEditing();
-    }
-
-    @Override
-    protected void fireEditingStopped() {
-        super.fireEditingStopped();
-    }
-    }
 
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButtonRefresh;
+    private javax.swing.JLabel jLabelArticleName;
     private javax.swing.JLabel jLabelAvailableC;
     private javax.swing.JLabel jLabelConferences;
     private javax.swing.JLabel jLabelExit;
@@ -562,7 +492,7 @@ public class VEvaluators extends javax.swing.JFrame{
     private javax.swing.JPanel jPanelNoConferences;
     private javax.swing.JPanel jPanelViewC;
     private javax.swing.JScrollPane jScrollPaneConferences;
-    private javax.swing.JTable jTableConferences;
+    private javax.swing.JTable jTableEvaluators;
     private javax.swing.JTextField jTextFieldSearch;
     // End of variables declaration//GEN-END:variables
 }

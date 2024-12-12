@@ -1,3 +1,4 @@
+
 package views;
 
 import models.Article;
@@ -17,7 +18,9 @@ import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import mapper.Mapper;
+import models.EvaluatorDTO;
 import serviceFactory.ServiceFactory;
+
 
 public class VConferenceOrganizer extends javax.swing.JFrame {
      private ServiceFactory serviceFactory;
@@ -43,54 +46,139 @@ public class VConferenceOrganizer extends javax.swing.JFrame {
         ListArticleConferencesDTO articles = serviceArticle.getArticlesByConference(authToken, idConference);
         listPapers(articles);
     }
-  
-    
+
     public void listPapers(ListArticleConferencesDTO ArticlesDTO) {
         List<Article> Articles = ArticlesDTO.getArticles();
         if (Articles.isEmpty()) {
-            jTableNoArticles.setVisible(true);
-            jTableArticles.setVisible(false);
+            System.out.println("No hay articulos");
+            jTableNoArticles.setVisible(false);
         } else {
-           jTableNoArticles.setVisible(false);
-           jTableArticles.setVisible(true);
-           
-           DefaultTableModel MyTable = new DefaultTableModel() {
+            jTableNoArticles.setVisible(true);
+
+            DefaultTableModel MyTable = new DefaultTableModel() {
                 @Override
                 public boolean isCellEditable(int row, int column) {
                     return column >= 1;  // Las columnas "Editar", "Borrar" y "Ver más..." son editables
                 }
             };
-           MyTable.addColumn("Autores");
-           MyTable.addColumn("Nombre del articulo");  
-           MyTable.addColumn("Informacion");  // Nueva columna para 
-           MyTable.addColumn("Asignacion");  // Columna para "Ver más"
+            MyTable.addColumn("Autores");
+            MyTable.addColumn("Nombre del articulo");
+            MyTable.addColumn("Informacion");
+            MyTable.addColumn("Asignacion");
 
             for (Article art : Articles) {
-                MyTable.addRow(new Object[]{idAuthor, art.getName(), "INF", "Asignacion"});
+                try {
+                    // Obtener evaluadores asignados al artículo
+                    ServiceEvaluator s = serviceFactory.getServiceEvaluator();
+                    List<EvaluatorDTO> evaluators = s.getEvaluatorsByArticle(authToken, art.getId());
+                    art.setEvaluators(evaluators); // Establecer evaluadores al artículo
+
+                    // Determinar el texto del botón en base a los evaluadores asignados
+                    String assignButtonLabel = evaluators != null && !evaluators.isEmpty() ? "Asignado" : "Asignar";
+                    MyTable.addRow(new Object[]{idAuthor, art.getName(), "INF", assignButtonLabel});
+
+                } catch (Exception e) {
+                    Logger.getLogger(VConferenceOrganizer.class.getName()).log(Level.WARNING, "Error al obtener evaluadores para el artículo: " + art.getName(), e);
+                    MyTable.addRow(new Object[]{idAuthor, art.getName(), "INF", "Asignar"}); // Por defecto
+                }
             }
-          
-           jTableArticles.setModel(MyTable);   
-           
-        // Asignar renderizadores y editores a las columnas "Informacion" y "Asignacion"
-        jTableArticles.getColumnModel().getColumn(2).setCellRenderer((TableCellRenderer) new ButtonRenderer());
-        jTableArticles.getColumnModel().getColumn(2).setCellEditor( new ButtonEditorArticles(
-                    new JCheckBox(), 
-                    Articles, 
-                    serviceArticle, 
+
+            jTableNoArticles.setModel(MyTable);
+
+            // Asignar renderizadores y editores a las columnas "Informacion" y "Asignacion"
+            jTableNoArticles.getColumnModel().getColumn(2).setCellRenderer(new ButtonRenderer());
+            jTableNoArticles.getColumnModel().getColumn(2).setCellEditor(new ButtonEditorArticles(
+                    new JCheckBox(),
+                    Articles,
+                    serviceArticle,
                     this::refreshArticlesById));
 
-        jTableArticles.getColumnModel().getColumn(3).setCellRenderer(new ButtonRenderer());
-        jTableArticles.getColumnModel().getColumn(3).setCellEditor(new ButtonEditorArticles(new JCheckBox(), Articles, serviceArticle, this::refreshArticlesById));
+            jTableNoArticles.getColumnModel().getColumn(3).setCellRenderer(new ButtonRenderer());
+            jTableNoArticles.getColumnModel().getColumn(3).setCellEditor(new AssignEvaluatorButtonEditor(
+                    new JCheckBox(),
+                    Articles,
+                    serviceArticle,
+                    this::refreshArticlesById));
 
-        // Configurar el ancho de las columnas
-        jTableArticles.getColumnModel().getColumn(0).setPreferredWidth(300);
-        jTableArticles.getColumnModel().getColumn(1).setPreferredWidth(300);
-        jTableArticles.getColumnModel().getColumn(2).setPreferredWidth(70);
-        jTableArticles.getColumnModel().getColumn(3).setPreferredWidth(70);
+            // Configurar el ancho de las columnas
+            jTableNoArticles.getColumnModel().getColumn(0).setPreferredWidth(300);
+            jTableNoArticles.getColumnModel().getColumn(1).setPreferredWidth(300);
+            jTableNoArticles.getColumnModel().getColumn(2).setPreferredWidth(70);
+            jTableNoArticles.getColumnModel().getColumn(3).setPreferredWidth(70);
 
-            jTableArticles.setRowHeight(40);
+            jTableNoArticles.setRowHeight(40);
         }
     }
+
+
+
+class AssignEvaluatorButtonEditor extends DefaultCellEditor {
+    private JButton button;
+    private String label;
+    private boolean isPushed;
+    private List<Article> articles;
+    private ServiceArticle serviceArticle;
+    private Runnable refreshCallback;
+
+    public AssignEvaluatorButtonEditor(JCheckBox checkBox, List<Article> articles, ServiceArticle serviceArticle, Runnable refreshCallback) {
+        super(checkBox);
+        this.articles = articles;
+        this.serviceArticle = serviceArticle;
+        this.refreshCallback = refreshCallback;
+        button = new JButton();
+        button.setOpaque(true);
+        button.addActionListener(e -> fireEditingStopped());
+    }
+
+    @Override
+    public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+        label = (value == null) ? "" : value.toString();
+        button.setText(label);
+        isPushed = true;
+        return button;
+    }
+
+    @Override
+    public Object getCellEditorValue() {
+        if (isPushed) {
+            // Validar el índice seleccionado
+            int selectedRow = jTableNoArticles.getSelectedRow();
+            if (selectedRow < 0 || selectedRow >= articles.size()) {
+                JOptionPane.showMessageDialog(null, "Seleccione un artículo válido.", "Error", JOptionPane.ERROR_MESSAGE);
+                isPushed = false;
+                return label;
+            }
+
+            Article selectedArticle = articles.get(selectedRow);
+
+            if ("Asignar".equals(label)) {
+                // Abrir VEvaluators
+                try {
+                    VEvaluators evaluatorsWindow = new VEvaluators(serviceFactory, selectedArticle.getId(), idAuthor, () -> {
+                        // Actualizar el estado del botón en el callback
+                        label = "Asignado";
+                        refreshCallback.run();
+                    }, authToken);
+
+                    evaluatorsWindow.setVisible(true);
+                } catch (Exception ex) {
+                    Logger.getLogger(VConferenceOrganizer.class.getName()).log(Level.SEVERE, null, ex);
+                    JOptionPane.showMessageDialog(null, "Error al abrir la ventana de evaluadores.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Los evaluadores ya fueron asignados.", "Información", JOptionPane.INFORMATION_MESSAGE);
+            }
+        }
+        isPushed = false;
+        return label;
+    }
+
+    @Override
+    protected void fireEditingStopped() {
+        super.fireEditingStopped();
+    }
+}
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -336,7 +424,7 @@ public class VConferenceOrganizer extends javax.swing.JFrame {
     }//GEN-LAST:event_jPanelHeaderMouseDragged
 
     private void jLabelExitMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelExitMouseClicked
-       this.dispose();
+        this.dispose();
     }//GEN-LAST:event_jLabelExitMouseClicked
 
     private void jLabelExitMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelExitMouseEntered
@@ -360,101 +448,101 @@ public class VConferenceOrganizer extends javax.swing.JFrame {
     }//GEN-LAST:event_jLabelMinimizeMouseClicked
     
     public void refreshArticlesById() {
-        ListArticleConferencesDTO articles;
-         try {
-             articles = serviceArticle.getArticlesByConference(authToken, idConference);
-            listPapers(articles);
-         } catch (Exception ex) {
-             Logger.getLogger(VConferenceOrganizer.class.getName()).log(Level.SEVERE, null, ex);
-         }
+    ListArticleConferencesDTO articles;
+    try {
+        articles = serviceArticle.getArticlesByConference(authToken, idConference);
+        listPapers(articles);
+    } catch (Exception ex) {
+        Logger.getLogger(VConferenceOrganizer.class.getName()).log(Level.SEVERE, null, ex);
     }
+}
 
     
     // Clase para renderizar un botón en la celda
     class ButtonRenderer extends JButton implements TableCellRenderer {
 
-        public ButtonRenderer() {
-            setOpaque(true);
-        }
-
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            setText((value == null) ? "" : value.toString());
-            return this;
-        }
+    public ButtonRenderer() {
+        setOpaque(true);
     }
+
+    @Override
+    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+        setText((value == null) ? "" : value.toString());
+        return this;
+    }
+}
 
     class ButtonEditorArticles extends DefaultCellEditor {
 
-        private JButton button;
-        private String label;
-        private boolean isPushed;
-        private List<Article> articles;
-        private ServiceArticle service;  // AÃ±adir el servicio como atributo
-        private String action; // Para identificar qué botón fue presionado
-        private Runnable refreshCallback;  // El callback para refrescar la lista
+    private JButton button;
+    private String label;
+    private boolean isPushed;
+    private List<Article> articles;
+    private ServiceArticle service;  // AÃ±adir el servicio como atributo
+    private String action; // Para identificar qué botón fue presionado
+    private Runnable refreshCallback;  // El callback para refrescar la lista
 
-        public ButtonEditorArticles(JCheckBox checkBox, List<Article> articles, ServiceArticle service, Runnable refreshCallback) {
-            super(checkBox);
-            this.articles = articles;
-            this.service = service;
-            this.refreshCallback = refreshCallback;  // Inicializar el callback
-            button = new JButton();
-            button.setOpaque(true);
-            button.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    fireEditingStopped();
-                }
-            });
-        }
-
-        @Override
-        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-            label = (value == null) ? "" : value.toString();
-            button.setText(label);
-            isPushed = true;
-
-            // Establecer la acción según la columna
-            if (column == 2) { // Columna "Editar"
-                action = "info";
-            } else if (column == 3) { // Columna "Borrar"
-                action = "asignae";
-            } 
-
-            return button;
-        }
-
-        @Override
-        public Object getCellEditorValue() {
-            if (isPushed) {
-                // Obtener la conferencia seleccionada
-                Article selectedArticle = articles.get(jTableArticles.getSelectedRow());
-
-                if (action.equals("info")) {
-                // Lógica para la columna "Editar"
-                } else if (action.equals("borrar")) {
-               if (refreshCallback != null) {
-               refreshCallback.run();
-               }
-               } else if (action.equals("ver")) {
-                 // Lógica para la columna "Ver más"
-                }
+    public ButtonEditorArticles(JCheckBox checkBox, List<Article> articles, ServiceArticle service, Runnable refreshCallback) {
+        super(checkBox);
+        this.articles = articles;
+        this.service = service;
+        this.refreshCallback = refreshCallback;  // Inicializar el callback
+        button = new JButton();
+        button.setOpaque(true);
+        button.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                fireEditingStopped();
             }
-            isPushed = false;
-            return label;
-        }
-
-        @Override
-        public boolean stopCellEditing() {
-            isPushed = false;
-            return super.stopCellEditing();
-        }
-
-        @Override
-        protected void fireEditingStopped() {
-            super.fireEditingStopped();
-        }
+        });
     }
+
+    @Override
+    public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+        label = (value == null) ? "" : value.toString();
+        button.setText(label);
+        isPushed = true;
+
+        // Establecer la acción según la columna
+        if (column == 2) { // Columna "Editar"
+            action = "info";
+        } else if (column == 3) { // Columna "Borrar"
+            action = "asignar";
+        }
+
+        return button;
+    }
+
+    @Override
+    public Object getCellEditorValue() {
+        if (isPushed) {
+            // Obtener la conferencia seleccionada
+            Article selectedArticle = articles.get(jTableArticles.getSelectedRow());
+
+            if (action.equals("info")) {
+                // Lógica para la columna "Editar"
+            } else if (action.equals("borrar")) {
+                if (refreshCallback != null) {
+                    refreshCallback.run();
+                }
+            } else if (action.equals("ver")) {
+                // Lógica para la columna "Ver más"
+            }
+        }
+        isPushed = false;
+        return label;
+    }
+
+    @Override
+    public boolean stopCellEditing() {
+        isPushed = false;
+        return super.stopCellEditing();
+    }
+
+    @Override
+    protected void fireEditingStopped() {
+        super.fireEditingStopped();
+    }
+}
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;

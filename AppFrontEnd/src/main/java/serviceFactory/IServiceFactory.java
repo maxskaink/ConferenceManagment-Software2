@@ -7,6 +7,7 @@ package serviceFactory;
 import services.ServiceAuth;
 import services.ServiceArticle;
 import services.ServiceConference;
+import services.ServiceEvaluator;
 /**
  *
  * @author isabe
@@ -15,4 +16,5 @@ public interface IServiceFactory {
     public ServiceArticle getServiceArticle();
     public ServiceConference getServiceConference();
     public ServiceAuth getServiceAuth();
+    public ServiceEvaluator getServiceEvaluator();
 }

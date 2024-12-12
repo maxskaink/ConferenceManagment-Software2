@@ -1,5 +1,7 @@
 package models;
 
+import java.util.List;
+
 public class Article {
     private String      id;
     private String      name;
@@ -7,6 +9,7 @@ public class Article {
     private String      keyWords;
     private BasicDate   publishDate;
     private String      idConference;
+    private List<EvaluatorDTO>   evaluadores;
 
     public Article(String id, String name, String idAuthor, String keyWords, BasicDate publishDate, String idConference) {
         this.id = id;
@@ -74,7 +77,14 @@ public class Article {
 
     public void setIdConference(String idConference) {
         this.idConference = idConference;
+    } 
+
+    public List<EvaluatorDTO> getEvaluators() {
+        return evaluadores;
     }
-    
+
+    public void setEvaluators(List<EvaluatorDTO> evaluadores) {
+        this.evaluadores = evaluadores;
+    }
     
 }

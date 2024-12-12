@@ -8,11 +8,12 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
 import java.util.List;
 import models.ArticleDTO;
 
 public class ServiceEvaluator {
-    private static final String BASE_URL = "http://localhost:8084/api"; 
+    private static final String BASE_URL = "http://localhost:8085/review"; 
     private final HttpClient httpClient;
     private final ObjectMapper objectMapper;
 
@@ -122,4 +123,21 @@ public class ServiceEvaluator {
             throw new RuntimeException("Error al asignar evaluadores: " + response.body());
         }
     }
+    
+    public List<EvaluatorDTO> getEvaluatorsByArticle(String authToken, String articleId) throws Exception {
+        List<EvaluatorDTO> allEvaluators = getAllEvaluators(); // Obtener evaluadores
+        List<EvaluatorDTO> assignedEvaluators = new ArrayList<>();
+
+        for (EvaluatorDTO evaluator : allEvaluators) {
+            List<ArticleDTO> articles = getArticlesByEvaluator(evaluator.getId());
+            for (ArticleDTO article : articles) {
+                if (article.getId().equals(articleId)) {
+                    assignedEvaluators.add(evaluator);
+                    break;
+                }
+            }
+        }
+        return assignedEvaluators;
+    }
+
 }
