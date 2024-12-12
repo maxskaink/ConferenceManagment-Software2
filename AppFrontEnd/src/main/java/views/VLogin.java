@@ -190,7 +190,7 @@ public class VLogin extends javax.swing.JFrame {
         jTextFieldEmail.setFont(new java.awt.Font("Montserrat", 2, 12)); // NOI18N
         jTextFieldEmail.setForeground(new java.awt.Color(153, 153, 153));
         jTextFieldEmail.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        jTextFieldEmail.setText("Correo electrónico");
+        jTextFieldEmail.setText("username");
         jTextFieldEmail.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
         jTextFieldEmail.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
@@ -327,7 +327,7 @@ public class VLogin extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonLoginMouseExited
 
     private void jTextFieldEmailMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextFieldEmailMousePressed
-        if(jTextFieldEmail.getText().equals("Correo electrónico")){
+        if(jTextFieldEmail.getText().equals("username")){
             jTextFieldEmail.setText("");
             jTextFieldEmail.setForeground(Color.black);
         }
@@ -343,8 +343,8 @@ public class VLogin extends javax.swing.JFrame {
             jPasswordField.setForeground(Color.black);
         }
         
-        if(jTextFieldEmail.getText().equals("Correo electrónico")){
-            jTextFieldEmail.setText("Correo electrónico");
+        if(jTextFieldEmail.getText().equals("username")){
+            jTextFieldEmail.setText("username");
             jTextFieldEmail.setForeground(Color.gray);
         }
     }//GEN-LAST:event_jPasswordFieldMousePressed

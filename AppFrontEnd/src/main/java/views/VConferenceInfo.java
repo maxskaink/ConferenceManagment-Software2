@@ -249,7 +249,7 @@ public class VConferenceInfo extends javax.swing.JFrame {
                 .addComponent(jLabelName, javax.swing.GroupLayout.PREFERRED_SIZE, 192, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabelShownName, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(236, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -257,7 +257,7 @@ public class VConferenceInfo extends javax.swing.JFrame {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabelName, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabelShownName))
-                .addGap(0, 7, Short.MAX_VALUE))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         jLabelName.getAccessibleContext().setAccessibleParent(jPanelViewInfo);
@@ -317,12 +317,17 @@ public class VConferenceInfo extends javax.swing.JFrame {
         jButtonNoOpen.setFont(new java.awt.Font("Montserrat", 1, 24)); // NOI18N
         jButtonNoOpen.setForeground(new java.awt.Color(0, 0, 0));
         jButtonNoOpen.setText("No acepta articulos");
+        jButtonNoOpen.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonNoOpenActionPerformed(evt);
+            }
+        });
         jPanelViewInfo.add(jButtonNoOpen, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 260, 280, 70));
 
         jButtonIsOpen.setBackground(new java.awt.Color(193, 255, 114));
         jButtonIsOpen.setFont(new java.awt.Font("Montserrat", 1, 24)); // NOI18N
         jButtonIsOpen.setForeground(new java.awt.Color(0, 0, 0));
-        jButtonIsOpen.setText("Acepta articulo");
+        jButtonIsOpen.setText("Enviar articulo");
         jButtonIsOpen.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonIsOpenActionPerformed(evt);
@@ -443,6 +448,10 @@ public class VConferenceInfo extends javax.swing.JFrame {
             e.printStackTrace();
         }
     }//GEN-LAST:event_jLabelConferencesMouseClicked
+
+    private void jButtonNoOpenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonNoOpenActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButtonNoOpenActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

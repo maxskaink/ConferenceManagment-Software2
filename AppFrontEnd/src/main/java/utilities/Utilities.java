@@ -5,6 +5,7 @@ import java.awt.Font;
 import java.awt.event.MouseEvent;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -132,6 +133,12 @@ public class Utilities {
         } else {
             throw new IllegalArgumentException("Tipo de entrada no soportado. Use String ('dd-MM-yyyy') o Date.");
         }
+    }
+    
+    public static Date toDate(BasicDate d) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(d.getYear(), d.getMonth() - 1, d.getDay());
+        return calendar.getTime();
     }
 
 }

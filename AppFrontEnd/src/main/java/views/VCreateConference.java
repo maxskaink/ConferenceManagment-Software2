@@ -16,7 +16,7 @@ import utilities.Utilities;
 import static utilities.Utilities.parseBasicDate;
 import utilities.ViewManager;
 
-public class VCreateConference extends javax.swing.JFrame {
+public class VCreateConference extends javax.swing.JFrame{
     private String authToken; // Token de autenticación obtenido al inicio
     private ServiceConference serviceConference;
     private ServiceFactory serviceFactory;
@@ -544,4 +544,5 @@ public class VCreateConference extends javax.swing.JFrame {
     private com.toedter.calendar.JDateChooser jTextFieldStartDate;
     private javax.swing.JTextField jTextFieldTheme;
     // End of variables declaration//GEN-END:variables
+
 }
