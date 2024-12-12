@@ -1,11 +1,17 @@
 package mapper;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import models.Article;
 import models.ArticleDTO;
 import models.BasicDate;
 import models.ConferenceDTO;
 import models.Conference;
+import models.Evaluator;
 import models.ListConferencesDTO;
 import models.ListArticleConferencesDTO;
 import models.ListConferencesOrganizerDTO;
@@ -255,5 +261,48 @@ public class Mapper {
                 dto.getIdConference() // ID de la conferencia
         );
     }
+    
+    public static String evaluatorToJson(Evaluator evaluator) throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.writeValueAsString(evaluator);
+    }
+
+    public static List<Evaluator> jsonToListEvaluators(String json) throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.readValue(json, new TypeReference<List<Evaluator>>() {
+        });
+    }
+
+    public static Evaluator jsonToEvaluator(String json) throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.readValue(json, Evaluator.class);
+    }
+
+    public static List<Article> jsonToListArticles(String json) throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.readValue(json, new TypeReference<List<Article>>() {
+        });
+    }
+
+    public static String listEvaluatorsToJson(List<Evaluator> evaluators) throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.writeValueAsString(evaluators);
+    }
+    
+    public static String toAssignEvaluatorsRequest(String articleId, List<String> evaluatorIds) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            // Construir un mapa para el JSON
+            Map<String, Object> requestBody = new HashMap<>();
+            requestBody.put("articleId", articleId);
+            requestBody.put("evaluatorIds", evaluatorIds);
+
+            // Convertir el mapa a JSON
+            return objectMapper.writeValueAsString(requestBody);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Error al convertir los datos a JSON", e);
+        }
+    }
+
 
 }
