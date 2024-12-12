@@ -18,7 +18,14 @@ import java.util.List;
 public class EvaluatorRepository implements  IEvaluatorsRepository{
     private final List<Evaluator> evaluators;
     public EvaluatorRepository() {
+
         evaluators = new ArrayList<Evaluator>();
+
+        evaluators.add(new Evaluator("4AEB195C", "Evaluador 1", "evaluador1@gnail.com"));
+        evaluators.add(new Evaluator("93520B9D", "Evaluador 2", "evaluador2@gnail.com"));
+        evaluators.add(new Evaluator("9636264E", "Evaluador 2", "evaluador3@gnail.com"));
+
+
     }
 
     @Override
