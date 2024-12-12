@@ -405,6 +405,8 @@ public class VUpdateConference extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
+            
+            System.out.println("ID DEL ORGANIZADOR " + idOrganizer);
 
             try {
                 // Crear el objeto BasicDate
@@ -413,10 +415,7 @@ public class VUpdateConference extends javax.swing.JFrame {
 
 
                 // Crear un nuevo objeto Conference con las fechas formateadas
-                ConferenceDTO newConference = new ConferenceDTO(
-                        name, description, startBasicDate, finishBasicDate, place, theme,
-                        this.conference.getId(), idOrganizer
-                );
+                ConferenceDTO newConference = new ConferenceDTO(conference.getId(), name, startBasicDate, finishBasicDate, place, theme, idOrganizer, description);
                 String response = serviceConferences.updateConference(authToken, conference.getId(), newConference);
                 // Editar la conferencia
                 if (response == null || response.isEmpty()) {

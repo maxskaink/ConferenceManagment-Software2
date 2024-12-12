@@ -1,34 +1,26 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-package co.edu.unicauca.Microservicio.de.evaluacion.domain;
-import java.util.List;
+package models;
 
+import java.util.List;
 
 public class Evaluator {
     private String id;
     private String name;
     private String email;
     private List<Article> articles;
+
+    // Constructor por defecto
     public Evaluator() {
-        
-    }
-    public Evaluator(String id, String name, String email) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
     }
 
+    // Constructor con parámetros
     public Evaluator(String id, String name, String email, List<Article> articles) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.articles = articles;
     }
-    
-    // Getters y setters
 
+    // Getters y Setters
     public String getId() {
         return id;
     }
@@ -41,9 +33,10 @@ public class Evaluator {
         return name;
     }
 
-    public void setName(String name){
+    public void setName(String name) {
         this.name = name;
     }
+
     public String getEmail() {
         return email;
     }
@@ -60,9 +53,15 @@ public class Evaluator {
         this.articles = articles;
     }
 
-    public Article addArticle(Article article) {
-        this.articles.add(article);
-        return article;
+    // Método toString (opcional, útil para depuración)
+    @Override
+    public String toString() {
+        return "Evaluator{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", articles=" + articles +
+                '}';
     }
-
 }
+

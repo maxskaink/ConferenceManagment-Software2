@@ -8,15 +8,23 @@ import mapper.Mapper;
 import models.ConferenceDTO;
 import models.ListConferencesDTO;
 import models.ListConferencesOrganizerDTO;
+import serviceObserver.Subject;
 
 public class ServiceConference {
     private static final String BASE_URL = "http://localhost:8083/api/conferences"; // {{PATH}}/conferences
     private final HttpClient httpClient;
     
+    private final Subject subject;
+    
     private ListConferencesDTO conferencesList;
 
     public ServiceConference() {
-        this.httpClient = HttpClient.newHttpClient();
+        this.httpClient = HttpClient.newHttpClient(); 
+        this.subject = new Subject();
+    }
+    
+    public Subject getSubject() {
+        return subject;
     }
    
     // Listar todas las conferencias
@@ -30,6 +38,8 @@ public class ServiceConference {
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         if (response.statusCode() == 200) {
             conferencesList = Mapper.jsonToListConferencesDTO(response.body());
+            subject.setChanged();
+            subject.notifyObservers(conferencesList);
             return conferencesList;
         } else {
             throw new RuntimeException("Failed to fetch conferences: " + response.body());
@@ -58,7 +68,7 @@ public class ServiceConference {
     // Crear una conferencia
     public String createConference(String token, ConferenceDTO conference) throws Exception {
         // Convertir ConferenceDTO a JSON
-        String conferenceJson = Mapper.conferenceDTOToJson(conference);
+        String conferenceJson = Mapper.conferenceDTOToJsonNoId(conference);
 
         System.out.println("JSON enviado al servidor: " + conferenceJson);
 
@@ -71,6 +81,9 @@ public class ServiceConference {
 
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         if (response.statusCode() == 201) {
+            ListConferencesDTO updatedList = getAllConferences(token);
+            subject.setChanged();
+            subject.notifyObservers(updatedList);
             return response.body(); // Éxito
         } else {
             throw new RuntimeException("Failed to create conference: " + response.body());
@@ -92,8 +105,12 @@ public class ServiceConference {
 
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         if (response.statusCode() == 200) {
+            ListConferencesDTO updatedList = getAllConferences(token);
+            subject.setChanged();
+            subject.notifyObservers(updatedList);
             return response.body();
         } else {
+            System.out.println("JSON" + conferenceJson);
             throw new RuntimeException("Failed to update conference: " + response.body());
         }
     }
@@ -109,6 +126,9 @@ public class ServiceConference {
 
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         if (response.statusCode() == 200) {
+            ListConferencesDTO updatedList = getAllConferences(token);
+            subject.setChanged();
+            subject.notifyObservers(updatedList);
             return response.body();
         } else {
             throw new RuntimeException("Failed to delete conference: " + response.body());

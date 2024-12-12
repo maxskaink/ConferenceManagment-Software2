@@ -60,6 +60,19 @@ services:
       - discovery-service
       - rabbitmq
 
+  review-service:
+    build: ./MicroServiceReview
+    container_name: review-service
+    ports:
+      - "8085:8085"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - app-network
+    depends_on:
+      - discovery-service
+      - rabbitmq
+
 networks:
   app-network:
     driver: bridge

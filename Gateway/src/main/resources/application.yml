@@ -14,6 +14,11 @@ spring:
           predicates:
               - Path=/api/** # Rutas que redirige al microservicio
         # Rutas que redirige al microservicio
+        - id:
+          uri: lb://CONFERENCEMICROSERVICE # URL del microservicio de conferencias
+          predicates:
+            - Path=/api/** # Rutas que redirige al microservicio
+        # Rutas que redirige al microservicio
   security:
     oauth2:
       resourceserver:

@@ -14,13 +14,15 @@ import javax.swing.table.TableCellRenderer;
 import mapper.Mapper;
 import models.Conference;
 import models.ConferenceDTO;
+import models.ListConferencesDTO;
 import models.ListConferencesOrganizerDTO;
 import serviceFactory.ServiceFactory;
+import serviceObserver.Observer;
 import services.ServiceConference;
 import utilities.Utilities;
 import utilities.ViewManager;
 
-public class VProfileOrganizer extends javax.swing.JFrame{
+public class VProfileOrganizer extends javax.swing.JFrame implements Observer{
     private final String idOrganizer;
     private final String authToken;
     private ServiceConference serviceConferences;
@@ -49,12 +51,16 @@ public class VProfileOrganizer extends javax.swing.JFrame{
     }
 
     public void loadConferences(ListConferencesOrganizerDTO conferenceByOrganizer) {
+        if (jTableConferences.isEditing()) {
+            jTableConferences.getCellEditor().stopCellEditing();
+        }
+
         List<ConferenceDTO> conferencesDTO =  conferenceByOrganizer.getConferences();
         List<Conference> conferences = new ArrayList<Conference>();
         for(ConferenceDTO conference : conferencesDTO) {
             conferences.add(Mapper.DTOToConference(conference));
         }
-        if (conferenceByOrganizer == null || conferenceByOrganizer.getConferences() == null) {
+        if (conferences.isEmpty()) {
             jPanelNoConferences.setVisible(true);
             jScrollPaneConferences.setVisible(false);  // Ocultar el JScrollPane si no hay conferencias
         } else {
@@ -68,11 +74,14 @@ public class VProfileOrganizer extends javax.swing.JFrame{
                     return column >= 1;  // Las columnas "Editar", "Borrar" y "Ver más..." son editables
                 }
             };
+            model.setRowCount(0);
 
             model.addColumn("Nombre");
             model.addColumn("Editar");  // Nueva columna para editar
             model.addColumn("Borrar");  // Nueva columna para borrar
             model.addColumn("Ver más...");  // Columna para "Ver más"
+
+            System.out.println("Cantidad de conferencias cargadas en la tabla: " + conferences.size());
 
             for (Conference conf : conferences) {
                 model.addRow(new Object[]{conf.getName(), "E", "B", "+"});
@@ -514,14 +523,55 @@ public class VProfileOrganizer extends javax.swing.JFrame{
     }//GEN-LAST:event_jComboBoxProfileActionPerformed
 
     public void refreshConferencesById() {
-        ListConferencesOrganizerDTO conferences;
+        if (jTableConferences.isEditing()) {
+            jTableConferences.getCellEditor().stopCellEditing();
+        }
+
         try {
-            conferences = serviceConferences.getConferencesByOrganizer(authToken, idOrganizer);
-            loadConferences(conferences);
+            ListConferencesOrganizerDTO conferences = serviceConferences.getConferencesByOrganizer(authToken, idOrganizer);
+
+            if (conferences == null || conferences.getConferences().isEmpty()) {
+                // Si no hay conferencias, mostrar el mensaje y ocultar la tabla
+                jPanelNoConferences.setVisible(true);
+                jScrollPaneConferences.setVisible(false);
+            } else {
+                // Si hay conferencias, actualizamos la tabla
+                System.out.println("Conferencias recibidas: " + conferences.getConferences().size());
+                loadConferences(conferences);
+            }
         } catch (Exception ex) {
             Logger.getLogger(VProfileOrganizer.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Error al actualizar las conferencias: " + ex.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
         }
     }
+
+    @Override
+    public void update(Object arg) {
+        SwingUtilities.invokeLater(() -> {
+            if (arg == null) {
+                System.out.println("El argumento es null.");
+            } else {
+                System.out.println("Tipo de argumento recibido: " + arg.getClass().getName());
+            }
+
+            if (arg instanceof ListConferencesDTO) {
+                System.out.println("Entra en el if de organizador");
+                ListConferencesOrganizerDTO updatedList;
+                try {
+                    updatedList = serviceConferences.getConferencesByOrganizer(authToken, idOrganizer);
+                    loadConferences(updatedList);
+                } catch (Exception ex) {
+                    Logger.getLogger(VProfileOrganizer.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+    }
+
 
     // Clase para renderizar un botón en la celda
     class ButtonRenderer extends JButton implements TableCellRenderer {
@@ -554,10 +604,8 @@ public class VProfileOrganizer extends javax.swing.JFrame{
             this.refreshCallback = refreshCallback;  // Inicializar el callback
             button = new JButton();
             button.setOpaque(true);
-            button.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    fireEditingStopped();
-                }
+            button.addActionListener((ActionEvent e) -> {
+                fireEditingStopped();
             });
         }
 
@@ -568,12 +616,21 @@ public class VProfileOrganizer extends javax.swing.JFrame{
             isPushed = true;
 
             // Establecer la acción según la columna
-            if (column == 1) { // Columna "Editar"
-                action = "editar";
-            } else if (column == 2) { // Columna "Borrar"
-                action = "borrar";
-            } else if (column == 3) { // Columna "Ver más"
-                action = "ver";
+            switch (column) {
+                case 1:
+                    // Columna "Editar"
+                    action = "editar";
+                    break;
+                case 2:
+                    // Columna "Borrar"
+                    action = "borrar";
+                    break;
+                case 3:
+                    // Columna "Ver más"
+                    action = "ver";
+                    break;
+                default:
+                    break;
             }
 
             return button;
@@ -582,36 +639,59 @@ public class VProfileOrganizer extends javax.swing.JFrame{
         @Override
         public Object getCellEditorValue() {
             if (isPushed) {
-                // Obtener la conferencia seleccionada
-                Conference selectedConference = conferences.get(jTableConferences.getSelectedRow());
-                if (action.equals("editar")) {
-                    
-                    VUpdateConference updateWindow = new VUpdateConference(serviceFactory, idOrganizer, selectedConference, authToken, refreshCallback);
-                    updateWindow.setVisible(true);  // Mostrar la ventana para editar
-                } else if (action.equals("borrar")) {
-                    try {
-                        serviceConferences.deleteConference(authToken, selectedConference.getId());
-                    } catch (Exception ex) {
-                        Logger.getLogger(VProfileOrganizer.class.getName()).log(Level.SEVERE, null, ex);
+                // Verifica que haya una fila seleccionada
+                int selectedRow = jTableConferences.getSelectedRow();
+                
+                if (selectedRow < 0 || selectedRow >= conferences.size()) {
+                    JOptionPane.showMessageDialog(null, "No se seleccionó ninguna fila válida.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return label; // Salir sin procesar
+                }
+
+                if (selectedRow >= 0 && selectedRow < conferences.size()) {
+                    Conference selectedConference = conferences.get(selectedRow);
+
+                    if ("editar".equals(action)) {
+                        VUpdateConference updateWindow = new VUpdateConference(serviceFactory, idOrganizer, selectedConference, authToken, refreshCallback);
+                        updateWindow.setVisible(true);
+                    } else if ("borrar".equals(action)) {
+                        int confirm = JOptionPane.showConfirmDialog(
+                                null,
+                                "¿Estás seguro de que deseas borrar esta conferencia?",
+                                "Confirmación",
+                                JOptionPane.YES_NO_OPTION
+                        );
+                        if (confirm == JOptionPane.YES_OPTION) {
+                            try {
+                                serviceConferences.deleteConference(authToken, selectedConference.getId());
+
+                                // Usar un pequeño retraso para actualizar la tabla
+                                SwingUtilities.invokeLater(() -> refreshConferencesById());
+
+                                JOptionPane.showMessageDialog(null, "Conferencia eliminada de las conferencias disponibles.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+
+                            } catch (Exception ex) {
+                                Logger.getLogger(VProfileOrganizer.class.getName()).log(Level.SEVERE, null, ex);
+                                JOptionPane.showMessageDialog(null, "Error al eliminar la conferencia.", "Error", JOptionPane.ERROR_MESSAGE);
+                            }
+                        }
+                    } else if ("ver".equals(action)) {
+                        String idConference = selectedConference.getId();
+                        VConferenceOrganizer infoWindow;
+                        try {
+                            infoWindow = new VConferenceOrganizer(serviceFactory, idConference, idOrganizer, authToken);
+                            infoWindow.setVisible(true);
+                        } catch (Exception ex) {
+                            Logger.getLogger(VProfileOrganizer.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                     }
-                    if (refreshCallback != null) {
-                        refreshCallback.run();
-                    }
-                } else if (action.equals("ver")) {
-                    // Lógica para ver más detalles
-                    String idConference = selectedConference.getId();
-                    VConferenceOrganizer infoWindow;
-                    try {
-                        infoWindow = new VConferenceOrganizer(serviceFactory, idConference, idOrganizer, authToken);
-                        infoWindow.setVisible(true);  // Mostrar la ventana con la información de la conferencia
-                    } catch (Exception ex) {
-                        Logger.getLogger(VProfileOrganizer.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "La conferencia seleccionada ya no está disponible.", "Advertencia", JOptionPane.WARNING_MESSAGE);
                 }
             }
             isPushed = false;
             return label;
         }
+
 
         @Override
         public boolean stopCellEditing() {

@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
  * @author ismos
  */
 @RestController
-@RequestMapping("/article") 
+@RequestMapping("/review/article")
 public class ArticleController {
 
    private final ArticleService articleService;
