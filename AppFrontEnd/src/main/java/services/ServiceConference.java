@@ -68,7 +68,7 @@ public class ServiceConference {
     // Crear una conferencia
     public String createConference(String token, ConferenceDTO conference) throws Exception {
         // Convertir ConferenceDTO a JSON
-        String conferenceJson = Mapper.conferenceDTOToJson(conference);
+        String conferenceJson = Mapper.conferenceDTOToJsonNoId(conference);
 
         System.out.println("JSON enviado al servidor: " + conferenceJson);
 
@@ -110,6 +110,7 @@ public class ServiceConference {
             subject.notifyObservers(updatedList);
             return response.body();
         } else {
+            System.out.println("JSON" + conferenceJson);
             throw new RuntimeException("Failed to update conference: " + response.body());
         }
     }

@@ -57,8 +57,8 @@ public class Mapper {
     }
 
     // Convertir ConferenceDTO a JSON
-    public static String conferenceDTOToJson(ConferenceDTO conferenceDTO) {
-    return """
+    public static String conferenceDTOToJsonNoId(ConferenceDTO conferenceDTO) {
+        return """
     {
         "name": "%s",
         "startDate": {
@@ -77,19 +77,56 @@ public class Mapper {
         "description": "%s"
     }
     """.formatted(
-        conferenceDTO.getName(),
-        conferenceDTO.getStartDate().getDay(),
-        conferenceDTO.getStartDate().getMonth(),
-        conferenceDTO.getStartDate().getYear(),
-        conferenceDTO.getFinishDate().getDay(),
-        conferenceDTO.getFinishDate().getMonth(),
-        conferenceDTO.getFinishDate().getYear(),
-        conferenceDTO.getPlace(),
-        conferenceDTO.getTopic(),
-        conferenceDTO.getIdOrganizer(),
-        conferenceDTO.getDescription()
-    );
-}
+                conferenceDTO.getName(),
+                conferenceDTO.getStartDate().getDay(),
+                conferenceDTO.getStartDate().getMonth(),
+                conferenceDTO.getStartDate().getYear(),
+                conferenceDTO.getFinishDate().getDay(),
+                conferenceDTO.getFinishDate().getMonth(),
+                conferenceDTO.getFinishDate().getYear(),
+                conferenceDTO.getPlace(),
+                conferenceDTO.getTopic(),
+                conferenceDTO.getIdOrganizer(),
+                conferenceDTO.getDescription()
+        );
+    }
+    
+    public static String conferenceDTOToJson(ConferenceDTO conferenceDTO) {
+        return """
+    {
+        "id": "%s",
+        "name": "%s",
+        "startDate": {
+            "day": %d,
+            "month": %d,
+            "year": %d
+        },
+        "finishDate": {
+            "day": %d,
+            "month": %d,
+            "year": %d
+        },
+        "place": "%s",
+        "topic": "%s",
+        "idOrganizer": "%s",
+        "description": "%s"
+    }
+    """.formatted(
+                conferenceDTO.getId(), // Agregado el ID aquí
+                conferenceDTO.getName(),
+                conferenceDTO.getStartDate().getDay(),
+                conferenceDTO.getStartDate().getMonth(),
+                conferenceDTO.getStartDate().getYear(),
+                conferenceDTO.getFinishDate().getDay(),
+                conferenceDTO.getFinishDate().getMonth(),
+                conferenceDTO.getFinishDate().getYear(),
+                conferenceDTO.getPlace(),
+                conferenceDTO.getTopic(),
+                conferenceDTO.getIdOrganizer(),
+                conferenceDTO.getDescription()
+        );
+    }
+
 
 
     // Convertir JSON a ArticleDTO
