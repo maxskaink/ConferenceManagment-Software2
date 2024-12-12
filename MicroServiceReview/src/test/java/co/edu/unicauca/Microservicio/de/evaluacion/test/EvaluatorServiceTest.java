@@ -39,12 +39,6 @@ public class EvaluatorServiceTest {
         // Crear un evaluador de prueba
         Evaluator evaluator = new Evaluator("1","Evaluador 1", "evaluador1@example.com");
 
-        // Simular el comportamiento del repositorio
-<<<<<<< HEAD
-        when(evaluatorRepository.saveEvaluator(evaluator)).thenReturn(evaluator);
-=======
-        when(evaluatorRepository.save(evaluator)).thenReturn(evaluator);
->>>>>>> 53ff72f0d68a5e22859cec4e914681ae5235c330
 
         // Llamar al método del servicio
         Evaluator createdEvaluator = evaluatorService.create(evaluator);
@@ -64,11 +58,6 @@ public class EvaluatorServiceTest {
         evaluator.setArticles(articles);
 
         // Simular el comportamiento del repositorio
-<<<<<<< HEAD
-
-=======
-        when(evaluatorRepository.findById("evaluador1")).thenReturn(java.util.Optional.of(evaluator));
->>>>>>> 53ff72f0d68a5e22859cec4e914681ae5235c330
 
         // Llamar al método del servicio
         List<Article> retrievedArticles = evaluatorService.getArticlesByEvaluatorId("evaluador1");
