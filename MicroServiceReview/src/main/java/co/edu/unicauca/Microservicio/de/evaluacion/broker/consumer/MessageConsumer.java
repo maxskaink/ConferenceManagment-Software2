@@ -6,6 +6,8 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+
 @Service
 public class MessageConsumer {
 
@@ -18,7 +20,7 @@ public class MessageConsumer {
 
     @RabbitListener(queues = "articleQueue")
     public void receiveMessage(Article obArticle) {
-
+        obArticle.setEvaluadores( new ArrayList<>());
         System.out.println("Se ha recibido nuevo articulo por broker");
 
         articleRepository.save(obArticle);
