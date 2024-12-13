@@ -53,12 +53,10 @@ Clona este repositorio en tu máquina local:
 ```bash
 git clone https://github.com/maxskaink/ConferenceManagment-Software2.git
 cd ConferenceManagement
-
+```
 ## Documento del proyecto
 Se adjunta link del documento que contiene los diferentes links de la documentacion del proyecto
 https://docs.google.com/document/d/18yl8qEotnIHBprFm0Sm5nAzeMxzRafQuaiBu6a-xEmg/edit?usp=sharing
 ## Video explicación del proyecto 
 Se adjunta el link del video explicaion del proyecto gestión de conferencias
 https://drive.google.com/file/d/1F1vG7pX3ySBTdq6gb1iAZiQg0VUMGzn5/view?usp=drive_link
-
-```
