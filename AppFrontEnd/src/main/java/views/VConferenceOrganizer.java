@@ -68,20 +68,15 @@ public class VConferenceOrganizer extends javax.swing.JFrame {
 
             for (Article art : Articles) {
                 try {
-                    // Obtener evaluadores asignados al artículo
-                    ServiceEvaluator s = serviceFactory.getServiceEvaluator();
-                    List<EvaluatorDTO> evaluators = s.getEvaluatorsByArticle(authToken, art.getId());
-                    art.setEvaluators(evaluators); // Establecer evaluadores al artículo
-
-                    // Determinar el texto del botón en base a los evaluadores asignados
-                    String assignButtonLabel = evaluators != null && !evaluators.isEmpty() ? "Asignado" : "Asignar";
+                    // Determinar el texto del botón sin hacer validación de evaluadores
+                    String assignButtonLabel = "Asignar"; // Texto predeterminado para el botón
                     MyTable.addRow(new Object[]{idAuthor, art.getName(), "INF", assignButtonLabel});
-
                 } catch (Exception e) {
-                    Logger.getLogger(VConferenceOrganizer.class.getName()).log(Level.WARNING, "Error al obtener evaluadores para el artículo: " + art.getName(), e);
-                    MyTable.addRow(new Object[]{idAuthor, art.getName(), "INF", "Asignar"}); // Por defecto
+                    Logger.getLogger(VConferenceOrganizer.class.getName()).log(Level.WARNING, "Error al procesar el artículo: " + art.getName(), e);
+                    MyTable.addRow(new Object[]{idAuthor, art.getName(), "INF", "Asignar"}); // Por defecto en caso de error
                 }
             }
+
 
             jTableNoArticles.setModel(MyTable);
 

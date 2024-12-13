@@ -1,7 +1,9 @@
 package models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.List;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Article {
     private String      id;
     private String      name;
@@ -9,7 +11,7 @@ public class Article {
     private String      keyWords;
     private BasicDate   publishDate;
     private String      idConference;
-    private List<EvaluatorDTO>   evaluadores;
+    private List<EvaluatorDTO>   Evaluadores;
 
     public Article(String id, String name, String idAuthor, String keyWords, BasicDate publishDate, String idConference) {
         this.id = id;
@@ -80,11 +82,11 @@ public class Article {
     } 
 
     public List<EvaluatorDTO> getEvaluators() {
-        return evaluadores;
+        return Evaluadores;
     }
 
     public void setEvaluators(List<EvaluatorDTO> evaluadores) {
-        this.evaluadores = evaluadores;
+        this.Evaluadores = Evaluadores;
     }
     
 }

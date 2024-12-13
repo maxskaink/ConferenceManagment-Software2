@@ -30,12 +30,13 @@ import services.ServiceConference;
 import services.ServiceEvaluator;
 import utilities.ViewManager;
 
-public class VEvaluators extends javax.swing.JFrame{
+public class VEvaluators extends javax.swing.JFrame {
+
     private ServiceConference service;
     private final ServiceArticle serviceArticle;
     private ServiceFactory serviceFactory;
     private final ServiceEvaluator serviceEvaluator;
-    private final Runnable refreshCallback; 
+    private final Runnable refreshCallback;
     private final String idArticle;
     private final String idAuthor;
     private final String authToken;
@@ -224,6 +225,7 @@ public class VEvaluators extends javax.swing.JFrame{
         jPanelAvailableC.add(jLabelAvailableC, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 6, 402, 60));
 
         jLabelArticleName.setFont(new java.awt.Font("Montserrat ExtraBold", 1, 14)); // NOI18N
+        jLabelArticleName.setForeground(new java.awt.Color(255, 255, 255));
         jLabelArticleName.setText("n");
         jPanelAvailableC.add(jLabelArticleName, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 6, 180, 60));
 
@@ -320,7 +322,7 @@ public class VEvaluators extends javax.swing.JFrame{
     }//GEN-LAST:event_jPanelHeaderMouseDragged
 
     private void jLabelExitMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelExitMouseClicked
-        Utilities.exitApp();
+        this.dispose();
     }//GEN-LAST:event_jLabelExitMouseClicked
 
     private void jLabelExitMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelExitMouseEntered
@@ -384,30 +386,26 @@ public class VEvaluators extends javax.swing.JFrame{
 
                 @Override
                 public Class<?> getColumnClass(int columnIndex) {
-                    // Devolver el tipo correcto para cada columna
-                    if (columnIndex == 2) {
-                        return Boolean.class; // Columna de selección como Boolean
-                    }
-                    return String.class; // Otras columnas como String
+                    return columnIndex == 2 ? Boolean.class : String.class;
                 }
             };
 
-            // Agregar columnas al modelo
-            model.addColumn("Evaluator");
+            model.addColumn("Evaluador");
             model.addColumn("Nombre");
             model.addColumn("Seleccionar");
 
-            // Agregar filas al modelo
+            // Agregar filas al modelo y evitar duplicados
             for (EvaluatorDTO evaluator : evaluators) {
-                model.addRow(new Object[]{evaluator, evaluator.getName(), false}); // Selección como Boolean
+                model.addRow(new Object[]{evaluator, evaluator.getName(), false}); // Checkbox inicial en "false"
             }
+
             jTableEvaluators.setModel(model);
 
-            // Configurar el renderizador y el editor para la columna de selección (Boolean)
+            // Configurar la columna de selección como checkbox
             jTableEvaluators.getColumnModel().getColumn(2).setCellRenderer(jTableEvaluators.getDefaultRenderer(Boolean.class));
             jTableEvaluators.getColumnModel().getColumn(2).setCellEditor(jTableEvaluators.getDefaultEditor(Boolean.class));
 
-            // Ocultar la columna del evaluador completo
+            // Ocultar la columna del objeto EvaluatorDTO para evitar confusiones en la tabla
             jTableEvaluators.getColumnModel().getColumn(0).setMinWidth(0);
             jTableEvaluators.getColumnModel().getColumn(0).setMaxWidth(0);
             jTableEvaluators.getColumnModel().getColumn(0).setWidth(0);
@@ -418,38 +416,28 @@ public class VEvaluators extends javax.swing.JFrame{
         }
     }
 
-    
     class CheckBoxRenderer extends JCheckBox implements TableCellRenderer {
-    public CheckBoxRenderer() {
-        setHorizontalAlignment(SwingConstants.CENTER); // Centrar el checkbox
+
+        public CheckBoxRenderer() {
+            setHorizontalAlignment(SwingConstants.CENTER); // Centrar el checkbox
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            setSelected(value != null && (boolean) value); // Establecer el estado del checkbox
+            return this;
+        }
     }
 
-    @Override
-    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-        setSelected(value != null && (boolean) value); // Establecer el estado del checkbox
-        return this;
-    }
-}
-
-    
     private void saveEvaluatorAssignments() {
         List<EvaluatorDTO> selectedEvaluators = new ArrayList<>();
-
         for (int i = 0; i < jTableEvaluators.getRowCount(); i++) {
             Boolean isSelected = (Boolean) jTableEvaluators.getValueAt(i, 2); // Verifica si está seleccionado
             if (isSelected != null && isSelected) {
-                // Obtener el evaluador completo desde la fila (columna oculta)
-                EvaluatorDTO evaluator = (EvaluatorDTO) jTableEvaluators.getValueAt(i, 0);
-                selectedEvaluators.add(evaluator);
-            }
-        }
-        
-        for (int i = 0; i < jTableEvaluators.getRowCount(); i++) {
-            Boolean isSelected = (Boolean) jTableEvaluators.getValueAt(i, 2); // Verifica si está seleccionado
-            if (isSelected != null && isSelected) {
-                // Obtener el evaluador completo desde la fila (columna oculta)
-                EvaluatorDTO evaluator = (EvaluatorDTO) jTableEvaluators.getValueAt(i, 0);
-                selectedEvaluators.add(evaluator);
+                EvaluatorDTO evaluator = (EvaluatorDTO) jTableEvaluators.getValueAt(i, 0); // Evaluador almacenado en la primera columna oculta
+                if (!selectedEvaluators.contains(evaluator)) { // Evitar duplicados
+                    selectedEvaluators.add(evaluator);
+                }
             }
         }
 
@@ -459,17 +447,15 @@ public class VEvaluators extends javax.swing.JFrame{
         }
 
         try {
-            // Llamar al servicio para asignar evaluadores
             serviceEvaluator.assignEvaluatorsToArticle(idArticle, selectedEvaluators);
-            JOptionPane.showMessageDialog(this, "Evaluadores asignados exitosamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-            dispose(); // Cerrar la ventana
+            JOptionPane.showMessageDialog(this, "Evaluadores asignados correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            refreshCallback.run();
+            dispose();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Error al asignar evaluadores: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
     }
-
-
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
